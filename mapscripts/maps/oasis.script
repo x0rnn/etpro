@@ -65,12 +65,11 @@ game_manager
 		}
 
 		accum 1 set 0		// State of objective number one
-		accum 5 set 0		// Corrent number of Pak 75mm guns destroyed
 		accum 6 set 0		// Current number of water pumps built
 		accum 7 set 0		// Value used in checking whether or not to announce "Axis have damaged both water pumps!"
 
-		globalaccum 5 set 0
-		globalaccum 6 set 0
+		globalaccum 2 set 0	// first gun
+		globalaccum 3 set 0	// second gun
 
 		// Game rules
 		wm_axis_respawntime	30
@@ -164,15 +163,13 @@ game_manager
 
 	trigger 75mm_gun_counter
 	{
-		accum 5 inc 1				// Increase game counter
-		accum 5 abort_if_not_equal 2		// All guns destroyed ?
+		globalaccum 2 abort_if_not_equal 1		// north gun destroyed?
+		globalaccum 3 abort_if_not_equal 1		// south gun destroyed?
 
 		wm_announce	"Allies have destroyed both Anti-Tank Guns!"
 
 		accum 1 set 1				// Both pak guns destroyed
 
-		wait 8000
-		
 		// Call function to check if the round has been won
 		trigger game_manager checkgame
 	}
@@ -374,6 +371,10 @@ oldcitywall //Broken section of Old City wall
 
 		wm_set_main_objective	1 0
 		wm_set_main_objective	1 1
+
+		// ***** nUllSkillZ START *****
+		trigger team_only_door_1 setinv
+		// ***** nUllSkillZ END *****
 	}
 }
 
@@ -842,6 +843,9 @@ pak75_clip_1
 		wm_set_main_objective	2 0
 		wm_set_main_objective	2 1
 
+		//bani - north gun destroyed
+		globalaccum 2 set 1
+
 		// Update game manager counter for objectives
 		trigger game_manager 75mm_gun_counter
 
@@ -900,6 +904,9 @@ pak75_clip_2
 
 		wm_objective_status 		2 0 2
 		wm_objective_status 		2 1 1
+
+		//bani
+		globalaccum 3 set 1
 
 		// Update game manager counter for objectives
 		trigger game_manager 75mm_gun_counter
@@ -1801,3 +1808,17 @@ allied_camp_wobj
 // ======================================================
 // ==============   END SEQUENCE End   ==================
 // ======================================================
+// ***** nUllSkillZ START *****
+team_only_door_1
+{
+	spawn
+	{
+		wait 150
+	}
+
+	trigger setinv
+	{
+		remove
+	}
+}
+// ***** nUllSkillZ END *****
