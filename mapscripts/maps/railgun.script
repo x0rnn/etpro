@@ -1,6 +1,7 @@
 // bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
 // mortis - Wed Aug 31 23:13:15 PST 2005 - depot tank exploit fixed
 // mortis - Sat Jan 28 15:30:00 PST 2006 - added trigger_hurt to oil tank to punish etpub exploiters
+// mortis - Mon Jan 30 12:57:46 PST 2006 - amalgamated ragnar's tower spawn script
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
 
@@ -62,6 +63,106 @@ game_manager
 			spawnflags 16
 			dmg 25
 		}
+
+		// Ragnar_40k - create spawn points for Axis on tower
+		// Upper level of tower with spawn point layout (ASCII-Art!):
+		// 1-6 -> Spawn points, * -> team_WOLF_objective
+		// +----------------------------+
+		// |                            |
+		// |                            |
+		// |    +------------------+    |
+		// |    | +-+ +-+      +-+ |    |
+		// |    | |5| |1|      |3| |+-+ |
+		// |    | +-+ +-+      +-+ ||6| |
+		// |    |                  |+-+ |
+		// |    |                  |+-+ |
+        	// |    |       +-+        ||2| |
+	        // |    |       |*|        |+-+ |
+        	// |    |       +-+        |+-+ |
+	        // |    |                  ||4| |
+	        // |    |                  |+-+ |
+	        // |    |                  |    |
+		// |    +------|    |------+    |
+		// |                            |
+		// |                            |
+		// +----------------------------+
+		create
+		{
+			classname "team_WOLF_objective"
+			scriptname "axistowermarker"
+			targetname "axistowermarker"
+			origin "2048 5120 5"   // z = CC_FILTER_ALLIES(1) | CC_FILTER_SPAWNS(4)
+			spawnflags 3	 // TEAM_AXIS(3)
+			description "Axis Tower Spawn"
+		}
+
+		// spawn #1
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns1"
+			origin "2024 5200 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "270"
+		}
+
+		// spawn #2
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns2"
+			origin "2200 5128 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "0"
+		}
+
+		// spawn #3
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns3"
+			origin "2128 5200 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "270"
+		}
+
+		// spawn #4
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns4"
+			origin "2200 5072 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "0"
+		}
+
+		// spawn #5
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns5"
+			origin "1968 5200 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "270"
+		}
+
+		// spawn #6
+		create
+		{
+			classname "team_CTF_redspawn"
+			targetname "axistowerspawns"
+			scriptName "axistowerspawns6"
+			origin "2200 5184 584"
+			spawnflags 3 // TEAM_AXIS
+			angle "0"
+		}
+
+
 
 
 		// Game rules
@@ -139,6 +240,10 @@ game_manager
 		wm_teamvoiceannounce 1 "railgun_allies_depot_capture"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
+
+		// Ragnar_40k		
+		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
+
 	}
 
 	trigger enable_gun
@@ -196,6 +301,10 @@ game_manager
 		// Some kind of UI pop-up to alert players
 		wm_announce	"Allies capture the Depot Yard!"
 
+		// Ragnar_40k
+		trigger axistowermarker enable
+
+
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "railgun_axis_capture_depot"
 
@@ -220,6 +329,10 @@ game_manager
 		// Some kind of UI pop-up to alert players
 		wm_announce	"Axis captures the Depot Yard!"
 
+		// Ragnar_40k
+		trigger axistowermarker disable
+
+
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 1 "railgun_allies_depot_capture"
 
@@ -241,6 +354,53 @@ game_manager
 		alertentity end_alliedsmoke
 	}
 }
+
+// Begin: Ragnar_40k
+axistowermarker
+{
+	// accum 0 signals if Axis Tower Spawn can triggered by Depot Yard Flag
+	// 0 -> Axis Tower Spawn can be enabled/disabled by Depot Yard Flag
+	// 1 -> Axis Tower Spawn is permanently disabled
+	spawn
+	{
+		set
+		{
+			description "Axis Tower Spawn"
+			message "Axis Tower Spawn"
+		}
+		wait 50
+		accum 0 set 0
+		setstate axistowermarker default
+		setstate axistowerspawns default
+		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
+	}
+
+	trigger enable
+	{
+		accum 0 abort_if_equal 1
+		setstate axistowermarker default
+		setstate axistowerspawns default
+		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
+	}
+
+	trigger disable
+	{
+		accum 0 abort_if_equal 1
+		setstate axistowermarker invisible
+		setstate axistowerspawns invisible
+		wm_announce "^1Axis Tower Spawn disabled!"
+	}
+	
+	trigger disable_permanent
+	{
+		accum 0 set 1
+		setstate axistowermarker invisible
+		setstate axistowerspawns invisible
+		wm_announce "^1Axis Tower Spawn permanently disabled!"
+	}
+}
+// End: Rangar_40k
+
 
 // BIG NOTE BY GORDON: NEVER EVER PUT ANY WAIT COMMANDS IN ANYTHING BUT THE SPAWN FUNCTION OF THIS ENTITY
 train1
@@ -1364,6 +1524,10 @@ train1
 		accum 4 set 0
 
 		wm_announce "Axis transported the Ammo to the North Crane!"
+
+		// Ragnar_40k
+		trigger axistowermarker disable_permanent
+
 
 		wm_objective_status	2 1 2
 		wm_objective_status	2 0 1
