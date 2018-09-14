@@ -6,13 +6,66 @@
 // Forward Spawn:
 // Command Post Spawn:
 // ============================================================================
-
+// Harlekin - Sat Feb 3 2007 Playerclip to prevent jumping on the roof
+// Mateos - Wed April 4 2012 Playerclip like Harlekin, see below
 game_manager
 {
-	spawn
-   	{
+		spawn
+	   	{
+		// Harlekin - Prevent people get on the roofs
+		create
+		{
+			scriptName "jump1"
+			classname "func_fakebrush"
+			origin "290 -927 500"
+			contents 65536  // 1 SOLID 65536 CONTENTS_PLAYERCLIP
+			mins "-370 -2 -30"
+			maxs "370 2 30"
+		}
+		// Harlekin - Prevent people get on the roofs
+		create
+		{
+			scriptName "jump2"
+			classname "func_fakebrush"
+			origin "469 -435 480"
+			contents 65536  // 1 SOLID 65536 CONTENTS_PLAYERCLIP
+			mins "-160 -140 -30"
+			maxs "160 140 120"
+		}
+
+		// Mateos - Roof above Key
+		create
+		{
+			scriptName "jump3"
+			classname "func_fakebrush"
+			origin "280 -704 384"
+			contents 65536  // 1 SOLID 65536 CONTENTS_PLAYERCLIP
+			mins "-260 -164 -180"
+			maxs "260 164 180"
+		}
+		// Mateos - Roof near Black Tank
+		create
+		{
+			scriptName "jump4"
+			classname "func_fakebrush"
+			origin "704 1252 564"
+			contents 65536  // 1 SOLID 65536 CONTENTS_PLAYERCLIP
+			mins "-204 -144 -232"
+			maxs "204 144 232"
+		}
+		// Mateos - Behind Church
+		create
+		{
+			scriptName "crouch1"
+			classname "func_fakebrush"
+			origin "1504 2808 552"
+			contents 65536  // 1 SOLID 65536 CONTENTS_PLAYERCLIP
+			mins "-220 -4 -100"
+			maxs "220 4 100"
+		}
+
 		remapshaderflush
-		
+
 		// Game rules
 		wm_axis_respawntime	25
 		wm_allied_respawntime	20
@@ -47,7 +100,7 @@ game_manager
 
 		setautospawn	"East Courtyard"	1
 		setautospawn	"Convent"	0
-   	}
+	}
 
 //Objective counter and game win check scripts
 
@@ -104,7 +157,7 @@ key_safe
 			constructible_class 2
 			trigger self startup
 		}
-	
+
 		buildstart final
 		{
 		}
@@ -164,7 +217,7 @@ key_safe
 			constructible_class 2
 			trigger self startup
 		}
-	
+
 		buildstart final
 		{
 		}
@@ -270,7 +323,7 @@ enable_gold //enter this as the scriptname value for the single trigger_flagonly
 		setstate gold_cap_toi default
 		setstate allied_objective default
 		setstate access_control_cm_marker invisible
-		
+
 		// *----------------------------------- vo ----*
 		wm_teamvoiceannounce 0 "dubrovnik_axis_obj_captured"
 		wm_teamvoiceannounce 1 "dubrovnik_allies_obj_secured"
