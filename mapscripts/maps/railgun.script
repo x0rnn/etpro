@@ -1,3 +1,4 @@
+// bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
 
@@ -5,6 +6,37 @@ game_manager
 {
 	spawn
 	{
+		//bani - bug fixes
+		create
+		{
+			scriptName "bugfix1"
+			classname "func_fakebrush"
+			origin "2936 3292 191"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-1 -15 -63"
+			maxs "3 25 80"
+		}
+
+		create
+		{
+			scriptName "bugfix2"
+			classname "func_fakebrush"
+			origin "1274 5142 298"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-10 -10 -22"
+			maxs "10 10 22"
+		}
+
+		create
+		{
+			scriptName "bugfix3"
+			classname "func_fakebrush"
+			origin "3789 2011 296"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-10 -10 -28"
+			maxs "10 10 28"
+		}
+
 		// Game rules
 		wm_axis_respawntime	20
 		wm_allied_respawntime	20
@@ -6657,6 +6689,7 @@ switch_invtrig1
 {
 	spawn
 	{
+		wait 200
 		trigger self allies_want_depot
 		trigger self axis_want_base
 
