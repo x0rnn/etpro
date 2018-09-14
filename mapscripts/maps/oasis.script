@@ -1,8 +1,69 @@
+// rain - Tue Sep 23 19:57:17 EDT 2003 - fixed autospawns
+// rain - Sun Feb 29 18:56:48 EST 2004 - moved autospawn flags so that
+// the resulting choice of spawnpoints is approximately the same
+// bani - Mon Mar  1 00:38:32 PST 2004 - fix map bugs, falling deaths
+// rain - Thu Apr  1 21:46:24 EST 2004 - fix weird underwater movement
+// bugs
 
 game_manager
 {
 	spawn
 	{
+		//bani - cheat fix
+		create
+		{
+			scriptName "cheatfix"
+			classname "func_fakebrush"
+			origin "7591 6428 -109"
+			contents 65536	// CONTENTS_PLAYERCLIP
+			mins "-100 -50 -50"
+			maxs "100 50 200"
+		}
+
+		//bani - bug fixes
+		create
+		{
+			scriptName "bugfix1"
+			classname "func_fakebrush"
+			origin "3592 7176 -430"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-40 -2 -66"
+			maxs "40 2 136"
+		}
+
+		//bani - bug fixes
+		create
+		{
+			scriptName "bugfix2"
+			classname "func_fakebrush"
+			origin "3534 7212 -430"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-10 -40 -66"
+			maxs "20 145 136"
+		}
+
+		//bani - bug fixes
+		create
+		{
+			scriptName "bugfix3"
+			classname "func_fakebrush"
+			origin "2194 5550 -265"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-7 -50 -37"
+			maxs "7 50 37"
+		}
+
+		//bani - bug fixes
+		create
+		{
+			scriptName "bugfix4"
+			classname "func_fakebrush"
+			origin "9255 3991 -467"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-10 -2 -11"
+			maxs "10 2 11"
+		}
+
 		accum 1 set 0		// State of objective number one
 		accum 5 set 0		// Corrent number of Pak 75mm guns destroyed
 		accum 6 set 0		// Current number of water pumps built
@@ -64,7 +125,8 @@ game_manager
 		// Old City
 		wait 150
 
-		setautospawn "Old City"			1
+		// rain - properly set initial spawns
+		setautospawn "Allied Camp"		1
 		setautospawn "Old City"			0
 
 		wait 350
@@ -107,10 +169,10 @@ game_manager
 
 		wm_announce	"Allies have destroyed both Anti-Tank Guns!"
 
-		wait 8000
-
 		accum 1 set 1				// Both pak guns destroyed
 
+		wait 8000
+		
 		// Call function to check if the round has been won
 		trigger game_manager checkgame
 	}
@@ -152,6 +214,9 @@ game_manager
 
 	trigger timelimit_hit
 	{
+		// Call function to check if the round has been won
+		trigger game_manager checkgame
+		
 		trigger end_boom_north check_0
 		trigger end_boom_south check_1
 	}
@@ -189,6 +254,14 @@ oldcityflag
 		wm_objective_status 		4 1 2
 
 		alertentity old_city_wobj
+
+		// rain - properly set autospawns
+		// Spawn points: (1 = allies, 0 = axis)
+		// Axis Garrison
+		// Allied Camp
+		// Old City
+		setautospawn "Allied Camp"		1
+		setautospawn "Old City"			0
 	}
 
 	trigger allied_capture	// Flag has been touched by an allied player
@@ -218,6 +291,14 @@ oldcityflag
 		wm_objective_status 		4 1 1
 
 		alertentity old_city_wobj
+
+		// rain - properly set autospawns
+		// Spawn points: (1 = allies, 0 = axis)
+		// Axis Garrison
+		// Allied Camp
+		// Old City
+		setautospawn "Old City"			1
+		setautospawn "Axis Garrison"		0
 	}
 
 	trigger check_obj
@@ -235,6 +316,14 @@ oldcityflag
 
 		alertentity old_city_wobj
 		alertentity oldcityspawns
+
+		// rain - properly set autospawns
+		// Spawn points: (1 = allies, 0 = axis)
+		// Axis Garrison
+		// Allied Camp
+		// Old City
+		setautospawn "Old City"			1
+		setautospawn "Axis Garrison"		0
 	}
 
 	trigger kill
@@ -835,6 +924,18 @@ pak75_clip_2
 
 water_tunnel
 {
+	spawn
+	{
+		// rain - these are put into the world as CONTENTS_SOLID,
+		// which is a Bad Thing if WolfReviveBBox gets called
+		// while we're in the water
+		wait 100
+		set
+		{
+			contents 32 // CONTENTS_WATER
+			clipmask 32 // CONTENTS_WATER
+		}
+	}
 	trigger up
 	{
 		gotomarker path_water_tunnel_top 3 wait
@@ -850,6 +951,18 @@ water_tunnel
 
 water_tunnel2
 {
+	spawn
+	{
+		// rain - these are put into the world as CONTENTS_SOLID,
+		// which is a Bad Thing if WolfReviveBBox gets called
+		// while we're in the water
+		wait 100
+		set
+		{
+			contents 32 // CONTENTS_WATER
+			clipmask 32 // CONTENTS_WATER
+		}
+	}
 	trigger up
 	{
 		gotomarker path_water_tunnel_top 3 wait
@@ -865,6 +978,18 @@ water_tunnel2
 
 water_discharge
 {
+	spawn
+	{
+		// rain - these are put into the world as CONTENTS_SOLID,
+		// which is a Bad Thing if WolfReviveBBox gets called
+		// while we're in the water
+		wait 100
+		set
+		{
+			contents 32 // CONTENTS_WATER
+			clipmask 32 // CONTENTS_WATER
+		}
+	}
 	trigger up
 	{
 		gotomarker path_water_discharge_top 3 wait
@@ -878,6 +1003,18 @@ water_discharge
 
 water_discharge_2
 {
+	spawn
+	{
+		// rain - these are put into the world as CONTENTS_SOLID,
+		// which is a Bad Thing if WolfReviveBBox gets called
+		// while we're in the water
+		wait 100
+		set
+		{
+			contents 32 // CONTENTS_WATER
+			clipmask 32 // CONTENTS_WATER
+		}
+	}
 	trigger up
 	{
 		gotomarker path_water_discharge_2_top 3 wait
@@ -1636,6 +1773,28 @@ pak75_model_2
 		setspeed 30 0 0
 		wait 500
 		setspeed 0 0 0
+	}
+}
+
+axis_garrison_wobj
+{
+	spawn
+	{
+		set
+		{
+			origin "7089 4852 -415"
+		}
+	}
+}
+
+allied_camp_wobj
+{
+	spawn
+	{
+		set
+		{
+			origin "1153 2879 -383"
+		}
 	}
 }
 
