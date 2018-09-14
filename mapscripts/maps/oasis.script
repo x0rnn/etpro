@@ -9,72 +9,6 @@ game_manager
 {
 	spawn
 	{
-		// allied closer spawn, enabled after the old city wall is destroyed
-		create
-		{
-			classname "team_WOLF_objective"
-			scriptname "alliedcloserspawn"
-			targetname "alliedcloserspawn"
-			origin "5283 7799 -426"
-			spawnflags 2
-			description "Wall Service Room"
-		}
-
-		// allied spawn #1
-		create
-		{
-			classname "team_CTF_bluespawn"
-			targetname "alliedcloserspawns"
-			scriptName "alliedcloserspawns1"
-			origin "5250 7714 -471"
-			spawnflags 2
-			angle "360"
-		}
-
-		// allied spawn #2
-		create
-		{
-			classname "team_CTF_bluespawn"
-			targetname "alliedcloserspawns"
-			scriptName "alliedcloserspawns2"
-			origin "5251 7870 -437"
-			spawnflags 2
-			angle "360"
-		}
-
-		// axis spawn above the axis garrison (2nd spawn)
-		create
-		{
-			classname "team_WOLF_objective"
-			scriptname "abovegarrison"
-			targetname "abovegarrison"
-			origin "7440 4064 -128"
-			spawnflags 1
-			description "Above Axis Garrison"
-		}
-
-		// axis spawn #1
-		create
-		{
-			classname "team_CTF_redspawn"
-			targetname "abovegarrisonspawn"
-			scriptName "abovegarrisonspawn1"
-			origin "7520 4276 -196"
-			spawnflags 3
-			angle "180"
-		}
-
-		// axis spawn #2
-		create
-		{
-			classname "team_CTF_redspawn"
-			targetname "abovegarrisonspawn"
-			scriptName "abovegarrisonspawn2"
-			origin "7520 4212 -196"
-			spawnflags 3
-			angle "180"
-		}
-
 		//bani - cheat fix
 		create
 		{
@@ -285,28 +219,6 @@ game_manager
 	}
 }
 
-alliedcloserspawn
-{
-	spawn
-	{
-		set
-		{
-			description "Wall Service Room"
-			message "Wall Service Room"
-		}
-		wait 50
-		setstate alliedcloserspawn invisible
-		setstate alliedcloserspawns invisible
-	}
-
-	trigger enable
-	{
-		setstate alliedcloserspawn default
-		setstate alliedcloserspawns default
-		wm_announce "^1Allied Wall Service Room Spawn enabled (2 positions availabe)!"
-	}
-}
-
 oldcityflag
 {
 	spawn
@@ -463,8 +375,6 @@ oldcitywall //Broken section of Old City wall
 		// ***** nUllSkillZ START *****
 		trigger team_only_door_1 setinv
 		// ***** nUllSkillZ END *****
-
-		trigger alliedcloserspawn enable
 	}
 }
 
@@ -548,7 +458,7 @@ water_pump_1
 		setstate pump_materials_clip_1 default
 		setstate pump_flag_1 default
 		setstate pump1_p2 invisible
-		//setstate pump_sound invisible
+		setstate pump_sound invisible
 		setstate water_pump_1_oldclip default
 
 		disablespeaker wp1_sound
@@ -625,7 +535,7 @@ water_pump_2
 		setstate pump_flag_2 default
 		setstate pump2_p1 default
 		setstate pump2_p2 invisible
-		//setstate pump2_sound invisible
+		setstate pump2_sound invisible
 		setstate water_pump_2_oldclip default
 	}
 
@@ -683,7 +593,7 @@ water_pump_2
 		setstate water_pump_2_oldclip default
 
 		setstate pump2_p2 invisible
-		//setstate pump2_sound invisible
+		setstate pump2_sound invisible
 
 		disablespeaker wp2_sound
 		enablespeaker hose2_sound2
@@ -720,7 +630,7 @@ water_pump_2
 		setstate pump_flag_2 default
 		setstate pump2_p1 default
 		setstate pump2_p2 invisible
-		//setstate pump2_sound invisible
+		setstate pump2_sound invisible
 		setstate water_pump_2_oldclip default
 	}
 
