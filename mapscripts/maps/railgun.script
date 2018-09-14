@@ -1,7 +1,14 @@
 // bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
+// Ragnar_40k, 2005-04-30 added Axis Tower Spawn
 // mortis - Wed Aug 31 23:13:15 PST 2005 - depot tank exploit fixed
 // mortis - Sat Jan 28 15:30:00 PST 2006 - added trigger_hurt to oil tank to punish etpub exploiters
 // mortis - Mon Jan 30 12:57:46 PST 2006 - amalgamated ragnar's tower spawn script
+
+// x0rnn, 2018-09-09:
+// - fixed missing sound: "railgun_axis_capture_depot" -> "railgun_axis_depot_capture"
+// - MG at Depot Yard removed
+// - Flag at Depot Yard moved to where the MG was
+
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
 
@@ -9,6 +16,17 @@ game_manager
 {
 	spawn
 	{
+
+		// x0rnn - new flag at MG
+		create
+		{
+			spawnflags "1"
+			scriptname "depotflag2"
+			origin "1216 1848 350"
+			classname "team_WOLF_checkpoint"
+			targetname "depotflag2"
+			target "depotspawn"
+		}
 
 		//bani - bug fixes
 		create
@@ -306,7 +324,7 @@ game_manager
 
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "railgun_axis_capture_depot"
+		wm_addteamvoiceannounce 0 "railgun_axis_depot_capture"
 
 		wm_teamvoiceannounce 0 "railgun_axis_depot_lost"
 
@@ -352,6 +370,14 @@ game_manager
 	trigger timelimit_hit
 	{
 		alertentity end_alliedsmoke
+	}
+}
+
+depotflag
+{
+	spawn
+	{
+		remove
 	}
 }
 
@@ -6206,7 +6232,7 @@ train2_disabler
 	}
 }
 
-depotflag
+depotflag2
 {
 	spawn
 	{
@@ -6218,13 +6244,13 @@ depotflag
 	trigger axis_capture
 	{
 		trigger game_manager depotflagred
-		trigger depotflag setaxis
+		trigger depotflag2 setaxis
 	}
 
 	trigger allied_capture
 	{
 		trigger game_manager depotflagblue
-		trigger depotflag setallies
+		trigger depotflag2 setallies
 	}
 
 	trigger setaxis
@@ -6582,7 +6608,7 @@ axis_compost_built_model
 }
 
 
-// Depot Yard MG nest
+// Depot Yard Flag nest
 browning_clip_1
 {
 	spawn
@@ -6604,7 +6630,7 @@ browning_clip_1
 
 	buildstart final
 	{
-		setstate browning_1 underconstruction
+		setstate browning_1 invisible
 		setstate browning_materials_1 default
 		setstate browning_materials_clip_1 default
 		setstate browning_flag_1 default
@@ -6612,12 +6638,12 @@ browning_clip_1
 
 	built final
 	{
-		setstate browning_1 default
+		setstate browning_1 invisible
 		setstate browning_materials_1 invisible
 		setstate browning_materials_clip_1 invisible
 		setstate browning_flag_1 invisible
 
-		wm_announce	"The Depot Yard MG has been constructed."
+		wm_announce	"The Depot Yard Flag Nest has been constructed."
 	}
 
 	decayed final
@@ -6636,7 +6662,7 @@ browning_clip_1
 		setstate browning_materials_clip_1 default
 		setstate browning_flag_1 default
 
-		wm_announce	"The Depot Yard MG has been destroyed."
+		wm_announce	"The Depot Yard Flag Nest has been destroyed."
 	}
 }
 
@@ -6661,7 +6687,7 @@ mg42depot_clip_1
 
 	buildstart final
 	{
-		setstate browning_1 underconstruction
+		setstate browning_1 invisible
 		setstate browning_materials_1 default
 		setstate browning_materials_clip_1 default
 		setstate browning_flag_1 default
@@ -6669,12 +6695,12 @@ mg42depot_clip_1
 
 	built final
 	{
-		setstate browning_1 default
+		setstate browning_1 invisible
 		setstate browning_materials_1 invisible
 		setstate browning_materials_clip_1 invisible
 		setstate browning_flag_1 invisible
 
-		wm_announce	"The Depot Yard MG Nest has been constructed."
+		wm_announce	"The Depot Yard Flag Nest has been constructed."
 	}
 
 	decayed final
@@ -6693,7 +6719,7 @@ mg42depot_clip_1
 		setstate browning_materials_clip_1 default
 		setstate browning_flag_1 default
 
-		wm_announce	"The Depot Yard MG Nest has been destroyed."
+		wm_announce	"The Depot Yard Flag Nest has been destroyed."
 	}
 }
 
