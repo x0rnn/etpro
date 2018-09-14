@@ -1,0 +1,1029 @@
+// ============================================================================ 
+// Map: Reactor_b4 (working name)
+// Author:  Ifurita
+// ============================================================================ 
+
+game_manager
+{
+	spawn 
+   	{
+		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_allied"
+		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_axis"
+		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/cm_tower2_allied"
+		remapshader "gfx/reactor/cm_tower2_axis" "gfx/reactor/cm_tower2_axis"
+		resetscript
+		remapshaderflush
+		
+		// Game rules
+		wm_axis_respawntime	30
+		wm_allied_respawntime	25
+		wm_number_of_objectives 6
+		wm_set_round_timelimit	12
+
+		// Objectives
+		//1 Load box of explosives onto the truck
+		//2 Repair the truck
+		//3 Capture the forward spawn area
+		//4 Destroy the coolant controls
+		//5 Breach the West security door
+		//6 Breach the East security door
+
+		// Current main objectives for each team (0=Axis, 1=Allies)
+		wm_objective_status 1 0 0
+		wm_objective_status 1 1 0
+		wm_objective_status 2 0 0
+		wm_objective_status 2 1 0
+		wm_objective_status 3 0 0
+		wm_objective_status 3 1 0
+		wm_objective_status 4 0 0
+		wm_objective_status 4 1 0
+		wm_objective_status 5 0 0
+		wm_objective_status 5 1 0
+		wm_objective_status 6 0 0
+		wm_objective_status 6 1 0
+
+		// Accum values
+		accum 0 set 2 //status of forward flag
+		accum 1 set 0 //Overall Allied status
+		accum 2 set 0 //Overall Axis status
+
+		// Stopwatch mode defending team (0=Axis, 1=Allies)
+		wm_set_defending_team	0
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies, -1=Overtime)
+		wm_setwinner	0
+
+		wait 2000
+
+		setautospawn	"Forward Spawn"	1 //Uses name from description field of team_WOLF_objective
+		setautospawn	"Forward Spawn"	0
+
+   	}
+
+//Objective counter and game win check scripts
+
+	trigger objectivecounter  //Destruction of Axis objectives
+        {
+                //Set accum to increase by 1 so we know that the objective has been completed
+                accum 2 inc 1
+
+   		//Call function called checkgame in game_manager to check if the round has been won
+                trigger game_manager checkgame
+     	}
+
+	trigger checkgame // checks to see if Axis win requirements have been met
+	{
+                accum 2 abort_if_not_equal 1
+                wm_setwinner 1
+		wait 1500
+                wm_endround
+ 	}  
+} 
+
+//End of Game_manager section
+
+// ============================================================================ 
+// CONSTRUCTIBLE ==============================================================
+// ============================================================================ 
+
+
+//Coolant controls
+
+coolant_controls_script
+{ 
+	spawn 
+	{ 
+		wait 200 
+		constructible_class 2
+		constructible_chargebarreq 1.25
+		disablespeaker coolant_fill
+		disablespeaker coolant_drain
+		trigger self startup 
+
+		accum 1 set 0 //variable to track if controls have been blown at least once
+		globalaccum 1 set 0 //variable to track if tank 1 has been drained completely
+	} 
+
+	buildstart final 
+	{ 
+	} 
+
+	built final 
+	{ 
+		setstate coolant_controls_target default
+		setstate controls_damaged invisible
+		setstate obj_coolantcontrols default
+
+		wm_announce "Coolant controls repaired."
+		disablespeaker coolant_drain
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_controls_repaired"
+		wm_teamvoiceannounce 1 "reactor_allied_controls_repaired"
+		// *---------------------------------------------------------------------------------*
+
+		trigger self tank1_up_check
+		trigger self tank2_up_check
+	} 
+
+	decayed final 
+	{ 
+		setstate coolant_controls_target invisible
+		setstate controls_damaged default
+		setstate obj_coolantcontrols invisible
+	} 
+
+	death 
+	{ 
+		setstate coolant_controls_target invisible
+		setstate controls_damaged default
+		setstate obj_coolantcontrols invisible
+
+		wm_announce "Coolant controls destroyed!!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_controls_destroyed"
+		wm_teamvoiceannounce 1 "reactor_allied_controls_destroyed"
+		wm_teamvoiceannounce 0 "reactor_axis_controls_repair"
+		// *---------------------------------------------------------------------------------*
+
+		trigger self tank1_down_check
+		trigger self tank2_down_check
+		//trigger self flag_check
+	} 
+
+	trigger tank1_up_check
+	{
+		globalaccum 1 abort_if_not_equal 0
+		trigger tank_coolant1 up
+	}
+
+	trigger tank2_up_check
+	{
+		globalaccum 1 abort_if_not_equal 1
+		trigger tank_coolant2 up
+	}
+
+	trigger tank1_down_check
+	{
+		globalaccum 1 abort_if_not_equal 0
+		trigger tank_coolant1 down
+	}
+
+	trigger tank2_down_check
+	{
+		globalaccum 1 abort_if_not_equal 1
+		trigger tank_coolant2 down
+	}
+
+	trigger flag_check
+	{
+		accum 1 abort_if_equal 1
+		trigger forward_spawn allied_keep
+		accum 1 set 1
+	}
+
+	trigger startup 
+	{ 
+		setstate coolant_controls_target default
+		setstate controls_damaged invisible
+		setstate obj_coolantcontrols default
+	} 
+}
+// ============================================================================
+// COOLANT STUFF ==============================================================
+// ============================================================================
+
+tank_coolant1
+{
+	spawn
+	{
+		wait 200
+		setstate obj_tower1 default	
+		setstate obj_tower1_toi default
+	}
+
+	trigger up
+	{
+		enablespeaker coolant_fill
+		wm_announce "Coolant tower 1 refilling"
+
+		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_up"
+		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_up"
+		remapshaderflush
+
+		gotomarker tank1_full 9 wait
+
+		disablespeaker coolant_fill
+		wm_announce "Coolant tower 1 filled"
+
+		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_allied"
+		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_axis"
+		remapshaderflush
+	}
+
+	trigger down
+	{
+		enablespeaker coolant_drain
+		wm_announce "Coolant tower 1 draining" 
+		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_down"
+		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_down"
+		remapshaderflush
+		gotomarker tank1_empty 10 wait
+
+		disablespeaker coolant_drain
+
+		alertentity coolant_tank1_tnt
+		wm_announce "Coolant tower 1 drained"
+
+		globalaccum 1 set 1
+		trigger tank_coolant2 down
+		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/stamp_complete"
+		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/stamp_failed"
+		remapshaderflush
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_obj_lost"
+		wm_teamvoiceannounce 1 "reactor_allied_obj_destroyed"
+		// *---------------------------------------------------------------------------------*
+
+		setstate obj_tower1 default	
+		setstate obj_tower1_toi default
+	}
+}
+
+tank_coolant2
+{
+	spawn
+	{
+		wait 200
+		setstate obj_tower2 default
+		setstate obj_tower2_toi default	
+	}
+
+	trigger up
+	{
+		enablespeaker coolant_fill
+		wm_announce "Coolant tower 2 refilling"
+
+		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/cm_tower2_up"
+		remapshader "gfx/reactor/cm_tower2_axis" "gfx/reactor/cm_tower2_up"
+		remapshaderflush
+
+		gotomarker tank2_full 9 wait
+		wm_announce "Coolant tower 2 filled"
+
+		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/cm_tower2_allied"
+		remapshader "gfx/reactor/cm_tower2_axis" "gfx/reactor/cm_tower2_axis"
+		remapshaderflush
+
+		disablespeaker coolant_fill
+	}
+
+	trigger down
+	{
+		enablespeaker coolant_drain
+		wm_announce "Coolant tower 2 draining"
+
+		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/cm_tower2_down"
+		remapshader "gfx/reactor/cm_tower2_axis" "gfx/reactor/cm_tower2_down"
+		remapshaderflush
+
+		gotomarker tank2_empty 10 wait
+		alertentity coolant_tank2_tnt
+		wm_announce "Coolant tower 2 drained"
+		disablespeaker coolant_drain
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_obj_lost"
+		wm_teamvoiceannounce 1 "reactor_allied_obj_destroyed"
+		// *---------------------------------------------------------------------------------*
+
+		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/stamp_complete"
+		remapshader "gfx/reactor/cm_tower2_axis" "gfx/reactor/stamp_failed"
+		remapshaderflush
+
+		trigger game_manager objectivecounter
+	}
+}
+
+// ============================================================================ 
+// Returnable Objective =======================================================
+// ============================================================================ 
+
+//Gas Can 
+gas_can 
+{ 
+	spawn 
+	{ 
+		wait 200 
+		setstate gas_can_captured invisible 
+		setstate gas_can_red default
+		setstate gas_can_target default
+		setstate maindoor default
+		setstate maindoor_debris invisible
+	} 
+
+	trigger stolen 
+	{ 
+		wm_announce "The Allies have stolen the box of explosives" 
+		setstate gas_can_target invisible
+
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1
+	} 
+
+
+	trigger returned 
+	{ 
+		wm_announce "The Axis have recovered the box of explosives" 
+		setstate gas_can_target default 
+
+		wm_objective_status 1 0 1
+		wm_objective_status 1 1 2
+	} 
+
+	trigger captured 
+	{ 
+		wm_announce "The Allies have loaded the explosives onto the truck" 
+		setstate gas_can_red invisible 
+		setstate gas_can_captured default 
+	} 
+} 
+
+gas_can_toi
+{
+	spawn
+	{
+		wait 250
+		attachtotag truck tag_obj1
+	}
+}
+
+gas_can_red
+{
+	spawn
+	{
+		wait 250
+		attachtotag truck tag_obj1
+	}
+}
+
+gas_can_captured
+{
+	spawn
+	{
+		wait 250
+		attachtotag truck tag_obj1
+	}
+}
+
+gas_obj_completed //enter this as the scriptname value for the single trigger_flagonly_multiples entity 
+{ 
+	spawn
+	{
+		wait 250
+		attachtotag truck tag_obj1
+	}
+
+	death 
+	{ 
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1
+
+		setstate gas_can_toi invisible
+
+		trigger truck capped_obj
+		
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "reactor_axis_obj_captured"
+		wm_teamvoiceannounce 1 "reactor_allied_obj_secured"
+		// *----------------------------------- vo ----*
+	} 
+
+	trigger explode_maingate
+	{
+		alertentity maindoor_tnt1
+		wait 50
+		alertentity maindoor_tnt2
+		wait 50
+		alertentity maindoor_tnt3
+
+		setstate maindoor invisible
+		setstate maindoor_debris default
+		setstate main_gate_door invisible
+
+		enablespeaker gate_alarm
+		wait 10000
+		disablespeaker gate_alarm
+	}
+} 
+// ============================================================================ 
+// DESTRUCTIBLE OBJECTIVES ====================================================
+// ============================================================================ 
+
+west_dynoteamdoor 
+{ 
+   	spawn 
+   	{ 
+      		wait 200 
+      		constructible_class 3
+   	} 
+    
+   	death 
+   	{ 
+      		setstate west_axisteamdoor invisible 
+      		//setstate west_dynoteamdoor_toi invisible 
+      		//setstate west_dynoteamdoor invisible 
+		setstate dynafaker_west invisible
+      		wm_announce   "West Security Door breached!!"
+
+		wm_objective_status 5 0 2
+		wm_objective_status 5 1 1 
+
+		trigger coolant_controls_script flag_check
+   	} 
+}  
+
+east_dynoteamdoor 
+{ 
+   	spawn 
+   	{ 
+      		wait 200 
+      		constructible_class 3
+   	} 
+    
+   	death 
+   	{ 
+      		setstate east_axisteamdoor invisible 
+      		//setstate east_dynoteamdoor_toi invisible
+      		//setstate east_dynoteamdoor invisible 
+		setstate dynafaker_east invisible
+      		wm_announce   "East Security Door breached!!" 
+
+		wm_objective_status 6 0 2
+		wm_objective_status 6 1 1 
+
+		trigger coolant_controls_script flag_check
+   	} 
+} 
+
+// ============================================================================ 
+// FORWARD SPAWN POINT ========================================================
+// ============================================================================ 
+
+forward_spawn
+{
+	spawn
+	{
+		wait 200
+		accum 0 set 0 // Who has the flag: 0-Axis, 1-Allied
+	}
+
+	trigger axis_capture
+	{
+		accum 0 abort_if_equal 0
+		accum 0 set 0
+
+		// Change the objective state internally, so UI can update, etc.
+		// Axis takes control of forward flag
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Axis capture the Forward Bunker!"
+
+		wm_objective_status	3 1 2
+		wm_objective_status	3 0 1
+
+		alertentity forwardflag_wobj
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_obj_flag_lost"
+		wm_teamvoiceannounce 1 "reactor_allied_obj_flag_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_capture
+	{
+		accum 0 abort_if_equal 1
+		accum 0 set 1
+
+		// Change the objective state internally, so UI can update, etc.
+		// Allied takes control of forward flag
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Allies capture the Forward Bunker!"
+
+		wm_objective_status	3 1 1
+		wm_objective_status	3 0 2
+
+		alertentity forwardflag_wobj
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "reactor_axis_obj_flag_captured"
+		wm_teamvoiceannounce 1 "reactor_allied_obj_flag_captured"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_keep
+	{
+		setstate axis_forward_spawnblob invisible
+		setautospawn "Head Quarters" 0
+		setautospawn "Forward Spawn" 1
+
+		wm_announce "Allies have secured the forward bunker"
+		remove
+
+		accum 0 abort_if_equal 1
+		alertentity forwardflag_wobj
+		alertentity forward_spawnblob
+
+	}
+}
+
+// ============================================================================
+// TRUCK STUFF ================================================================
+// ============================================================================
+
+//
+//=====================================================================================
+//	accum 0
+//	 - bit 0: player check		( 0 = players,		1 = no players	)
+//	 - bit 1: cap obj status	( 0 = capped, 		1 = not capped		)
+//	 - bit 2: spline status		( 0 = not moving,	1 = moving		)
+//	 - bit 3: temp register
+//	 - bit 4: stuck check flag	( 0 = not stuck,	1 = stuck		)
+//	 - bit 5: script lockout	( 0 = not locked,	1 = locked 		)
+//	 - bit 6: death flag		( 0 = alive,		1 = dead		)
+//	 - bit 7: visible status	( 0 = alive,		1 = dead		)
+//	accum 1:, current movement loop position
+//	accum 2:, counter for sound stopping
+//	accum 4:, stop counter
+//	accum 5:, initial truck state ( 0 = alive,		1 = dead		)
+//=====================================================================================
+// wheels events
+//	- wheels_forward
+// 	- wheels_backward
+//	- wheels_stop
+truck
+{
+	spawn
+	{	
+		wait 50
+		faceangles 0 0 0 50
+		accum 1 set 1			
+		accum 3 set 0
+		accum 0 bitset 1
+	}
+
+	rebirth
+	{
+		accum 0 bitreset 6
+		accum 0 bitreset 7
+		accum 5 set 1
+
+		trigger self script_lockout
+		changemodel models/mapobjects/blitz_sd/blitzbody.md3
+		trigger truck_engine sound_idle
+		setstate truck_smoke invisible
+
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "reactor_axis_truck_repaired"
+		wm_teamvoiceannounce 1 "reactor_allied_truck_repaired"
+		// *----------------------------------- vo ----*
+
+		trigger self script_lockout_stop
+		trigger self move
+	}
+
+	death
+	{
+		accum 5 abort_if_equal 1
+		accum 0 bitset 6
+	}
+
+	//------------------------------------------------------------------------------------
+	// wheel movement
+	//------------------------------------------------------------------------------------
+	trigger wheels_forward
+	{
+		trigger truck_bwheel2 forward
+		trigger truck_fwheel forward
+	}
+
+	trigger wheels_stop
+	{
+		trigger truck_bwheel2 stop
+		trigger truck_fwheel stop
+	}
+
+	//------------------------------------------------------------------------------------
+	// enable and disable triggers
+	//------------------------------------------------------------------------------------
+
+	trigger truck_enable
+	{
+		trigger self stuck_check
+		accum 4 set 0					// reset stop counter	
+		accum 0 abort_if_not_bitset 0			// player near truck
+					
+		accum 0 abort_if_bitset 2 			// already following the path so abort
+		accum 0 abort_if_bitset 4			// truck stuck
+		accum 0 abort_if_bitset 5			// script lockout
+		accum 0 abort_if_bitset 6			// truck is dead
+
+		accum 0 bitreset 0  				// set player near truck
+
+		trigger truck_engine start			// start engine sound only if truck was stopped
+		trigger truck wheels_forward			// start wheels forward 
+		trigger self move
+	}
+
+	trigger truck_disable
+	{
+		accum 4 inc 1				// increment the stop counter
+		accum 4 abort_if_less_than 3
+		accum 0 bitset 0			// no players near truck
+		trigger self deathcheck
+	}
+
+	trigger move
+	{
+		trigger self move_check
+		wait 500
+		trigger self move
+	}
+
+	trigger move_check
+	{
+		trigger self stuck_check		// truck stuck?
+		accum 0 abort_if_bitset 4
+		trigger self stopcheck			// truck stopped?
+		accum 0 abort_if_bitset 6
+		
+		accum 0 abort_if_bitset 0
+		
+		accum 2 set 0
+		trigger self dispatch			// run to next spline point
+	}
+
+	trigger dispatch
+	{
+		accum 1 trigger_if_equal 1	truck run_1
+	}
+
+	trigger run_continue
+	{
+		trigger self stopcheck
+		trigger self move
+	}
+	
+	//-------------------------------------------------------------------------------
+	// stop checks
+	//-------------------------------------------------------------------------------
+	trigger stopcheck
+	{
+		trigger self stopcheck_setup
+		accum 0 abort_if_not_bitset 3
+		trigger self script_lockout
+		trigger self wheels_stop			// stop wheel animation
+		trigger truck_engine stop			// idle engine
+
+		trigger self script_lockout_stop
+		resetscript
+	}
+
+	trigger stopcheck_setup
+	{
+		accum 0 bitset 3				// assume stop motion
+		accum 0 abort_if_bitset 0			// no player in the trigger then abort
+		accum 1 abort_if_equal 22			// end of truck path
+		accum 0 bitreset 3				// resume motion
+	}
+
+	//-------------------------------------------------------------------------------
+	// stuck checks
+	//-------------------------------------------------------------------------------
+
+	trigger stuck_check
+	{
+		accum 0 bitreset 4				// assume not stuck
+		trigger self stuck_check_cap_obj		// check the status of the bridge
+		trigger self stuck_check_script_lockout		// script lockout?
+	}
+
+	trigger stuck_check_cap_obj
+	{
+		accum 0 abort_if_not_bitset 1
+		accum 0 bitset 4
+	}
+
+	trigger capped_obj
+	{
+		accum 0 bitreset 1
+	}
+
+	trigger stuck_check_script_lockout
+	{
+		accum 0 abort_if_not_bitset 5
+		accum 0 bitset 4
+	}
+
+
+	trigger deathcheck
+	{
+		accum 5 abort_if_equal 1
+		accum 0 abort_if_not_bitset 6		// are we dead?
+		accum 0 abort_if_bitset 7		// are we already visibly dead?
+		accum 0 abort_if_bitset 2		// following a spline
+
+		accum 0 bitset 7
+
+		changemodel models/mapobjects/blitz_sd/blitzbody_damaged.md3
+		kill truck_construct
+		
+		resetscript
+	}
+
+	trigger script_lockout
+	{
+		accum 0 bitset 5
+	}
+
+	trigger script_lockout_stop
+	{
+		accum 0 bitreset 5
+	}
+
+	//------------------------------------------------
+	// spline points for truck
+	//------------------------------------------------
+
+
+	trigger run_1
+	{
+		accum 0 bitset 2					// set spline flag to moving
+		followspline 0 truck_sp1 160 wait length 304 //170
+		accum 0 bitreset 2					// set spline flag to not moving
+		accum 1 set 2						// increment run flag
+		trigger gas_obj_completed explode_maingate
+
+		wm_announce "the truck has rammed the main gate"
+
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "reactor_axis_gate_destroyed"
+		wm_teamvoiceannounce 1 "reactor_allied_gate_destroyed"
+		// *----------------------------------- vo ----*
+
+		changemodel models/mapobjects/blitz_sd/blitzbody_damaged.md3
+		setstate gas_can_captured invisible
+		trigger truck_engine sound_death
+		trigger self wheels_stop
+
+		setstate truck_smoke default
+		trigger truck_enabler remove
+		resetscript
+	}
+
+
+}
+
+//********************************************************//
+//               Additional TRUCK entities                         
+//
+// last mod: Mean Mr. Mustard - 01/11/2004
+//*******************************************************//
+
+truck_enabler
+{
+	spawn
+	{	
+		wait 200
+		attachtotag truck tag_wback
+	}
+
+	trigger run
+	{
+		trigger truck truck_enable
+	}
+
+	trigger remove
+	{
+		remove
+	}
+}
+
+truck_disabler
+{
+	spawn
+	{	
+		wait 200
+		attachtotag truck tag_wback
+	}
+
+	trigger run
+	{
+		trigger truck truck_disable
+	}
+}
+
+truck_trigger	// attach movement trigger to the truck
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wback
+	}
+}
+
+//--------------------------------------------------------------------------------
+//                         Wheels
+//--------------------------------------------------------------------------------
+
+truck_bwheel2
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wback
+	}
+
+	trigger forward
+	{
+		setrotation	110 0 0
+		accum 1 abort_if_less_than 10
+		stoprotation
+		setrotation	220 0 0
+	}
+
+	trigger stop
+	{
+		stoprotation
+	}
+}
+
+truck_fwheel
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wfront
+	}
+
+	trigger forward
+	{
+		setrotation	110 0 0
+		accum 1 abort_if_less_than 10
+		stoprotation
+		setrotation	220 0 0
+	}
+
+	trigger stop
+	{
+		stoprotation
+	}	
+}
+
+//--------------------------------------------------------------------------------
+//                         Truck engine sounds
+//--------------------------------------------------------------------------------
+
+truck_engine
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wfront
+	}
+
+	trigger start
+	{
+		trigger self sound_start
+		wait 950
+		trigger self sound_move
+	}
+
+	trigger stop
+	{
+		trigger self sound_stop
+		wait 950
+		trigger self sound_idle
+	}
+
+	trigger sound_idle
+	{
+		playsound sound/vehicles/truck/truck_idle.wav looping
+	}
+
+	trigger sound_start
+	{
+		stopsound
+		playsound sound/vehicles/truck/truck_revup.wav volume 96
+	}
+
+	trigger sound_move
+	{
+		playsound sound/vehicles/truck/truck_move.wav looping
+	}
+
+	trigger sound_stop
+	{
+		stopsound
+		playsound sound/vehicles/truck/truck_revdown.wav volume 96
+	}
+
+	trigger sound_death
+	{
+		stopsound
+		playsound sound/vehicles/truck/truck_stop.wav volume 96
+	}
+}
+
+//----------------------------------------------------------------------
+//                           Truck build routines
+//----------------------------------------------------------------------
+
+truck_build //TOI for construction
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wback
+	}
+}
+
+truck_construct
+{
+	spawn
+	{
+		wait 20
+		constructible_class 2
+		constructible_chargebarreq 1.25
+		constructible_health 100000
+		constructible_constructxpbonus 10
+		//constructible_destructxpbonus 10
+		kill truck	
+	}
+	
+	built final
+	{
+		alertentity truck
+		wm_announce "The Truck has been repaired"
+
+		wm_objective_status	2 1 1
+		wm_objective_status	2 0 2
+	}
+
+}
+
+truck_smoke 
+{
+	spawn
+	{
+		wait 200
+		attachtotag truck tag_wfront
+	}
+}
+
+// ============================================================================ 
+// Ventilation Fans ===========================================================
+// ============================================================================
+
+fan1
+{
+	spawn
+	{
+		wait 50
+		faceangles 0 270 0 1
+		setrotation	0 450 0
+	}
+}
+
+fan2
+{
+	spawn
+	{
+		wait 50
+		faceangles 0 270 0 1
+		setrotation	0 450 0
+	}
+}
+
+fan3
+{
+	spawn
+	{
+		wait 50
+		faceangles 0 270 0 1
+		setrotation	0 450 0
+	}
+}
+
+fan4
+{
+	spawn
+	{
+		wait 50
+		faceangles 0 270 0 1
+		setrotation	0 450 0
+	}
+}
