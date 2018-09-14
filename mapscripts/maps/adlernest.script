@@ -1,7 +1,10 @@
+//dersaidin 24/1/07		removed short wait before wm_endround
+//dersaidin 11/2/07		sidewall: set "health 10000" so it cannot be shot resulting in crash bug - thanks fnTc^h3ll
 game_manager
 {
 spawn
 {
+	
 // Set scenario information
 wm_axis_respawntime 30
 wm_allied_respawntime 20
@@ -102,7 +105,7 @@ trigger checkgame
 {
 	accum 1 abort_if_not_equal 1
 	wm_setwinner 1
-	wait 100
+	//wait 100
 	wm_endround
 }
 }
@@ -696,8 +699,13 @@ sidewall
 {
 	spawn
 	{
+		set
+		{
+			health "10000"
+		}
 		wait 200
 	}
+	
 	death
 	{
 		alertentity sidewall_explo
