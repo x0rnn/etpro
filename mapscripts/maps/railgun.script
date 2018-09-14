@@ -1,4 +1,6 @@
 // bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
+// mortis - Wed Aug 31 23:13:15 PST 2005 - depot tank exploit fixed
+// mortis - Sat Jan 28 15:30:00 PST 2006 - added trigger_hurt to oil tank to punish etpub exploiters
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
 
@@ -6,6 +8,7 @@ game_manager
 {
 	spawn
 	{
+
 		//bani - bug fixes
 		create
 		{
@@ -36,6 +39,30 @@ game_manager
 			mins "-10 -10 -28"
 			maxs "10 10 28"
 		}
+
+		// mortis - depot yard oil tank exploit fix 
+		create
+		{
+			scriptName "bugfix4"
+			classname "func_fakebrush"
+			origin "2560 768 616"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-80 -64 -200"
+			maxs "80 64 200"
+		}
+
+		// mortis - add trigger_hurt to tank to injure etpub clipping exploiters
+		create
+		{
+			scriptName "bugfix5"
+			classname "trigger_hurt"
+			origin "2560 768 616"	
+			mins "-75 -60 -200"
+			maxs "75 60 200"
+			spawnflags 16
+			dmg 25
+		}
+
 
 		// Game rules
 		wm_axis_respawntime	20
