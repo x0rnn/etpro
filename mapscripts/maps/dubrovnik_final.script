@@ -1,0 +1,412 @@
+// ============================================================================
+// Map: Dubrovnik
+// Author:  Ifurita
+// Credits:
+// Original concept and brushwork:  Apple
+// Forward Spawn:
+// Command Post Spawn:
+// ============================================================================
+
+game_manager
+{
+	spawn
+   	{
+		remapshaderflush
+		
+		// Game rules
+		wm_axis_respawntime	25
+		wm_allied_respawntime	20
+		wm_number_of_objectives 5
+		wm_set_round_timelimit	12
+
+		//Objective 1:  Capture key card
+		//Objective 2:  Disable power
+		//Objective 3:  Breach church doors
+		//Objective 4:  Steal gold from church
+		//Objective 5:  Return gold to boat
+
+		// Current main objectives for each team (0=Axis, 1=Allies)
+		wm_objective_status 1 0 0
+		wm_objective_status 1 1 0
+		wm_objective_status 2 0 0
+		wm_objective_status 2 1 0
+		wm_objective_status 3 0 0
+		wm_objective_status 3 1 0
+		wm_objective_status 4 0 0
+		wm_objective_status 4 1 0
+		wm_objective_status 5 0 0
+		wm_objective_status 5 1 0
+
+		// Stopwatch mode defending team (0=Axis, 1=Allies)
+		wm_set_defending_team	0
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies, -1=Overtime)
+		wm_setwinner	0 //Assumes allies defending
+
+		wait 2000
+
+		setautospawn	"East Courtyard"	1
+		setautospawn	"Convent"	0
+   	}
+
+//Objective counter and game win check scripts
+
+	trigger alliedobjectivecounter  //Completion of Allied objectives
+        {
+                //Set accum to increase by 1 so we know that the objective has been completed
+                accum 1 inc 1
+
+   		//Call function called checkgame in game_manager to check if the round has been won
+        	trigger game_manager alliedcheckgame
+     	}
+
+	trigger alliedcheckgame // checks to see if Axis win requirements have been met
+	{
+                accum 1 abort_if_not_equal 1
+                wm_setwinner 1
+		wait 1500
+                wm_endround
+ 	}
+
+}
+
+//End of Game_manager section
+
+// ============================================================================
+// FORWARD SPAWN POINT ========================================================
+// ============================================================================
+
+
+// ============================================================================
+// DESTRUCTIBLE OBJECTIVES ===================================================
+// ============================================================================
+
+key_safe
+{
+	spawn
+	{
+		wait 200
+		setdamagable key_safe 1
+		constructible_health 150
+	}
+}
+
+// ============================================================================
+// Axis Constructibles ========================================================
+// ============================================================================
+//Axis constructible
+
+	axisconstruct_script
+	{
+		spawn
+		{
+			wait 200
+			constructible_class 2
+			trigger self startup
+		}
+	
+		buildstart final
+		{
+		}
+
+		built final
+		{
+			setstate axisconstruct_target default
+			setstate axisconstruct_materials invisible
+			setstate church_doors_damaged invisible
+			setstate obj_churchdoors default
+			wm_announce "The Church Doors has been repaired"
+
+			wm_objective_status 3 0 1
+			wm_objective_status 3 1 2
+		}
+
+		decayed final
+		{
+			setstate axisconstruct_target invisible
+			setstate axisconstruct_materials default
+			setstate church_doors_damaged default
+			setstate obj_churchdoors invisible
+		}
+
+		death
+		{
+			trigger self startup
+			wm_announce "The Church doors has been destroyed"
+			setstate axisconstruct_materials default
+			setstate church_doors_damaged default
+			setstate obj_churchdoors invisible
+
+			wm_objective_status 3 0 2
+			wm_objective_status 3 1 1
+		}
+
+		trigger startup
+		{
+			setstate axisconstruct_target default
+			setstate axisconstruct_materials invisible
+			setstate axisconstruct_toi default
+			setstate church_doors_damaged invisible
+			setstate obj_churchdoors default
+		}
+	}
+
+//Axis constructible
+
+
+//Allied constructible
+
+	dock_platform_script
+	{
+		spawn
+		{
+			wait 200
+			constructible_class 2
+			trigger self startup
+		}
+	
+		buildstart final
+		{
+		}
+
+		built final
+		{
+			setstate dock_platform_target default
+			setstate dock_platform_materials invisible
+			wm_announce "The Dock Staircase has been constructed"
+		}
+
+		decayed final
+		{
+			trigger self startup
+		}
+
+		death
+		{
+			trigger self startup
+			wm_announce "The Dock Staircase has been destroyed"
+			setstate dock_platform_materials default
+		}
+
+		trigger startup
+		{
+			setstate dock_platform_target invisible
+			setstate dock_platform_materials default
+			setstate dock_platform_toi default
+		}
+	}
+// ============================================================================
+// Returnable Objective =======================================================
+// ============================================================================
+
+//Access Codes
+access_codes
+{
+	spawn
+	{
+		wait 200
+		setstate access_codes_captured invisible
+		setstate access_codes_red default
+		setstate access_codes_target default
+		setstate obj_generator invisible
+		setstate obj_generator_toi invisible
+		setstate obj_keycard invisible
+		setstate obj_keycard_toi invisible
+		setstate maindoor default
+		setstate maindoor_debris invisible
+	}
+
+	trigger stolen
+	{
+		wm_announce "The Allies have stolen the Key Card"
+		setstate access_codes_target invisible
+		setstate obj_keycard default
+		setstate obj_keycard_toi default
+
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1
+	}
+
+
+	trigger returned
+	{
+		wm_announce "The Axis have retrieved the Key Card"
+		setstate access_codes_target default
+		setstate obj_keycard invisible
+		setstate obj_keycard_toi invisible
+
+		wm_objective_status 1 0 1
+		wm_objective_status 1 1 2
+	}
+
+	trigger captured
+	{
+		wm_announce "The Allies have disabled power to the security doors"
+		setstate access_codes_red invisible
+		setstate access_codes_captured default
+		setstate obj_generator default
+		setstate obj_generator_toi default
+		setstate obj_keycard default
+		setstate obj_keycard_toi default
+
+		trigger irongate_left open
+		trigger irongate_right open
+	}
+}
+
+
+enable_gold //enter this as the scriptname value for the single trigger_flagonly_multiples entity
+{
+	death
+	{
+		wm_objective_status 2 0 2
+		wm_objective_status 2 1 1
+
+		setstate gold_cm_marker default
+		setstate gold_toi default
+		setstate access_card_toi invisible
+		setstate gold_cap_cm_marker default
+		setstate goldbox_red default
+		setstate gold_cap_toi default
+		setstate allied_objective default
+		setstate access_control_cm_marker invisible
+		
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "dubrovnik_axis_obj_captured"
+		wm_teamvoiceannounce 1 "dubrovnik_allies_obj_secured"
+		wm_teamvoiceannounce 0 "dubrovnik_axis_protect_gold"
+		wm_teamvoiceannounce 1 "dubrovnik_allies_steal_gold"
+		// *----------------------------------- vo ----*
+
+		enablespeaker generator_alarm
+		wait 10000
+		disablespeaker generator_alarm
+	}
+}
+
+//Gold
+gold
+{
+	spawn
+	{
+		wait 200
+		setstate goldbox_captured invisible
+		setstate goldbox_red invisible
+		setstate gold_toi invisible
+		setstate gold_cm_marker invisible
+		setstate gold_cap_cm_marker invisible
+		setstate gold_cap_toi invisible
+		setstate allied_objective invisible
+		setstate obj_gold invisible
+		setstate obj_gold_toi invisible
+	}
+
+	trigger stolen
+	{
+		wm_announce "The Allies have stolen the gold"
+		setstate gold_cm_marker invisible
+		setstate obj_gold default
+		setstate obj_gold_toi default
+
+		wm_objective_status 4 0 2
+		wm_objective_status 4 1 1
+
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "dubrovnik_axis_gold_taken"
+		wm_teamvoiceannounce 1 "dubrovnik_allies_gold_taken"
+		// *----------------------------------- vo ----*
+	}
+
+
+	trigger returned
+	{
+		wm_announce "The Axis have returned the gold"
+		setstate gold_cm_marker default
+		setstate obj_gold invisible
+		setstate obj_gold_toi invisible
+
+		wm_objective_status 4 0 1
+		wm_objective_status 4 1 2
+
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "dubrovnik_axis_gold_returned"
+		wm_teamvoiceannounce 1 "dubrovnik_allies_gold_returned"
+		// *----------------------------------- vo ----*
+	}
+
+	trigger captured
+	{
+		wm_announce "The Allies have secured the gold"
+		setstate goldbox_red invisible
+		setstate goldbox_captured default
+	}
+}
+
+
+allied_objective //enter this as the scriptname value for the single trigger_flagonly_multiples entity
+{
+	death
+	{
+		wm_objective_status 5 0 2
+		wm_objective_status 5 1 1
+
+		trigger game_manager alliedobjectivecounter
+
+		// *----------------------------------- vo ----*
+		wm_teamvoiceannounce 0 "dubrovnik_axis_obj_captured"
+		wm_teamvoiceannounce 1 "dubrovnik_allies_obj_secured"
+		// *----------------------------------- vo ----*
+	}
+}
+
+
+// ============================================================================
+// DOORS TO CHURCH VAULT ======================================================
+// ============================================================================
+
+irongate_left
+{
+	spawn
+	{
+		wait 200
+
+	}
+
+	trigger open      // Move left
+   	{
+      		playsound sound/movers/doors/door6_open.wav looping
+      		faceangles 0 -90 0 3000
+		stopsound
+   	}
+
+   	trigger close      // Move right
+   	{
+		playsound sound/movers/doors/door6_close.wav looping
+      		faceangles 0 90 0 3000
+      		stopsound
+   	}
+}
+
+irongate_right
+{
+	spawn
+	{
+		wait 200
+
+	}
+
+	trigger open      // Move right
+   	{
+
+      		playsound sound/movers/doors/door6_open.wav looping
+      		faceangles 0 90 0 3000
+		stopsound
+   	}
+
+   	trigger close      // Move left
+   	{
+      		playsound sound/movers/doors/door6_close.wav
+      		faceangles 0 -90 0 3000
+		stopsound
+   	}
+}
