@@ -1,11 +1,39 @@
-//Braundorf b3 script
+//Braundorf b4 script
 //Written (with sections copied and pasted from other scripts) by Brevik
-
+//last edit: syd 25-may-05 - fixed plant time + misc bugs.
 
 game_manager
 {
 	spawn 
    	{
+		create
+		{
+			scriptName "bugfix1"
+			classname "func_fakebrush"
+			origin "3583 -2771 144"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-5 -5 -5"
+			maxs "5 5 5"
+		}
+		create
+		{
+			scriptName "bugfix2"
+			classname "func_fakebrush"
+			origin "3922 -3995 144"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-5 -5 -5"
+			maxs "5 5 5"
+		}
+		create
+		{
+			scriptName "bugfix3"
+			classname "func_fakebrush"
+			origin "2374 -2484 128"
+			contents 65536  // CONTENTS_PLAYERCLIP
+			mins "-10 -10 -22"
+			maxs "10 10 22"
+		}
+
 		remapshaderflush
 		
 		// Game rules
@@ -74,7 +102,7 @@ game_manager
 	trigger endgame
 	{
 		
-   		wait 5000
+   		wait 500
    		
 		wm_objective_status 2 1 1
 		wm_objective_status 2 0 2
