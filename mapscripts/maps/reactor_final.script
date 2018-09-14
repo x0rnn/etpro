@@ -6,7 +6,65 @@
 game_manager
 {
 	spawn 
-   	{
+	{
+		create
+		{
+			scriptName "axis_spawnblob_lower"
+			targetname "axis_spawnblob_lower"
+			classname "team_WOLF_objective"
+			description "Lower Barracks"
+			spawnflags 3
+			origin "-294 1409 64"
+		}
+		create
+		{
+			scriptName "axis_lowerspawn1"
+			classname "team_CTF_redspawn"
+			origin "-405 1180 40"
+			angle 90
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_lowerspawn2"
+			classname "team_CTF_redspawn"
+			origin "-305 1180 40"
+			angle 90
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_lowerspawn3"
+			classname "team_CTF_redspawn"
+			origin "-205 1180 40"
+			angle 90
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_lowerspawn4"
+			classname "team_CTF_redspawn"
+			origin "-405 1580 40"
+			angle 270
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_lowerspawn5"
+			classname "team_CTF_redspawn"
+			origin "-305 1580 40"
+			angle 270
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_lowerspawn6"
+			classname "team_CTF_redspawn"
+			origin "-205 1580 40"
+			angle 270
+			spawnflags 3
+		}
+
 		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_allied"
 		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_axis"
 		remapshader "gfx/reactor/cm_tower2_allied" "gfx/reactor/cm_tower2_allied"
