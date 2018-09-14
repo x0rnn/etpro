@@ -1061,6 +1061,10 @@ truck_construct
 {
 	spawn
 	{
+	set
+	{
+		spawnflags 8
+	}
 		wait 500
 		
 		kill truck
