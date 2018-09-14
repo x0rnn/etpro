@@ -1,11 +1,112 @@
 // ============================================================================
 // Map: Fueldump
-// Last update : 01/05/03 Sock
+// Last update : 16/06/03 Sock
 // ============================================================================
+// rain - Tue Sep 23 20:24:55 EDT 2003 - fixed setautospawns
+// bani - Mon Jan  5 23:45:25 PST 2004 - allied spawn at garage commandpost
+// /SS/StinVec ? HOUSE OF PAIN /SS/ 7/2/07 - Axis Assault-Bridge
+// IRATA [*] Son Jul 22 13:49:00 GMT+1 - merge of garage-spawn & assault-bridge
+
 game_manager
 {
 	spawn
 	{
+		// ---START--- StinVec Assault Bridge for Axis in Fueldump
+        	create
+        	{
+            		scriptName "axisbridge"
+            		targetname "axisbridge"
+            		classname  "script_mover"
+            		origin "-10712 -5931 603"
+            		angles "0 -47 2"
+            		model      "*10"
+            		spawnflags "2"
+			modelscale 1.04
+        	}
+		// ---END--- StinVec Assault Bridge for Axis in Fueldump
+	
+	
+		create
+		{
+			scriptName "fueldumphq_obj"
+			classname "team_WOLF_objective"
+			targetname "fueldumphq_obj"
+			origin "-10853 -2036 6"	// z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+			spawnflags 2	// TEAM_ALLIES(2)
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn1"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "11072 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn2"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10995 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn3"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10918 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn4"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10841 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn5"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "11072 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn6"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10995 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn7"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10918 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn8"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10841 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
@@ -83,8 +184,9 @@ game_manager
 		wm_announce	"Allied team has breached the Tunnel Doors!"
 		setstate tunneldoor_toi invisible
 
-		setautospawn "Allied Entrance Spawn" 0
+		// rain - fixed axis spawn point
 		setautospawn "Tunnel Store Room" 1
+		setautospawn "Axis Fuel Dump" 0
 		alertentity t108	// Switch the tunnel spawns around
 
 		// *----------------------------------- vo ------------------------------------------*
@@ -187,6 +289,35 @@ game_manager
 	}
 }
 
+//bani
+fueldumphq_obj
+{
+	spawn
+	{
+		set
+		{
+			//these have to be set inside the spawn{} function, not create{}
+			description "Garage HQ"
+			message "Garage HQ"
+		}
+		wait 50
+		setstate fueldumphq_obj invisible
+		setstate fueldumphq_spawn invisible
+	}
+
+	trigger on
+	{               
+		setstate fueldumphq_obj default
+		setstate fueldumphq_spawn default
+	}
+
+	trigger off
+	{
+		setstate fueldumphq_obj invisible
+		setstate fueldumphq_spawn invisible
+	}
+}
+
 // ============================================================================
 // LMS stuff to remove from obj mode
 // ============================================================================
@@ -270,12 +401,12 @@ axis_radio_built
 
 	trigger setup
 	{
-		setchargetimefactor 0 soldier 0.75
-		setchargetimefactor 0 lieutenant 0.75
-		setchargetimefactor 0 medic 0.75
-		setchargetimefactor 0 engineer 0.75
-		setchargetimefactor 0 covertops 0.75
-		sethqstatus 0 1
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
 	}
 
 	buildstart final
@@ -344,7 +475,7 @@ axis_radio_built_model
 	trigger enable_axis_features
 	{
 		//-----------------------------------------------------------------------
-		// Increase Allies charge times
+		// Increase Axis charge times
 		//-----------------------------------------------------------------------
 		setchargetimefactor 0 soldier 0.75
 		setchargetimefactor 0 lieutenant 0.75
@@ -519,6 +650,9 @@ allied_radio_built
 
 		trigger allied_radio_built_model enable_allied_features
 		enablespeaker alliedhq_sound
+
+		//bani
+		trigger fueldumphq_obj on
 	}
 
 	death
@@ -528,6 +662,9 @@ allied_radio_built
 
 		trigger allied_radio_built_model disable_allied_features
 		disablespeaker alliedhq_sound
+
+		//bani
+		trigger fueldumphq_obj off
 	}
 }
 
@@ -596,7 +733,7 @@ allied_radio_built_model
 		setchargetimefactor 1 medic 1
 		setchargetimefactor 1 engineer 1
 		setchargetimefactor 1 covertops 1
-		sethqstatus 1 1
+		sethqstatus 1 0
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
