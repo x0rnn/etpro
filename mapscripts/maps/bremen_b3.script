@@ -2,6 +2,19 @@ game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "woodenbarrier_toi2"
+			targetname "woodenbarrier_toi2"
+			classname  "trigger_objective_info"
+			target "woodenbarrier"
+			origin "1448 -98 80"
+			mins "-80 -50 -80"
+			maxs "80 50 140"
+			spawnflags "2"
+			track "the Wooden Barrier"
+		}
+
 		// Set scenario information
 		wm_axis_respawntime 30
 		wm_allied_respawntime 20
@@ -111,9 +124,9 @@ game_manager
 
 
 ///////////////////////////////////////////////
-//                                           //
-//              SPAWNS  &  CP                //
-//                                           //
+//										   //
+//			  SPAWNS  &  CP				//
+//										   //
 ///////////////////////////////////////////////
 
 // ================================================
@@ -170,19 +183,19 @@ allied_cp_open
 		globalaccum 6 set 1
 		
 		wm_objective_status 4 0 2
-        wm_objective_status 4 1 1
-        
-        // ENABLE NEW SPAWN
-        trigger allied2spawn_wobj on
+		wm_objective_status 4 1 1
+		
+		// ENABLE NEW SPAWN
+		trigger allied2spawn_wobj on
 
 		sethqstatus 1 1			// Landmines team warning message
 		enablespeaker allied_cp_sound		// Enable morse code sound
-		      	
-      // If first time, then set new spawn as default
-      accum 3 abort_if_equal 1
-      accum 3 set 1      
-      
-      setautospawn "CP Spawn"	1	// Set Allies to forward spawn
+			  	
+	  // If first time, then set new spawn as default
+	  accum 3 abort_if_equal 1
+	  accum 3 set 1	  
+	  
+	  setautospawn "CP Spawn"	1	// Set Allies to forward spawn
 	}
 
 	buildstart final
@@ -213,11 +226,11 @@ allied_cp_open
 	  globalaccum 6 set 0
 		
 	  wm_objective_status 4 0 0
-      wm_objective_status 4 1 0
+	  wm_objective_status 4 1 0
 		
 	  //DISABLE NEW SPAWN
-      trigger allied2spawn_wobj off
-      
+	  trigger allied2spawn_wobj off
+	  
 		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
 		trigger self disable_cp_features		// Default charge bar times
 
@@ -325,25 +338,25 @@ allied1spawn_wobj
 	  wait 200
 	}
 	trigger off
-    {
-      setstate allied1spawn_wobj invisible
-      alertentity allied1spawn_spawns
-      setstate allied1spawn_spawns invisible
-    }
-    trigger on
-    {
-      setstate allied1spawn_wobj default
-      alertentity allied1spawn_spawns
-      setstate allied1spawn_spawns default
-    }
+	{
+	  setstate allied1spawn_wobj invisible
+	  alertentity allied1spawn_spawns
+	  setstate allied1spawn_spawns invisible
+	}
+	trigger on
+	{
+	  setstate allied1spawn_wobj default
+	  alertentity allied1spawn_spawns
+	  setstate allied1spawn_spawns default
+	}
 	trigger allied_capture 
 	{
 		//
 	}
-    trigger axis_capture
-    {
-	    //
-    }
+	trigger axis_capture
+	{
+		//
+	}
 } 
 
 allied2spawn_spawns
@@ -363,27 +376,27 @@ allied2spawn_wobj
 	  setstate allied2spawn_wobj invisible
 	}
 	trigger off
-    {
-      setstate allied2spawn_wobj invisible
-      setstate allied2spawn_spawns invisible
+	{
+	  setstate allied2spawn_wobj invisible
+	  setstate allied2spawn_spawns invisible
 	  alertentity allied2spawn_spawns
-    }
-    trigger on
-    {
-      setstate allied2spawn_wobj default
-      setstate allied2spawn_spawns default
+	}
+	trigger on
+	{
+	  setstate allied2spawn_wobj default
+	  setstate allied2spawn_spawns default
 	  alertentity allied2spawn_spawns
-      
-      setautospawn "CP Spawn"	1
-    }
+	  
+	  setautospawn "CP Spawn"	1
+	}
 	trigger allied_capture 
 	{
 		//
 	}
-    trigger axis_capture
-    {
-	    //
-    }
+	trigger axis_capture
+	{
+		//
+	}
 } 
 
 
@@ -404,30 +417,30 @@ allied3spawn_wobj
 	  setstate allied3spawn_wobj invisible
 	}
 	trigger off
-    {
-      setstate allied3spawn_wobj invisible
-      setstate allied3spawn_spawns invisible
+	{
+	  setstate allied3spawn_wobj invisible
+	  setstate allied3spawn_spawns invisible
 	  alertentity allied3spawn_spawns
-    }
-    trigger on
-    {
-      setstate allied3spawn_wobj default
-      setstate allied3spawn_spawns default
+	}
+	trigger on
+	{
+	  setstate allied3spawn_wobj default
+	  setstate allied3spawn_spawns default
 	  alertentity allied3spawn_spawns
-      
+	  
 	  // abort if cp already been done.
-      globalaccum 6 abort_if_equal 1
-      
-      setautospawn "Allied flag spawn"	1
-    }
+	  globalaccum 6 abort_if_equal 1
+	  
+	  setautospawn "Allied flag spawn"	1
+	}
 	trigger allied_capture 
 	{
 		//
 	}
-    trigger axis_capture
-    {
-	    //
-    }
+	trigger axis_capture
+	{
+		//
+	}
 } 
 
 axis1spawn_spawns
@@ -445,25 +458,25 @@ axis1spawn_wobj
 	  wait 200
 	}
 	trigger off
-    {
-      setstate axis1spawn_wobj invisible
-      setstate axis1spawn_spawns invisible
+	{
+	  setstate axis1spawn_wobj invisible
+	  setstate axis1spawn_spawns invisible
 	  alertentity axis1spawn_spawns
-    }
-    trigger on
-    {
-      setstate axis1spawn_wobj default
-      setstate axis1spawn_spawns default
+	}
+	trigger on
+	{
+	  setstate axis1spawn_wobj default
+	  setstate axis1spawn_spawns default
 	  alertentity axis1spawn_spawns
-    }
+	}
 	trigger allied_capture 
 	{
 		//
 	}
-    trigger axis_capture
-    {
-	    //
-    }
+	trigger axis_capture
+	{
+		//
+	}
 } 
 
 axis2spawn_spawns
@@ -482,25 +495,25 @@ axis2spawn_wobj
 	  wait 200
 	}
 	trigger off
-    {
-      setstate axis2spawn_wobj invisible
-      setstate axis2spawn_spawns invisible
+	{
+	  setstate axis2spawn_wobj invisible
+	  setstate axis2spawn_spawns invisible
 	  alertentity axis2spawn_spawns
-    }
-    trigger on
-    {
-      setstate axis2spawn_wobj default
-      setstate axis2spawn_spawns default
+	}
+	trigger on
+	{
+	  setstate axis2spawn_wobj default
+	  setstate axis2spawn_spawns default
 	  alertentity axis2spawn_spawns
-    }
+	}
 	trigger allied_capture 
 	{
 		//
 	}
-    trigger axis_capture
-    {
-	    //
-    }
+	trigger axis_capture
+	{
+		//
+	}
 } 
 
 flag1_flag
@@ -551,7 +564,7 @@ flag1_flag
 								
 		wm_objective_status 3 1 0		
 		wm_objective_status 3 0 1
-        
+		
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
 
@@ -598,9 +611,9 @@ flag1_flag
 
 
 ///////////////////////////////////////////////
-//                                           //
-//             OTHER OBJECTIVES              //
-//                                           //
+//										   //
+//			 OTHER OBJECTIVES			  //
+//										   //
 ///////////////////////////////////////////////
 
 
@@ -642,8 +655,8 @@ maingate
 		wm_removeteamvoiceannounce 1 "radar_allies_entrances_destroy"
 		
 		// "Construct the command post!" voice over, unless its already been done.
-        globalaccum 6 abort_if_equal 1
-        		
+		globalaccum 6 abort_if_equal 1
+				
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
 	}
@@ -796,15 +809,15 @@ keycard_capmodel
 
 keycard_flag
 {
-    spawn
-    {
-	    wait 200
-    }
-    trigger stolen 
-    {
-    	//when the objective is taken 
-    	// Hide command map marker of keycard at table
-    	setstate keycard_CMM invisible 
+	spawn
+	{
+		wait 200
+	}
+	trigger stolen 
+	{
+		//when the objective is taken 
+		// Hide command map marker of keycard at table
+		setstate keycard_CMM invisible 
 	}
 	trigger dropped
 	{
@@ -2407,52 +2420,76 @@ defense4
 	}
 }
 
-woodenbarrier
+
+woodenbarrier_toi
 {
 spawn
 {
-wait 200
-trigger self setup
-
-setstate baumaterial default
-setstate baumaterial_mod default
-setstate baumaterial_toi default
+remove
+}
 }
 
-trigger setup
+woodenbarrier
 {
-setstate woodenbarrier invisible
+	spawn
+	{
+		wait 200
+		set
+		{
+			spawnflags 4
+		}
+		trigger woodenbarrier setup
 
-setstate woodenbarrier_toi default
+		constructible_class 3
 
-setstate baumaterial default
-setstate woodenbarrier_mod default
-}
+	}
 
-buildstart final
-{
-setstate woodenbarrier underconstruction
+	trigger setup
+	{
+		setstate woodenbarrier invisible
+		setstate woodenbarrier_toi2 default
 
-setstate baumaterial default
-setstate woodenbarrier_mod default
-}
+		setstate baumaterial default
+		setstate woodenbarrier_mod default
+	}
 
-built final
-{
-setstate woodenbarrier default
+	buildstart final
+	{
+		setstate woodenbarrier underconstruction
 
-setstate baumaterial invisible
-setstate baumaterial_mod invisible
-setstate woodenbarrier_toi invisible
+		setstate baumaterial default
+		setstate woodenbarrier_mod default
+	}
 
-wm_announce "The Wooden Barrier has been constructed."
-}
+	built final
+	{
+		setstate woodenbarrier default
 
-decayed final
-{
-setstate woodenbarrier invisible
+		setstate baumaterial invisible
+		setstate baumaterial_mod invisible
+		setstate woodenbarrier_toi2 invisible
 
-setstate baumaterial default
-setstate baumaterial_mod default
-}
+		wm_announce "The Wooden Barrier has been constructed."
+		wm_announce "Allies can destroy it with dynamite."
+	}
+
+	decayed final
+	{
+		setstate woodenbarrier invisible
+
+		setstate baumaterial default
+		setstate baumaterial_mod default
+	}
+
+	death
+	{
+		setstate woodenbarrier invisible
+
+		setstate baumaterial default
+		setstate baumaterial_mod default
+		setstate woodenbarrier_toi2 default
+
+		wm_announce "Allies have destroyed the Wooden Barrier."
+	}
+
 }
