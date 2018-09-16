@@ -2,6 +2,19 @@ game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "woodenbarrier_toi2"
+			targetname "woodenbarrier_toi2"
+			classname  "trigger_objective_info"
+			target "woodenbarrier"
+			origin "1448 -98 80"
+			mins "-80 -50 -80"
+			maxs "80 50 140"
+			spawnflags "2"
+			track "the Wooden Barrier"
+		}
+
 		// Set scenario information
 		wm_axis_respawntime 30
 		wm_allied_respawntime 20
@@ -2407,54 +2420,76 @@ defense4
 	}
 }
 
-woodenbarrier
+
+woodenbarrier_toi
 {
 spawn
 {
-
-wait 200
-
-trigger self setup
-
-setstate baumaterial default
-setstate baumaterial_mod default
-setstate baumaterial_toi default
+remove
+}
 }
 
-trigger setup
+woodenbarrier
 {
-setstate woodenbarrier invisible
+	spawn
+	{
+		wait 200
+		set
+		{
+			spawnflags 4
+		}
+		trigger woodenbarrier setup
 
-setstate woodenbarrier_toi default
+		constructible_class 3
 
-setstate baumaterial default
-setstate woodenbarrier_mod default
-}
+	}
 
-buildstart final
-{
-setstate woodenbarrier underconstruction
+	trigger setup
+	{
+		setstate woodenbarrier invisible
+		setstate woodenbarrier_toi2 default
 
-setstate baumaterial default
-setstate woodenbarrier_mod default
-}
+		setstate baumaterial default
+		setstate woodenbarrier_mod default
+	}
 
-built final
-{
-setstate woodenbarrier default
+	buildstart final
+	{
+		setstate woodenbarrier underconstruction
 
-setstate baumaterial invisible
-setstate baumaterial_mod invisible
-setstate woodenbarrier_toi invisible
+		setstate baumaterial default
+		setstate woodenbarrier_mod default
+	}
 
-wm_announce "The Wooden Barrier has been constructed."
-}
+	built final
+	{
+		setstate woodenbarrier default
 
-decayed final
-{
-setstate woodenbarrier invisible
+		setstate baumaterial invisible
+		setstate baumaterial_mod invisible
+		setstate woodenbarrier_toi2 invisible
 
-setstate baumaterial default
-setstate baumaterial_mod default
-}
+		wm_announce "The Wooden Barrier has been constructed."
+		wm_announce "Allies can destroy it with dynamite."
+	}
+
+	decayed final
+	{
+		setstate woodenbarrier invisible
+
+		setstate baumaterial default
+		setstate baumaterial_mod default
+	}
+
+	death
+	{
+		setstate woodenbarrier invisible
+
+		setstate baumaterial default
+		setstate baumaterial_mod default
+		setstate woodenbarrier_toi2 default
+
+		wm_announce "Allies have destroyed the Wooden Barrier."
+	}
+
 }
