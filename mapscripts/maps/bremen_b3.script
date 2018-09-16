@@ -1061,6 +1061,10 @@ truck_construct
 {
 	spawn
 	{
+	set
+	{
+		spawnflags 8
+	}
 		wait 500
 		
 		kill truck
@@ -2407,7 +2411,9 @@ woodenbarrier
 {
 spawn
 {
+
 wait 200
+
 trigger self setup
 
 setstate baumaterial default
