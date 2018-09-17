@@ -1,9 +1,85 @@
 // bani - Mon Mar  1 00:38:32 PST 2004 - fixed invisible sinking player cheat
+// harlekin - Thu Jan 22 2009 - added anti spawn kill roofs
+// harlekin - Fri Jan 30 2009 - added 4 South Courtyard spawn for axis after allies moved the truck
+// harlekin - Fri Jan 30 2009 - removed wait at allies_win
+// Harlekin – This script prevents spawn camping of the Allies team after they moved the Truck with the gold crates.
+// Harlekin - 2 spawns aper at the South Courtyard after the truck moved the first time.
+// Harlekin - 2 more spawns aper after the truck is past barrier 1
+// Harlekin - as soon as the truck reaches barrier 2 allies spawn at their first spawn
+// Harlekin - Anti spawn kill roofs over all spawns. The roof over the Tank Spawn aper after the tank is repaired and moved out of the yard.
 
 game_manager
 {
 	spawn
 	{
+
+	// ----- Harlekin Truck Spawn Start -----
+	// info_limbo_flag
+	create
+	{
+		scriptName "truckspawn_obj"
+		classname "team_WOLF_objective"
+		targetname "truckspawn_obj"
+		origin "-950 -950 30"       // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+		spawnflags 1        // TEAM_AXIS(2)
+		description "South Courtyard"
+	}
+	setstate truckspawn_obj invisible
+
+	// info_limbo_camera
+	create
+	{
+		classname "info_limbo_camera"
+		origin "-1004 -1200 30" //"-2560 -7040 1008"
+		targetname "truckspawn_obj_camera_new"
+		target "truckspawn_obj"
+		scriptname "truckspawn_obj_camera_new"
+	}
+	// spawn 1
+	create
+	{
+		scriptName "truckspawn_spawn1"
+		classname "team_CTF_redspawn"
+		targetname "truckspawn_spawn"
+		origin "-1004 -1176 0"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+	// spawn 2
+	create
+	{
+		scriptName "truckspawn_spawn2"
+		classname "team_CTF_redspawn"
+		targetname "truckspawn_spawn"
+		origin "-1004 -1125 0"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+	// spawn 3 - delayed
+	create
+	{
+		scriptName "truckspawn_spawn3"
+		classname "team_CTF_redspawn"
+		targetname "truckspawn_spawn2"
+		origin "-1054 -1176 0"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+	// spawn 4 - delayed
+	create
+	{
+		scriptName "truckspawn_spawn4"
+		classname "team_CTF_redspawn"
+		targetname "truckspawn_spawn2"
+		origin "-1054 -1125 0"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+
+	setstate truckspawn_spawn invisible
+	setstate truckspawn_spawn2 invisible
+	// ----- Harlekin Truck Spawn END -----
+
 		//bani - bug fixes
 		create
 		{
@@ -14,6 +90,54 @@ game_manager
 			mins "-50 -5 -55"
 			maxs "50 5 55"
 		}
+		// ----- Harlekin Anti Spawnkill roof Start -----
+		// Roof over axis spawn
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "2757 -759 100"
+			contents 1  // SOLID
+			mins "-360 -375 -88"
+			maxs "360 375 88"
+		}
+
+		// Roof over axis south spawn exit
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "2987 -1597 100"
+			contents 1  // SOLID
+			mins "-210 -220 -88"
+			maxs "210 220 88"
+		}
+
+		// Roof over allies spawn 
+		create
+		{
+			scriptName "spawnroof3"
+			classname "func_fakebrush"
+			origin "-3360 -218 500"
+			contents 1  // SOLID
+			mins "-526 -719 -10"
+			maxs "526 719 10"
+		}
+	
+		// Roof over tank spawn
+		create
+		{
+			scriptName "tankspawnroof"
+			classname "func_fakebrush"
+            		targetname "tankspawnroof"
+			origin "-420 2095 1000"
+			contents 1  // SOLID
+			mins "-450 -975 -88"
+			maxs "450 975 88"
+		}
+
+        setstate tankspawnroof invisible
+		// ----- Harlekin Anti Spawnkill roof End -----
 
 		remapshader "models/mapobjects/tanks_sd/mg42turret" "models/mapobjects/tanks_sd/mg42turret_2"
 		
@@ -23,7 +147,7 @@ game_manager
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
 		wm_number_of_objectives 7
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	12
 
 		// Objectives
 		// 1: Steal Tank
@@ -89,6 +213,10 @@ game_manager
 		wm_teamvoiceannounce 1 "goldrush_allies_tank_steal"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin South Courtyard Announce Start -----
+		wm_announce "Axis get 2 spawns @ South Courtyard after Allies moved the truck."
+		wm_announce "Axis get another 2 spawns @ South Courtyard after the truck is past barrier 1."
+		// ----- Harlekin South Courtyard Announce End -----
 	}
 
 	trigger allies_win
@@ -99,14 +227,16 @@ game_manager
 		wm_objective_status 5 0 2
 		wm_objective_status 5 1 1
 
+		// ----- Harlekin removed wait -----
 		wait 1500
+		// ----- Harlekin removed wait -----
+
 		wm_endround
 	}
 
 	trigger allies_steal_tank
 	{
 		accum 4 abort_if_not_equal 0
-
 		wm_announce "Allied team has stolen the Tank!"
 
 		wm_objective_status 1 0 2
@@ -546,6 +676,11 @@ tank
 		accum 1 bitset 2
 		followspline 0 spln10 50 wait length 32
 		accum 1 bitreset 2
+
+		// ----- Harlekin Anti Spawnkill roof Start -----
+  	       setstate tankspawnroof default
+   	 	wm_announce "Tank Depot Anti Spawnkill roof activated!"
+		// ----- Harlekin Anti Spawnkill roof End -----
 
 		trigger self run_continue
 	}
@@ -2160,12 +2295,18 @@ truck
 
 	trigger run_1
 	{
+		// ----- Harlekin Truck Spawn Wave 1 Start -----
+	       setstate truckspawn_obj default
+	       setstate truckspawn_spawn default
+//	       setautospawn  "South Courtyard" 0
+		wm_announce "The Axis are sending reinforcements to stop the Truck!"
+		// ----- Harlekin Truck Spawn Wave 1 End -----
+
 		accum 1 bitset 2
 		followspline 0 tspln_1 125 wait length 304 wait roll 0 2 dampin
 		accum 1 bitreset 2
 
 		accum 3 set 1
-
 		trigger truck run_continue
 	}
 
@@ -2224,11 +2365,17 @@ truck
 		wm_teamvoiceannounce 1 "goldrush_allies_truck_barrier1"
 		// *---------------------------------------------------------------------------------*
 
+		// ----- Harlekin Truck Spawn Wave 2 Start -----
+	       setstate truckspawn_spawn2 default
+		wm_announce "The Axis are sending reinforcements to stop the Truck!"
+		// ----- Harlekin Truck Spawn Wave 2 End -----
+
 		accum 1 bitset 2
 		followspline 0 tspln_6 125 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 6
+
 		trigger truck run_continue
 	}
 
@@ -2259,6 +2406,7 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 9
+
 		trigger truck run_continue
 	}
 
@@ -2289,6 +2437,7 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 12
+
 		trigger truck run_continue
 	}
 
@@ -2339,7 +2488,10 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 17
-
+		// ----- Harlekin Autospawn Allied Spawn -----
+		setautospawn	"Allied Spawn"	1
+		wm_announce "The Allies send now reinforcements from the Allied Spawn."
+		// ----- Harlekin Autospawn Allied Spawn -----
 		trigger truck stuck_check_barrier4_built_msg
 
 		trigger truck run_continue
@@ -2860,7 +3012,7 @@ defense1
 		setstate defense1_flag default
 
 
-		setstate defense1_teeth invisible
+		setstate defense1_teeth default
 	}
 
 	buildstart final
@@ -2955,7 +3107,7 @@ defense2
 		setstate defense2_flag default
 
 
-		setstate defense2_teeth invisible
+		setstate defense2_teeth default
 	}
 
 	buildstart final
@@ -3361,10 +3513,10 @@ gold_crate
 		wm_teamvoiceannounce 0 "goldrush_axis_gold2_secured"
 
 		wm_teamvoiceannounce 1 "goldrush_allies_gold2_secured"
-
 		wm_removeteamvoiceannounce 0 "goldrush_axis_gold_defend"
 
 		wm_removeteamvoiceannounce 1 "goldrush_allies_gold_defend"
+
 		// *---------------------------------------------------------------------------------*
 	}
 
