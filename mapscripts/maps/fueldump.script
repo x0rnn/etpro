@@ -1,16 +1,566 @@
 // ============================================================================
 // Map: Fueldump
-// Last update : 01/05/03 Sock
+// Last update : 16/06/03 Sock
 // ============================================================================
+// rain - Tue Sep 23 20:24:55 EDT 2003 - fixed setautospawns
+// bani - Mon Jan  5 23:45:25 PST 2004 - allied spawn at garage commandpost
+// mortis - Fri Jun 24 18:11:58 PDT 2005 - set allied autospawn to HQ by default at spline 73
+// 2/3Soul - Sat Jan 15 17:12:56 GMT 2005 - east depot defences only partially constructable
+// mortis - Thu Sep 15 20:30:20 PDT 2005 - merged 2/3 soul features and mortis features
+// mortis - Tue Jun 6 09:46:59 PDT 2006 - adjusted waitstates in checkgame routine
+// mortis - Wed Jul 19 10:57:18 added arni's fueldump anti-trickjump playerclips
+// mortis - Wed Jul 19 10:57:18 added 2 of arni's extra axis spawns + routine
+// Harlekin - Sat Feb 3 2007 Anti spawnkill roofs
+// Harlekin - Fri Sept 19 2008 added Nullskillz Allied Hut Spawn
+// harlekin - added arni - 08.07.2006 - Tank drives alone
+// harlekin - added arni - 09.07.2006 - Broke one garage gate to only close half way
+// harlekin - disable rear allied spawns completely after allied team has breached the Tunnel Doors
+// Moses - add 2 more Axis Truck spawns
+// Harlekin - added StinVec Assault Bridge for Axis in Fueldump
+// Harlekin - added 2 spawns at axis cp
+// Harlekin - added Health & Ammo @ allied cp & @ axis second spawn.
+// x0rnn - corrected "fueljump1" playerclip so it actually works
+
 game_manager
 {
 	spawn
 	{
+
+//----START----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+        create
+		{
+		scriptname "fdbridge_toi"
+		targetname "fdbridge_toi"
+		target     "fdbridge"
+		classname  "trigger_objective_info"
+		infoAllied "Build Fueldump Assault Bridge"
+		infoAxis   "Destroy Fueldump Assault Bridge"
+		shortname  "Allied Fueldump Assault Bridge"
+		track      "the Allied Fueldump Assault Bridge"
+		spawnflags "2"
+		score      "50"
+		origin     "-10326 -5523 633"
+		mins       "-52 -66 -34"
+		maxs       "52 66 34"
+		}
+
+        create
+        	{
+            	scriptname "fdbridge_materials"
+            	targetname "fdbridge_materials"
+            	classname  "misc_gamemodel"
+            	angle      "90"
+		origin     "-10326 -5523 633"
+		skin       "models/mapobjects/cmarker/allied_crates.skin"
+            	model      "models/mapobjects/cmarker/cmarker_crates.md3"
+        	}
+
+        create
+        	{
+		scriptname "fdbridge_material_hurt"
+		targetname "fdbridge_material_hurt"
+		spawnflags 24
+		classname  "trigger_hurt"
+		dmg        0            
+		sound      "sound/player/hurt_barbwire.wav"
+		origin     "-10712 -5931 603" 
+		mins       "-30 -30 -20"
+		maxs       "30 30 20"
+        	}
+
+        create
+        	{
+
+            	scriptname "fdbridge_flag"
+            	targetname "fdbridge_flag"
+            	classname  "misc_gamemodel"
+            	spawnflags "2"
+            	origin     "-10326 -5482 646" 
+            	angle      "90" 
+            	frames     "190"
+            	modelscale "0.4"
+            	model      "models/mapobjects/cmarker/cmarker_flag.md3"
+            	skin       "models/mapobjects/cmarker/allied_cflag.skin"
+        	}
+
+        create
+        	{
+            	model      "*10"
+            	scriptname "fdbridge"
+            	targetname "fdbridge"		
+		classname  "func_constructible"
+            	origin     "-10712 -5931 603"
+            	spawnflags "8"
+            	modelscale 1.04
+        	}
+
+//----END----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+
+
+// ----- Harlekin Allies Entrance Spawn Spawn Roof -----
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "-857 -8050 900"
+			contents 1  // SOLID
+			mins "-845 -870 -88"
+			maxs "845 870 88"
+		}
+// ----- Harlekin Allies Entrance Spawn Spawn Roof -----
+
+// ----- Harlekin Extra Spawn @ Axis CP ----- Start
+           create
+           {
+                   scriptName "cp_axis_obj"
+                   classname "team_WOLF_objective"
+                   targetname "cp_axis_obj"
+                   origin "-2050 -1370 5"        // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+                   spawnflags 1        // TEAM_AXIS(2)
+           }
+
+           create
+           {
+                   scriptName "cp_axis_spawn1"
+                   classname "team_CTF_redspawn"
+                   targetname "cp_axis_spawn"
+                   origin "-2100 -1370 640"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "270"
+           }
+
+//           create
+//           {
+//                   scriptName "cp_axis_spawn2"
+//                   classname "team_CTF_redspawn"
+//                   targetname "cp_axis_spawn"
+//                   origin "-2000 -1370 640"
+//                   spawnflags 3        // TEAM_AXIS
+//                   angle "270"
+//           }
+// ----- Harlekin Extra Spawn @ Axis CP ----- End
+
+//Harlekin AMMO & Health Axis Start
+
+        create
+		{
+		classname "misc_cabinet_supply"
+		origin "-8815 -6815 210"
+		mins "0 0 0"
+		maxs "90 90 50"
+		angle "90"
+		scriptname "main_ammocabinet2"
+		targetname "main_ammocabinet2"
+		}
+		
+	create
+		{
+		classname "trigger_ammo"
+		origin "-8815 -6805 210"
+	        mins "-45 -45 -70"
+   		maxs "45 45 70"
+		ammototal "20"
+		ammorate "1"
+		scriptname "main_trigger_ammo2"
+		targetname "main_trigger_ammo2"
+		target "main_ammocabinet2"
+		}
+
+	create
+		{
+		classname "misc_cabinet_health"
+		origin "-8815 -6432 210"
+		mins "0 0 0"
+		maxs "90 90 50"
+		angle "270"
+		scriptname "main_healthcabinet2"
+		targetname "main_healthcabinet2"
+		}
+		
+	create
+		{
+		classname "trigger_heal"
+		origin "-8815 -6452 210"
+        	mins "-45 -45 -70"
+        	maxs "45 45 70"
+		healtotal "400"
+		scriptname "main_trigger_heal2"
+		targetname "main_trigger_heal2"
+		target "main_healthcabinet2"
+		}
+
+//Harlekin AMMO & Health Axis END
+
+//Harlekin AMMO & Health Allies Start
+
+        create
+		{
+		classname "misc_cabinet_supply"
+		origin "-11093 -1890 520"
+		mins "0 0 0"
+		maxs "90 90 50"
+		angle "270"
+		scriptname "main_ammocabinet"
+		targetname "main_ammocabinet"
+		}
+		
+	create
+		{
+		classname "trigger_ammo"
+		origin "-11093 -1890 520"
+	        mins "-45 -45 -70"
+   		maxs "45 45 70"
+		ammototal "20"
+		ammorate "1"
+		scriptname "main_trigger_ammo"
+		targetname "main_trigger_ammo"
+		target "main_ammocabinet"
+		}
+
+	create
+		{
+		targetname "main_ammocabinet_damaged"
+		scriptname "main_ammocabinet_damaged"
+		origin "-11093 -1890 520"
+		classname "misc_gamemodel"
+		angle "270"
+		modelscale 1
+		contents 1
+		mins "17 0 0"
+		maxs "20 20 57"
+		clipmask 1
+		model "models/mapobjects/supplystands/stand_ammo_damaged.md3"
+		}
+
+	create
+		{
+		classname "misc_cabinet_health"
+		origin "-11317 -2010 520"
+		mins "0 0 0"
+		maxs "90 90 50"
+		angle "0"
+		scriptname "main_healthcabinet"
+		targetname "main_healthcabinet"
+		}
+		
+	create
+		{
+		classname "trigger_heal"
+		origin "-11317 -2010 520"
+ 	        mins "-45 -45 -70"
+     		maxs "45 45 70"
+		healtotal "400"
+		scriptname "main_trigger_heal"
+		targetname "main_trigger_heal"
+		target "main_healthcabinet"
+		}
+
+	create
+		{
+		targetname "main_healthcabinet_damaged"
+		scriptname "main_healthcabinet_damaged"
+		origin "-11317 -2010 520"
+		classname "misc_gamemodel"
+		angle "0"
+		modelscale 1
+		contents 1
+		mins "0 0 0"
+		maxs "20 20 57"
+		clipmask 1
+		model "models/mapobjects/supplystands/stand_health_damaged.md3"
+		}
+		
+
+//Harlekin AMMO & Health Allies END
+
+
+
+	// ----- Arni Extra Spawn @ Axis Truck ----- 
+           create
+           {
+                   scriptName "fueldumpxt_obj"
+                   classname "team_WOLF_objective"
+                   targetname "fueldumpxt_obj"
+                   origin "-10556 -6692 5"        // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+                   spawnflags 1        // TEAM_AXIS(2)
+           }
+
+           create
+           {
+                   scriptName "fueldumpxt_spawn1"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10500 -6630 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+
+           create
+           {
+                   scriptName "fueldumpxt_spawn2"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10565 -6630 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+           
+           create
+           {
+                   scriptName "fueldumpxt_spawn3"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10630 -6630 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+
+           create
+           {
+                   scriptName "fueldumpxt_spawn4"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10500 -6710 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+
+           create
+           {
+                   scriptName "fueldumpxt_spawn5"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10565 -6710 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+
+           create
+           {
+                   scriptName "fueldumpxt_spawn6"
+                   classname "team_CTF_redspawn"
+                   targetname "fueldumpxt_spawn"
+                   origin "-10630 -6710 220"
+                   spawnflags 3        // TEAM_AXIS
+                   angle "90"
+           }
+		// ----- Arni Extra Spawn @ Axis Truck ----- 
+
+		// fueldump anti-trickjump player clips - courtesy arni
+
+           create
+           {
+                   scriptName "fueljump1"
+                   classname "func_fakebrush"
+                   origin "-8920 -5120 646"
+                   contents 65536  // CONTENTS_PLAYERCLIP      // high fueljump
+                   mins "-520 -2 -30"
+                   maxs "370 2 30"
+           }
+
+           create
+           {
+                   scriptName "fueljump2"
+                   classname "func_fakebrush"
+                   origin "-10430 -5126 424"
+                   contents 65536  // CONTENTS_PLAYERCLIP      // mg bunker
+                   mins "-50 -20 -20"
+                   maxs "20 20 30"
+           }
+
+           create
+           {
+                   scriptName "fueljump3"
+                   classname "func_fakebrush"
+                   origin "-9536 -5215 340"
+                   contents 1                                  // main gate "hut"
+                   mins "-35 -35 -20"
+                   maxs "35 35 5"
+            }
+
+		// fueldump anti-trickjump player clips - courtesy arni end
+
+		// ----- Allied Command Post Spawn -----
+
+		create
+		{
+			scriptName "fueldumphq_obj"
+			classname "team_WOLF_objective"
+			targetname "fueldumphq_obj"
+			origin "-10853 -2036 6"	// z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+			spawnflags 2	// TEAM_ALLIES(2)
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn1"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "11072 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn2"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10995 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn3"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10918 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn4"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10841 -2448 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn5"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "11072 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn6"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10995 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn7"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10918 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn8"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10841 -2288 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn9"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "11072 -2114 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn10"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10995 -2114 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn11"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10918 -2114 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "fueldumphq_spawn12"
+			classname "team_CTF_bluespawn"
+			targetname "fueldumphq_spawn"
+			origin "-10841 -2114 512"
+			spawnflags 2	// TEAM_ALLIES
+		}
+		// ----- Allied Command Post Spawn -----
+
+		// ----- Allied Hut Spawn START -----
+		// info_limbo_camera
+		create
+		{
+			classname "info_limbo_camera"
+			origin "-3712 -7040 1000" //"-2560 -7040 1008"
+			targetname "alliedstart_wobj_camera_new"
+			target "alliedstart_wobj_new"
+			scriptname "alliedstart_wobj_camera_new"
+		}
+
+		// team_WOLF_objective
+		create
+		{
+			classname "team_WOLF_objective"
+			origin "-3456 -7936 504" //"-2816 -7936 400"
+			spawnflags "2"
+			targetname "alliedstart_wobj_new"
+			description "Allied Hut"
+			scriptname "alliedstart_wobj_new"
+		}
+
+		// team_CTF_bluespawn's START
+		create
+		{
+			spawnflags "3"
+			scriptname "alliedrearspawn_new"
+			targetname "alliedrearspawn_new"
+			origin "-3080 -8376 416"
+			classname "team_CTF_bluespawn"
+			angle "90"
+		}
+
+		create
+		{
+			spawnflags "3"
+			scriptname "alliedrearspawn_new"
+			targetname "alliedrearspawn_new"
+			origin "-3136 -8376 416"
+			classname "team_CTF_bluespawn"
+			angle "90"
+		}
+
+		create
+		{
+			spawnflags "3"
+			scriptname "alliedrearspawn_new"
+			targetname "alliedrearspawn_new"
+			origin "-3192 -8376 416"
+			classname "team_CTF_bluespawn"
+			angle "90"
+		}
+		       setstate alliedstart_wobj_new invisible
+		       setstate alliedrearspawn_new invisible
+		// ----- Allied Hut Spawn END -----
+
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
 		wm_number_of_objectives 7
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	12
 
 		wm_set_main_objective 2	0
 		wm_set_main_objective 1	1
@@ -83,9 +633,14 @@ game_manager
 		wm_announce	"Allied team has breached the Tunnel Doors!"
 		setstate tunneldoor_toi invisible
 
-		setautospawn "Allied Entrance Spawn" 0
+		// rain - fixed axis spawn point
 		setautospawn "Tunnel Store Room" 1
+		setautospawn "Axis Fuel Dump" 0
 		alertentity t108	// Switch the tunnel spawns around
+
+// disable rear allied spawns completely		
+		setstate alliedrearspawn invisible
+		setstate alliedstart_wobj invisible
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "fueldump_axis_gates_stop"
@@ -154,7 +709,8 @@ game_manager
 		wm_objective_status 4 1 1
 		wm_objective_status 4 0 2
 
-		wait 3000
+		// mortis reduced waitstate
+		wait 100
 
 		// Call function to check if the round has been won
 		trigger game_manager checkgame
@@ -167,7 +723,6 @@ game_manager
 	{
 		wm_announce	"Allied team has breached the Depot Side Wall!"
 		setstate depotsidewall_toi invisible
-
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "fueldump_axis_fueldump_defend"
 
@@ -181,11 +736,113 @@ game_manager
 	trigger checkgame
 	{
 		accum 1 abort_if_not_equal 1
-		wm_setwinner 1
-		wait 1000
+    wm_setwinner 1
+		// mortis reduced waitstate
+		wait 100
 		wm_endround
 	}
 }
+
+//bani
+fueldumphq_obj
+{
+	spawn
+	{
+		set
+		{
+			//these have to be set inside the spawn{} function, not create{}
+			description "Garage HQ"
+			message "Garage HQ"
+		}
+		wait 50
+		setstate fueldumphq_obj invisible
+		setstate fueldumphq_spawn invisible
+		//Harle Health & Ammo Allies
+		setstate main_ammocabinet invisible
+		setstate main_trigger_ammo invisible
+		setstate main_healthcabinet invisible
+		setstate main_trigger_heal invisible
+		setstate main_ammocabinet_damaged default
+		setstate main_healthcabinet_damaged default
+
+	}
+
+	trigger on
+	{               
+		setstate fueldumphq_obj default
+		setstate fueldumphq_spawn default
+		//Harle Health & Ammo Allies
+		setstate main_ammocabinet default
+		setstate main_trigger_ammo default
+		setstate main_healthcabinet default
+		setstate main_trigger_heal default
+		setstate main_ammocabinet_damaged invisible
+		setstate main_healthcabinet_damaged invisible
+
+	}
+
+	trigger off
+	{
+		setstate fueldumphq_obj invisible
+		setstate fueldumphq_spawn invisible
+		//Harle Health & Ammo Allies
+		setstate main_ammocabinet invisible
+		setstate main_trigger_ammo invisible
+		setstate main_healthcabinet invisible
+		setstate main_trigger_heal invisible
+		setstate main_ammocabinet_damaged default
+		setstate main_healthcabinet_damaged default
+
+	}
+}
+
+//mortis - add arni's spawn routine
+
+fueldumpxt_obj
+{
+        spawn
+        {
+                set
+                {
+                        description "Truck"
+                        message "Truck"
+                }
+                wait 50
+                setstate fueldumpxt_obj default
+                setstate fueldumpxt_spawn default
+
+        }
+}
+
+
+// ----- Harlekin Extra AMMO @ ALLIED CP ----- Start
+cp_axis_obj
+{
+        spawn
+        {
+                set
+                {
+                        description "Command Post Spawn"
+                        message "Command Post Spawn"
+                }
+                wait 50
+                setstate cp_axis_obj invisible
+                setstate cp_axis_spawn invisible
+        }
+
+	trigger on
+	{               
+		setstate cp_axis_obj default
+		setstate cp_axis_spawn default
+	}
+
+	trigger off
+	{
+		setstate cp_axis_obj invisible
+		setstate cp_axis_spawn invisible
+	}
+}
+// ----- Harlekin Extra AMMO @ ALLIED CP ----- End
 
 // ============================================================================
 // LMS stuff to remove from obj mode
@@ -270,12 +927,12 @@ axis_radio_built
 
 	trigger setup
 	{
-		setchargetimefactor 0 soldier 0.75
-		setchargetimefactor 0 lieutenant 0.75
-		setchargetimefactor 0 medic 0.75
-		setchargetimefactor 0 engineer 0.75
-		setchargetimefactor 0 covertops 0.75
-		sethqstatus 0 1
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
 	}
 
 	buildstart final
@@ -303,6 +960,8 @@ axis_radio_built
 		enablespeaker axishq_sound
 		
 		setstate axishqstuff default
+		//harlekin
+		trigger cp_axis_obj on
 	}
 
 	death
@@ -312,6 +971,8 @@ axis_radio_built
 
 		trigger axis_radio_built_model disable_axis_features
 		disablespeaker axishq_sound
+		//harlekin
+		trigger cp_axis_obj off
 	}
 }
 
@@ -344,7 +1005,7 @@ axis_radio_built_model
 	trigger enable_axis_features
 	{
 		//-----------------------------------------------------------------------
-		// Increase Allies charge times
+		// Increase Axis charge times
 		//-----------------------------------------------------------------------
 		setchargetimefactor 0 soldier 0.75
 		setchargetimefactor 0 lieutenant 0.75
@@ -519,6 +1180,9 @@ allied_radio_built
 
 		trigger allied_radio_built_model enable_allied_features
 		enablespeaker alliedhq_sound
+
+		//bani
+		trigger fueldumphq_obj on
 	}
 
 	death
@@ -528,6 +1192,9 @@ allied_radio_built
 
 		trigger allied_radio_built_model disable_allied_features
 		disablespeaker alliedhq_sound
+
+		//bani
+		trigger fueldumphq_obj off
 	}
 }
 
@@ -596,7 +1263,7 @@ allied_radio_built_model
 		setchargetimefactor 1 medic 1
 		setchargetimefactor 1 engineer 1
 		setchargetimefactor 1 covertops 1
-		sethqstatus 1 1
+		sethqstatus 1 0
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
@@ -623,6 +1290,7 @@ thebridge
 		wait 200
 
 		constructible_class 3
+		constructible_constructxpbonus 15
 		setstate bridgematerials_stage1 default
 		setstate bridgematerials_stage2 default
 
@@ -835,6 +1503,10 @@ frontdump
 	built stage1
 	{
 		setstate frontdumpmaterials_stage1 invisible
+	// 2/3Soul - added entities of frontdumpmaterials_stage2 and frontdump_toi , and set states to invisible
+		setstate frontdumpmaterials_stage2 invisible
+		setstate frontdump_toi invisible
+	// 2/3Soul - added entities of frontdumpmaterials_stage2 and frontdump_toi , and set states to invisible
 		setstate frontdump1_trighurt default
 	}
 
@@ -844,6 +1516,10 @@ frontdump
 	death
 	{
 		setstate frontdumpmaterials_stage1 default
+	// 2/3Soul - added entities of frontdumpmaterials_stage2 and frontdump_toi , and set states to default
+		setstate frontdumpmaterials_stage2 default
+		setstate frontdump_toi default
+	// 2/3Soul - added entities of frontdumpmaterials_stage2 and frontdump_toi , and set states to default
 		setstate frontdump1_trighurt invisible
 
 		// Some kind of UI pop-up to alert players
@@ -857,6 +1533,7 @@ frontdump
 	//-----------------------------------------------------------------------
 	// Stage 2 is BUILT
 	//-----------------------------------------------------------------------
+	// 2/3Soul - because of alterations to *built stage1*, this code never gets called
 	built final
 	{
 		setstate frontdumpmaterials_stage2 invisible
@@ -875,6 +1552,7 @@ frontdump
 		wm_removeteamvoiceannounce 0 "fueldump_axis_depotdef_construct"
 		// *---------------------------------------------------------------------------------*
 	}
+	// 2/3Soul - because of alterations to *built stage1*, this code never gets called
 
 	//-----------------------------------------------------------------------
 	// Stage 2 is DESTROYED, go back to stage 1
@@ -1024,6 +1702,89 @@ footbridge
 		wm_announce	"Axis team has destroyed the Foot Bridge!"
 	}
 }
+
+//----START----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+fdbridge
+{
+    spawn
+    {
+        wait 200        
+
+        faceangles 0 -47 2 1
+        constructible_class 3
+        constructible_chargebarreq 1.6
+        constructible_constructxpbonus 20
+
+        trigger fdbridge setup
+    }
+
+    trigger show_materials
+    {
+        setstate fdbridge_materials      default
+        setstate fdbridge_flag           default
+    }
+
+    trigger hide_materials
+    {
+        setstate fdbridge_materials      invisible
+        setstate fdbridge_flag           invisible
+    }
+
+    trigger show_fdbridge
+    {
+        setstate fdbridge        default
+    }
+
+    trigger hide_fdbridge
+    {
+        setstate fdbridge        invisible
+    }
+
+    trigger building_fdbridge
+    {
+        setstate fdbridge  underconstruction
+    }
+
+    trigger setup
+    {
+        setstate fdbridge_material_hurt invisible
+        trigger self hide_fdbridge
+        trigger self show_materials
+    }
+
+    buildstart final
+    {
+        trigger self building_fdbridge
+        trigger self show_materials
+    }
+
+    built final
+    {
+        trigger self show_fdbridge
+        trigger self hide_materials
+
+        wm_announce "^4***ALLIES: ^3The Allied Fueldump Assault Bridge has been constructed!^7"
+        wm_announce "^1***AXIS: ^3 DESTROY IT!"
+    }
+    decayed final
+    {
+        trigger self hide_fdbridge
+        trigger self show_materials
+    }
+
+
+    death
+    {
+        trigger self hide_fdbridge
+        trigger self show_materials
+        setstate fdbridge_material_hurt default
+        wait 10
+        setstate fdbridge_material_hurt invisible
+
+        wm_announce "^1AXIS ^)have destroyed the Allied Fueldump Assault Bridge!^7"
+     }
+}
+//----END----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
 
 // ============================================================================
 // Allied MG42 Nest - on Allied side of the map
@@ -1620,7 +2381,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_0
-		followspline 0 spln0 80 wait length -64
+		followspline 0 spln0 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1630,7 +2391,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_1
-		followspline 0 spln1 80 wait length -64
+		followspline 0 spln1 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1640,7 +2401,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_2
-		followspline 0 spln2 80 wait length -64
+		followspline 0 spln2 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1657,7 +2418,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln3 80 wait length -64
+		followspline 0 spln3 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1671,7 +2432,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_4
-		followspline 0 spln4 80 wait length -64
+		followspline 0 spln4 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1688,7 +2449,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln5 80 wait length -64
+		followspline 0 spln5 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1702,7 +2463,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_6
-		followspline 0 spln6 80 wait length -64
+		followspline 0 spln6 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1712,7 +2473,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_7
-		followspline 0 spln7 80 wait length -64
+		followspline 0 spln7 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1722,7 +2483,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_8
-		followspline 0 spln8 80 wait length -64
+		followspline 0 spln8 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1739,7 +2500,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln9 80 wait length -64
+		followspline 0 spln9 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1760,7 +2521,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln10 80 wait length -64
+		followspline 0 spln10 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1774,7 +2535,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_11
-		followspline 0 spln11 80 wait length -64
+		followspline 0 spln11 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1784,7 +2545,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_12
-		followspline 0 spln12 80 wait length -64
+		followspline 0 spln12 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1801,8 +2562,8 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln13 80 wait length -64
-		followspline 0 spln14 80 wait length -64
+		followspline 0 spln13 125 wait length -64
+		followspline 0 spln14 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1817,7 +2578,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_15
-		followspline 0 spln15 80 wait length -64
+		followspline 0 spln15 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1827,7 +2588,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_16
-		followspline 0 spln16 80 wait length -64
+		followspline 0 spln16 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1837,7 +2598,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_17
-		followspline 0 spln17 80 wait length -64
+		followspline 0 spln17 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1854,7 +2615,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln18 80 wait length -64
+		followspline 0 spln18 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1868,7 +2629,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_19
-		followspline 0 spln19 80 wait length -64
+		followspline 0 spln19 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1878,7 +2639,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_20
-		followspline 0 spln20 80 wait length -64
+		followspline 0 spln20 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1888,7 +2649,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_21
-		followspline 0 spln21 80 wait length -64
+		followspline 0 spln21 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1898,7 +2659,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_22
-		followspline 0 spln22 80 wait length -64
+		followspline 0 spln22 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1908,7 +2669,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_23
-		followspline 0 spln23 80 wait length -64
+		followspline 0 spln23 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1925,7 +2686,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln24 80 wait length -64
+		followspline 0 spln24 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1939,7 +2700,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_25
-		followspline 0 spln25 80 wait length -64
+		followspline 0 spln25 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1956,7 +2717,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln26 80 wait length -64
+		followspline 0 spln26 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -1970,7 +2731,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_27
-		followspline 0 spln27 80 wait length -64
+		followspline 0 spln27 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -1987,7 +2748,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln28 80 wait length -64
+		followspline 0 spln28 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2001,7 +2762,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_29
-		followspline 0 spln29 80 wait length -64
+		followspline 0 spln29 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2011,7 +2772,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_30
-		followspline 0 spln30 80 wait length -64
+		followspline 0 spln30 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2028,7 +2789,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln31 80 wait length -64
+		followspline 0 spln31 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2045,7 +2806,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_32
-		followspline 0 spln32 80 wait length -64
+		followspline 0 spln32 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self		script_lockout
@@ -2061,13 +2822,19 @@ tank
 		trigger self run_incpos
 
 		trigger tank_turret turn4 // will break the lockout
+// harlekin set autospawn to river hut
+		 setstate alliedstart_wobj_new default
+		 setstate alliedrearspawn_new default
+     setautospawn "Allied Hut" 1
+     wm_announce	"^3Allied team has gained 3 spawns at the River Hut!"
+// harlekin set autospawn to river hut
 	}
 
 	trigger run_33
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_33
-		followspline 0 spln33 80 wait length -64
+		followspline 0 spln33 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2077,7 +2844,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_34
-		followspline 0 spln34 80 wait length -64
+		followspline 0 spln34 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2090,12 +2857,12 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_35
-		followspline 0 spln35 80 wait length -64
-		followspline 0 spln36 80 wait length -64
-		followspline 0 spln37 80 wait length -64
-		followspline 0 spln38 80 wait length -64
-		followspline 0 spln39 80 wait length -64
-		followspline 0 spln40 80 wait length -64
+		followspline 0 spln35 125 wait length -64
+		followspline 0 spln36 125 wait length -64
+		followspline 0 spln37 125 wait length -64
+		followspline 0 spln38 125 wait length -64
+		followspline 0 spln39 125 wait length -64
+		followspline 0 spln40 125 wait length -64
 		accum 1 bitreset 2
 
 		// setup sounds
@@ -2108,7 +2875,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_36
-		followspline 0 spln41 80 wait length -64
+		followspline 0 spln41 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2118,7 +2885,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_37
-		followspline 0 spln42 80 wait length -64
+		followspline 0 spln42 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2128,7 +2895,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_38
-		followspline 0 spln43 80 wait length -64
+		followspline 0 spln43 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2138,7 +2905,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_39
-		followspline 0 spln44 80 wait length -64
+		followspline 0 spln44 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2148,7 +2915,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_40
-		followspline 0 spln45 80 wait length -64
+		followspline 0 spln45 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2161,7 +2928,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_41
-		followspline 0 spln46 80 wait length -64
+		followspline 0 spln46 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self		script_lockout
@@ -2186,8 +2953,8 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln47 80 wait length -64
-		followspline 0 spln48 80 wait length -64
+		followspline 0 spln47 125 wait length -64
+		followspline 0 spln48 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2202,7 +2969,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_44
-		followspline 0 spln49 80 wait length -64
+		followspline 0 spln49 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2212,7 +2979,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_45
-		followspline 0 spln50 80 wait length -64
+		followspline 0 spln50 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2222,7 +2989,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_46
-		followspline 0 spln51 80 wait length -64
+		followspline 0 spln51 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2232,7 +2999,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_47
-		followspline 0 spln52 80 wait length -64
+		followspline 0 spln52 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2242,7 +3009,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_48
-		followspline 0 spln53 80 wait length -64
+		followspline 0 spln53 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2252,7 +3019,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_49
-		followspline 0 spln54 80 wait length -64
+		followspline 0 spln54 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2262,7 +3029,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_50
-		followspline 0 spln55 80 wait length -64
+		followspline 0 spln55 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2272,7 +3039,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_51
-		followspline 0 spln56 80 wait length -64
+		followspline 0 spln56 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2282,7 +3049,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_52
-		followspline 0 spln57 80 wait length -64
+		followspline 0 spln57 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2292,7 +3059,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_53
-		followspline 0 spln58 80 wait length -64
+		followspline 0 spln58 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2302,7 +3069,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_54
-		followspline 0 spln59 80 wait length -64
+		followspline 0 spln59 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2312,7 +3079,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_55
-		followspline 0 spln60 80 wait length -64
+		followspline 0 spln60 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2322,7 +3089,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_56
-		followspline 0 spln61 80 wait length -64
+		followspline 0 spln61 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2332,7 +3099,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_57
-		followspline 0 spln62 80 wait length -64
+		followspline 0 spln62 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2342,7 +3109,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_58
-		followspline 0 spln63 80 wait length -64
+		followspline 0 spln63 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2352,7 +3119,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_59
-		followspline 0 spln64 80 wait length -64
+		followspline 0 spln64 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2369,8 +3136,8 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln65 80 wait length -64 roll 0 -1 dampout
-		followspline 0 tunnel1 80 wait length -64 roll -1 5 dampin dampout
+		followspline 0 spln65 125 wait length -64 roll 0 -1 dampout
+		followspline 0 tunnel1 125 wait length -64 roll -1 5 dampin dampout
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2386,8 +3153,8 @@ tank
 		accum 1 bitset 2
 		trigger tank_turret2 run_62
 
-		followspline 0 tunnel2 80 wait length -64 roll 4 1 dampout
-		followspline 0 tunnel3 80 wait length -64 roll 5 -5 dampin
+		followspline 0 tunnel2 125 wait length -64 roll 4 1 dampout
+		followspline 0 tunnel3 125 wait length -64 roll 5 -5 dampin
 
 		accum 1 bitreset 2
 		trigger self run_incpos
@@ -2398,7 +3165,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_64
-		followspline 0 tunnel4 80 wait length -64
+		followspline 0 tunnel4 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2414,21 +3181,32 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 tunnel5 80 wait length -64
+		followspline 0 tunnel5 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
 		trigger self 		tracks_forward
 
+    trigger self run_incpos
+
 		accum 1 bitreset 2
-		trigger self run_continue
+
+    trigger self                 tracks_stop
+    trigger tank_sound           stop
+
+    startanimation 45         10         15 nolerp norandom
+    wait 666
+    startanimation 0         1         15 nolerp norandom
+    wait 900
+
+		//trigger self run_continue
 	}
 
 	trigger run_66
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_66
-		followspline 0 tunnel6 80 wait length -64
+		followspline 0 tunnel6 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2438,7 +3216,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_67
-		followspline 0 tunnel7 80 wait length -64
+		followspline 0 tunnel7 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2455,7 +3233,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 tunnel8 80 wait length -64
+		followspline 0 tunnel8 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2469,7 +3247,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_69
-		followspline 0 tunnel9 80 wait length -64 roll 0 1 dampout
+		followspline 0 tunnel9 125 wait length -64 roll 0 1 dampout
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2479,7 +3257,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_70
-		followspline 0 tunnel10 80 wait length -64 roll 1 4 dampin
+		followspline 0 tunnel10 125 wait length -64 roll 1 4 dampin
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2489,7 +3267,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_71
-		followspline 0 tunnel11 80 wait length -64 roll 5 1 dampin
+		followspline 0 tunnel11 125 wait length -64 roll 5 1 dampin
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2502,12 +3280,12 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_72
-		followspline 0 tunnel12 80 wait length -64 roll 6 -4 dampin
+		followspline 0 tunnel12 125 wait length -64 roll 6 -4 dampin
 
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln66 80 wait length -64 roll 2 -2 dampin dampout
+		followspline 0 spln66 125 wait length -64 roll 2 -2 dampin dampout
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2522,7 +3300,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_74
-		followspline 0 spln67 80 wait length -64
+		followspline 0 spln67 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2532,7 +3310,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_75
-		followspline 0 spln68 80 wait length -64
+		followspline 0 spln68 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2542,7 +3320,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_76
-		followspline 0 spln69 80 wait length -64
+		followspline 0 spln69 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2552,7 +3330,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_77
-		followspline 0 spln70 80 wait length -64
+		followspline 0 spln70 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2562,7 +3340,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_78
-		followspline 0 spln71 80 wait length -64
+		followspline 0 spln71 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2572,8 +3350,12 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_79
-		followspline 0 spln72 80 wait length -64
+		followspline 0 spln72 125 wait length -64
 		accum 1 bitreset 2
+		setautospawn "Garage HQ" 1
+		setautospawn "Axis Fuel Dump" 0
+		wm_announce "The Allies have exited the tunnel!" 
+		wm_announce "The Allies are attempting to send in reinforcements from the command post!"
 
 		trigger self run_continue
 	}
@@ -2582,7 +3364,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_80
-		followspline 0 spln73 80 wait length -64
+		followspline 0 spln73 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2592,7 +3374,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_81
-		followspline 0 spln74 80 wait length -64
+		followspline 0 spln74 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2602,7 +3384,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_82
-		followspline 0 spln75 80 wait length -64
+		followspline 0 spln75 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2612,7 +3394,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_83
-		followspline 0 spln76 80 wait length -64
+		followspline 0 spln76 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2622,7 +3404,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_84
-		followspline 0 spln77 80 wait length -64
+		followspline 0 spln77 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2632,7 +3414,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_85
-		followspline 0 spln78 80 wait length -64
+		followspline 0 spln78 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2642,7 +3424,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_86
-		followspline 0 spln79 80 wait length -64
+		followspline 0 spln79 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2652,7 +3434,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_87
-		followspline 0 spln80 80 wait length -64
+		followspline 0 spln80 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2662,7 +3444,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_88
-		followspline 0 spln81 80 wait length -64
+		followspline 0 spln81 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2672,7 +3454,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_89
-		followspline 0 spln82 80 wait length -64
+		followspline 0 spln82 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2682,7 +3464,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_90
-		followspline 0 spln83 80 wait length -64
+		followspline 0 spln83 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2692,7 +3474,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_91
-		followspline 0 spln84 80 wait length -64
+		followspline 0 spln84 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2702,7 +3484,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_92
-		followspline 0 spln85 80 wait length -64
+		followspline 0 spln85 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2715,7 +3497,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_93
-		followspline 0 spln86 80 wait length -64
+		followspline 0 spln86 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self		script_lockout
@@ -2759,7 +3541,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_95
-		followspline 0 spln2_0 80 wait length -64
+		followspline 0 spln2_0 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2769,7 +3551,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_96
-		followspline 0 spln2_1 80 wait length -64
+		followspline 0 spln2_1 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2779,7 +3561,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_97
-		followspline 0 spln2_2 80 wait length -64
+		followspline 0 spln2_2 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2796,7 +3578,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln2_3 80 wait length -64
+		followspline 0 spln2_3 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2810,7 +3592,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_99
-		followspline 0 spln2_4 80 wait length -64
+		followspline 0 spln2_4 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2820,7 +3602,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_100
-		followspline 0 spln2_5 80 wait length -64
+		followspline 0 spln2_5 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2830,7 +3612,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_101
-		followspline 0 spln2_6 80 wait length -64
+		followspline 0 spln2_6 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2840,7 +3622,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_102
-		followspline 0 spln2_7 80 wait length -64
+		followspline 0 spln2_7 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2850,7 +3632,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_103
-		followspline 0 spln2_8 80 wait length -64
+		followspline 0 spln2_8 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2867,7 +3649,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln2_9 80 wait length -64
+		followspline 0 spln2_9 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2881,7 +3663,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_105
-		followspline 0 spln2_10 80 wait length -64
+		followspline 0 spln2_10 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2891,7 +3673,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_106
-		followspline 0 spln2_11 80 wait length -64
+		followspline 0 spln2_11 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2901,7 +3683,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_107
-		followspline 0 spln2_12 80 wait length -64
+		followspline 0 spln2_12 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2918,7 +3700,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningright
 
-		followspline 0 spln2_13 80 wait length -64
+		followspline 0 spln2_13 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -2932,7 +3714,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_109
-		followspline 0 spln2_14 80 wait length -64
+		followspline 0 spln2_14 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2942,7 +3724,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_110
-		followspline 0 spln2_15 80 wait length -64
+		followspline 0 spln2_15 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2952,7 +3734,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_111
-		followspline 0 spln2_16 80 wait length -64
+		followspline 0 spln2_16 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2962,7 +3744,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_112
-		followspline 0 spln2_17 80 wait length -64
+		followspline 0 spln2_17 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2972,7 +3754,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_113
-		followspline 0 spln2_18 80 wait length -64
+		followspline 0 spln2_18 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2982,7 +3764,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_114
-		followspline 0 spln2_19 80 wait length -64
+		followspline 0 spln2_19 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -2992,7 +3774,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_115
-		followspline 0 spln2_20 80 wait length -64
+		followspline 0 spln2_20 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3002,7 +3784,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_116
-		followspline 0 spln2_21 80 wait length -64
+		followspline 0 spln2_21 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3012,7 +3794,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_117
-		followspline 0 spln2_22 80 wait length -64
+		followspline 0 spln2_22 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3022,7 +3804,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_118
-		followspline 0 spln2_23 80 wait length -64
+		followspline 0 spln2_23 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3032,7 +3814,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_119
-		followspline 0 spln2_24 80 wait length -64
+		followspline 0 spln2_24 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3042,7 +3824,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_120
-		followspline 0 spln2_25 80 wait length -64
+		followspline 0 spln2_25 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3059,7 +3841,7 @@ tank
 		// Start tracks turning in opp directions
 		trigger self 		tracks_turningleft
 
-		followspline 0 spln2_26 80 wait length -64
+		followspline 0 spln2_26 125 wait length -64
 
 		// Reset tracks back to forward motion
 		accum 1 bitreset 5
@@ -3073,7 +3855,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_122
-		followspline 0 spln2_27 80 wait length -64
+		followspline 0 spln2_27 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3083,7 +3865,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_123
-		followspline 0 spln2_28 80 wait length -64
+		followspline 0 spln2_28 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3093,7 +3875,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_124
-		followspline 0 spln2_29 80 wait length -64
+		followspline 0 spln2_29 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3103,7 +3885,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_125
-		followspline 0 spln2_30 80 wait length -64
+		followspline 0 spln2_30 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3113,7 +3895,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_126
-		followspline 0 spln2_31 80 wait length -64
+		followspline 0 spln2_31 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3123,7 +3905,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_127
-		followspline 0 spln2_32 80 wait length -64
+		followspline 0 spln2_32 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3133,7 +3915,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_128
-		followspline 0 spln2_33 80 wait length -64
+		followspline 0 spln2_33 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3143,7 +3925,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_129
-		followspline 0 spln2_35 80 wait length -64
+		followspline 0 spln2_35 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3153,7 +3935,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_130
-		followspline 0 spln2_36 80 wait length -64
+		followspline 0 spln2_36 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3163,7 +3945,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_131
-		followspline 0 spln2_37 80 wait length -64
+		followspline 0 spln2_37 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3173,7 +3955,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_132
-		followspline 0 spln2_38 80 wait length -64
+		followspline 0 spln2_38 125 wait length -64
 		accum 1 bitreset 2
 
 		trigger self run_continue
@@ -3183,7 +3965,7 @@ tank
 	{
 		accum 1 bitset 2
 		trigger tank_turret2 run_133
-		followspline 0 spln2_39 80 wait length -64 roll 0 -1 dampin dampout
+		followspline 0 spln2_39 125 wait length -64 roll 0 -1 dampin dampout
 		accum 1 bitreset 2
 
 		trigger self		script_lockout
@@ -3256,8 +4038,9 @@ tank
 	trigger stopcheck_setup
 	{
 		accum 1 bitset 6			// stop if we're stuck/no-one's pushing :)
-
-		accum 1 abort_if_bitset 8		// no one in the trigger, abort
+    //Tank Autopilot
+		//accum 1 abort_if_bitset 8		// no one in the trigger, abort
+    //Tank Autopilot
 
 		trigger self stuck_check		// call the stop check function
 		accum 1 abort_if_bitset 3		// we're stuck so break out
@@ -3774,173 +4557,173 @@ tank_turret2
 	//-----------------------------------------------------------------------
 	trigger run_0
 	{
-		followspline 0 spln0 80 wait length -64
+		followspline 0 spln0 125 wait length -64
 	}
 
 	trigger run_1
 	{
-		followspline 0 spln1 80 wait length -64
+		followspline 0 spln1 125 wait length -64
 	}
 
 	trigger run_2
 	{
-		followspline 0 spln2 80 wait length -64
+		followspline 0 spln2 125 wait length -64
 	}
 
 	trigger run_3
 	{
-		followspline 0 spln3 80 wait length -64
+		followspline 0 spln3 125 wait length -64
 	}
 
 	trigger run_4
 	{
-		followspline 0 spln4 80 wait length -64
+		followspline 0 spln4 125 wait length -64
 	}
 
 	trigger run_5
 	{
-		followspline 0 spln5 80 wait length -64
+		followspline 0 spln5 125 wait length -64
 	}
 
 	trigger run_6
 	{
-		followspline 0 spln6 80 wait length -64
+		followspline 0 spln6 125 wait length -64
 	}
 
 	trigger run_7
 	{
-		followspline 0 spln7 80 wait length -64
+		followspline 0 spln7 125 wait length -64
 	}
 
 	trigger run_8
 	{
-		followspline 0 spln8 80 wait length -64
+		followspline 0 spln8 125 wait length -64
 	}
 
 	trigger run_9
 	{
-		followspline 0 spln9 80 wait length -64
+		followspline 0 spln9 125 wait length -64
 	}
 
 	trigger run_10
 	{
-		followspline 0 spln10 80 wait length -64
+		followspline 0 spln10 125 wait length -64
 	}
 
 	trigger run_11
 	{
-		followspline 0 spln11 80 wait length -64
+		followspline 0 spln11 125 wait length -64
 	}
 
 	trigger run_12
 	{
-		followspline 0 spln12 80 wait length -64
+		followspline 0 spln12 125 wait length -64
 	}
 
 	trigger run_13
 	{
-		followspline 0 spln13 80 wait length -64
-		followspline 0 spln14 80 wait length -64
+		followspline 0 spln13 125 wait length -64
+		followspline 0 spln14 125 wait length -64
 	}
 
 	trigger run_15
 	{
-		followspline 0 spln15 80 wait length -64
+		followspline 0 spln15 125 wait length -64
 	}
 
 	trigger run_16
 	{
-		followspline 0 spln16 80 wait length -64
+		followspline 0 spln16 125 wait length -64
 	}
 
 	trigger run_17
 	{
-		followspline 0 spln17 80 wait length -64
+		followspline 0 spln17 125 wait length -64
 	}
 
 	trigger run_18
 	{
-		followspline 0 spln18 80 wait length -64
+		followspline 0 spln18 125 wait length -64
 	}
 
 	trigger run_19
 	{
-		followspline 0 spln19 80 wait length -64
+		followspline 0 spln19 125 wait length -64
 	}
 
 	trigger run_20
 	{
-		followspline 0 spln20 80 wait length -64
+		followspline 0 spln20 125 wait length -64
 	}
 
 	trigger run_21
 	{
-		followspline 0 spln21 80 wait length -64
+		followspline 0 spln21 125 wait length -64
 	}
 
 	trigger run_22
 	{
-		followspline 0 spln22 80 wait length -64
+		followspline 0 spln22 125 wait length -64
 	}
 
 	trigger run_23
 	{
-		followspline 0 spln23 80 wait length -64
+		followspline 0 spln23 125 wait length -64
 	}
 
 	trigger run_24
 	{
-		followspline 0 spln24 80 wait length -64
+		followspline 0 spln24 125 wait length -64
 	}
 
 	trigger run_25
 	{
-		followspline 0 spln25 80 wait length -64
+		followspline 0 spln25 125 wait length -64
 	}
 
 	trigger run_26
 	{
-		followspline 0 spln26 80 wait length -64
+		followspline 0 spln26 125 wait length -64
 	}
 
 	trigger run_27
 	{
-		followspline 0 spln27 80 wait length -64
+		followspline 0 spln27 125 wait length -64
 	}
 
 	trigger run_28
 	{
-		followspline 0 spln28 80 wait length -64
+		followspline 0 spln28 125 wait length -64
 	}
 
 	trigger run_29
 	{
-		followspline 0 spln29 80 wait length -64
+		followspline 0 spln29 125 wait length -64
 	}
 
 	trigger run_30
 	{
-		followspline 0 spln30 80 wait length -64
+		followspline 0 spln30 125 wait length -64
 	}
 
 	trigger run_31
 	{
-		followspline 0 spln31 80 wait length -64
+		followspline 0 spln31 125 wait length -64
 	}
 
 	trigger run_32
 	{
-		followspline 0 spln32 80 wait length -64
+		followspline 0 spln32 125 wait length -64
 	}
 
 	trigger run_33
 	{
-		followspline 0 spln33 80 wait length -64
+		followspline 0 spln33 125 wait length -64
 	}
 
 	trigger run_34
 	{
-		followspline 0 spln34 80 wait length -64
+		followspline 0 spln34 125 wait length -64
 	}
 
 	//-----------------------------------------------------------------------
@@ -3948,281 +4731,281 @@ tank_turret2
 	//-----------------------------------------------------------------------
 	trigger run_35
 	{
-		followspline 0 spln35 80 wait length -64
-		followspline 0 spln36 80 wait length -64
-		followspline 0 spln37 80 wait length -64
-		followspline 0 spln38 80 wait length -64
-		followspline 0 spln39 80 wait length -64
-		followspline 0 spln40 80 wait length -64
+		followspline 0 spln35 125 wait length -64
+		followspline 0 spln36 125 wait length -64
+		followspline 0 spln37 125 wait length -64
+		followspline 0 spln38 125 wait length -64
+		followspline 0 spln39 125 wait length -64
+		followspline 0 spln40 125 wait length -64
 	}
 
 	trigger run_36
 	{
-		followspline 0 spln41 80 wait length -64
+		followspline 0 spln41 125 wait length -64
 	}
 
 	trigger run_37
 	{
-		followspline 0 spln42 80 wait length -64
+		followspline 0 spln42 125 wait length -64
 	}
 
 	trigger run_38
 	{
-		followspline 0 spln43 80 wait length -64
+		followspline 0 spln43 125 wait length -64
 	}
 
 	trigger run_39
 	{
-		followspline 0 spln44 80 wait length -64
+		followspline 0 spln44 125 wait length -64
 	}
 
 	trigger run_40
 	{
-		followspline 0 spln45 80 wait length -64
+		followspline 0 spln45 125 wait length -64
 	}
 
 	trigger run_41
 	{
-		followspline 0 spln46 80 wait length -64
+		followspline 0 spln46 125 wait length -64
 	}
 
 	trigger run_42
 	{
-		followspline 0 spln47 80 wait length -64
-		followspline 0 spln48 80 wait length -64
+		followspline 0 spln47 125 wait length -64
+		followspline 0 spln48 125 wait length -64
 	}
 
 	trigger run_44
 	{
-		followspline 0 spln49 80 wait length -64
+		followspline 0 spln49 125 wait length -64
 	}
 
 	trigger run_45
 	{
-		followspline 0 spln50 80 wait length -64
+		followspline 0 spln50 125 wait length -64
 	}
 
 	trigger run_46
 	{
-		followspline 0 spln51 80 wait length -64
+		followspline 0 spln51 125 wait length -64
 	}
 
 	trigger run_47
 	{
-		followspline 0 spln52 80 wait length -64
+		followspline 0 spln52 125 wait length -64
 	}
 
 	trigger run_48
 	{
-		followspline 0 spln53 80 wait length -64
+		followspline 0 spln53 125 wait length -64
 	}
 
 	trigger run_49
 	{
-		followspline 0 spln54 80 wait length -64
+		followspline 0 spln54 125 wait length -64
 	}
 
 	trigger run_50
 	{
-		followspline 0 spln55 80 wait length -64
+		followspline 0 spln55 125 wait length -64
 	}
 
 	trigger run_51
 	{
-		followspline 0 spln56 80 wait length -64
+		followspline 0 spln56 125 wait length -64
 	}
 
 	trigger run_52
 	{
-		followspline 0 spln57 80 wait length -64
+		followspline 0 spln57 125 wait length -64
 	}
 
 	trigger run_53
 	{
-		followspline 0 spln58 80 wait length -64
+		followspline 0 spln58 125 wait length -64
 	}
 
 	trigger run_54
 	{
-		followspline 0 spln59 80 wait length -64
+		followspline 0 spln59 125 wait length -64
 	}
 
 	trigger run_55
 	{
-		followspline 0 spln60 80 wait length -64
+		followspline 0 spln60 125 wait length -64
 	}
 
 	trigger run_56
 	{
-		followspline 0 spln61 80 wait length -64
+		followspline 0 spln61 125 wait length -64
 	}
 
 	trigger run_57
 	{
-		followspline 0 spln62 80 wait length -64
+		followspline 0 spln62 125 wait length -64
 	}
 
 	trigger run_58
 	{
-		followspline 0 spln63 80 wait length -64
+		followspline 0 spln63 125 wait length -64
 	}
 
 	trigger run_59
 	{
-		followspline 0 spln64 80 wait length -64
+		followspline 0 spln64 125 wait length -64
 	}
 
 	trigger run_60
 	{
-		followspline 0 spln65 80 wait length -64 roll 0 -1 dampout
-		followspline 0 tunnel1 80 wait length -64 roll -1 5 dampin dampout
+		followspline 0 spln65 125 wait length -64 roll 0 -1 dampout
+		followspline 0 tunnel1 125 wait length -64 roll -1 5 dampin dampout
 	}
 
 	trigger run_62
 	{
-		followspline 0 tunnel2 80 wait length -64 roll 4 1 dampout
-		followspline 0 tunnel3 80 wait length -64 roll 5 -5 dampin
+		followspline 0 tunnel2 125 wait length -64 roll 4 1 dampout
+		followspline 0 tunnel3 125 wait length -64 roll 5 -5 dampin
 	}
 
 	trigger run_64
 	{
-		followspline 0 tunnel4 80 wait length -64
+		followspline 0 tunnel4 125 wait length -64
 	}
 
 	trigger run_65
 	{
-		followspline 0 tunnel5 80 wait length -64
+		followspline 0 tunnel5 125 wait length -64
 	}
 
 	trigger run_66
 	{
-		followspline 0 tunnel6 80 wait length -64
+		followspline 0 tunnel6 125 wait length -64
 	}
 
 	trigger run_67
 	{
-		followspline 0 tunnel7 80 wait length -64
+		followspline 0 tunnel7 125 wait length -64
 	}
 
 	trigger run_68
 	{
-		followspline 0 tunnel8 80 wait length -64
+		followspline 0 tunnel8 125 wait length -64
 	}
 
 	trigger run_69
 	{
-		followspline 0 tunnel9 80 wait length -64 roll 0 1 dampout
+		followspline 0 tunnel9 125 wait length -64 roll 0 1 dampout
 	}
 
 	trigger run_70
 	{
-		followspline 0 tunnel10 80 wait length -64 roll 1 4 dampin
+		followspline 0 tunnel10 125 wait length -64 roll 1 4 dampin
 	}
 
 	trigger run_71
 	{
-		followspline 0 tunnel11 80 wait length -64 roll 5 1 dampin
+		followspline 0 tunnel11 125 wait length -64 roll 5 1 dampin
 	}
 
 	trigger run_72
 	{
-		followspline 0 tunnel12 80 wait length -64 roll 6 -4 dampin
-		followspline 0 spln66 80 wait length -64 roll -2 2 dampin dampout
+		followspline 0 tunnel12 125 wait length -64 roll 6 -4 dampin
+		followspline 0 spln66 125 wait length -64 roll -2 2 dampin dampout
 	}
 
 	trigger run_74
 	{
-		followspline 0 spln67 80 wait length -64
+		followspline 0 spln67 125 wait length -64
 	}
 
 	trigger run_75
 	{
-		followspline 0 spln68 80 wait length -64
+		followspline 0 spln68 125 wait length -64
 	}
 
 	trigger run_76
 	{
-		followspline 0 spln69 80 wait length -64
+		followspline 0 spln69 125 wait length -64
 	}
 
 	trigger run_77
 	{
-		followspline 0 spln70 80 wait length -64
+		followspline 0 spln70 125 wait length -64
 	}
 
 	trigger run_78
 	{
-		followspline 0 spln71 80 wait length -64
+		followspline 0 spln71 125 wait length -64
 	}
 
 	trigger run_79
 	{
-		followspline 0 spln72 80 wait length -64
+		followspline 0 spln72 125 wait length -64
 	}
 
 	trigger run_80
 	{
-		followspline 0 spln73 80 wait length -64
+		followspline 0 spln73 125 wait length -64
 	}
 
 	trigger run_81
 	{
-		followspline 0 spln74 80 wait length -64
+		followspline 0 spln74 125 wait length -64
 	}
 
 	trigger run_82
 	{
-		followspline 0 spln75 80 wait length -64
+		followspline 0 spln75 125 wait length -64
 	}
 
 	trigger run_83
 	{
-		followspline 0 spln76 80 wait length -64
+		followspline 0 spln76 125 wait length -64
 	}
 
 	trigger run_84
 	{
-		followspline 0 spln77 80 wait length -64
+		followspline 0 spln77 125 wait length -64
 	}
 
 	trigger run_85
 	{
-		followspline 0 spln78 80 wait length -64
+		followspline 0 spln78 125 wait length -64
 	}
 
 	trigger run_86
 	{
-		followspline 0 spln79 80 wait length -64
+		followspline 0 spln79 125 wait length -64
 	}
 
 	trigger run_87
 	{
-		followspline 0 spln80 80 wait length -64
+		followspline 0 spln80 125 wait length -64
 	}
 
 	trigger run_88
 	{
-		followspline 0 spln81 80 wait length -64
+		followspline 0 spln81 125 wait length -64
 	}
 
 	trigger run_89
 	{
-		followspline 0 spln82 80 wait length -64
+		followspline 0 spln82 125 wait length -64
 	}
 
 	trigger run_90
 	{
-		followspline 0 spln83 80 wait length -64
+		followspline 0 spln83 125 wait length -64
 	}
 
 	trigger run_91
 	{
-		followspline 0 spln84 80 wait length -64
+		followspline 0 spln84 125 wait length -64
 	}
 
 	trigger run_92
 	{
-		followspline 0 spln85 80 wait length -64
+		followspline 0 spln85 125 wait length -64
 	}
 
 	//-----------------------------------------------------------------------
@@ -4230,7 +5013,7 @@ tank_turret2
 	//-----------------------------------------------------------------------
 	trigger run_93
 	{
-		followspline 0 spln86 80 wait length -64
+		followspline 0 spln86 125 wait length -64
 	}
 
 	//-----------------------------------------------------------------------
@@ -4243,197 +5026,197 @@ tank_turret2
 
 	trigger run_95
 	{
-		followspline 0 spln2_0 80 wait length -64
+		followspline 0 spln2_0 125 wait length -64
 	}
 
 	trigger run_96
 	{
-		followspline 0 spln2_1 80 wait length -64
+		followspline 0 spln2_1 125 wait length -64
 	}
 
 	trigger run_97
 	{
-		followspline 0 spln2_2 80 wait length -64
+		followspline 0 spln2_2 125 wait length -64
 	}
 
 	trigger run_98
 	{
-		followspline 0 spln2_3 80 wait length -64
+		followspline 0 spln2_3 125 wait length -64
 	}
 
 	trigger run_99
 	{
-		followspline 0 spln2_4 80 wait length -64
+		followspline 0 spln2_4 125 wait length -64
 	}
 
 	trigger run_100
 	{
-		followspline 0 spln2_5 80 wait length -64
+		followspline 0 spln2_5 125 wait length -64
 	}
 
 	trigger run_101
 	{
-		followspline 0 spln2_6 80 wait length -64
+		followspline 0 spln2_6 125 wait length -64
 	}
 
 	trigger run_102
 	{
-		followspline 0 spln2_7 80 wait length -64
+		followspline 0 spln2_7 125 wait length -64
 	}
 
 	trigger run_103
 	{
-		followspline 0 spln2_8 80 wait length -64
+		followspline 0 spln2_8 125 wait length -64
 	}
 
 	trigger run_104
 	{
-		followspline 0 spln2_9 80 wait length -64
+		followspline 0 spln2_9 125 wait length -64
 	}
 
 	trigger run_105
 	{
-		followspline 0 spln2_10 80 wait length -64
+		followspline 0 spln2_10 125 wait length -64
 	}
 
 	trigger run_106
 	{
-		followspline 0 spln2_11 80 wait length -64
+		followspline 0 spln2_11 125 wait length -64
 	}
 
 	trigger run_107
 	{
-		followspline 0 spln2_12 80 wait length -64
+		followspline 0 spln2_12 125 wait length -64
 	}
 
 	trigger run_108
 	{
-		followspline 0 spln2_13 80 wait length -64
+		followspline 0 spln2_13 125 wait length -64
 	}
 
 	trigger run_109
 	{
-		followspline 0 spln2_14 80 wait length -64
+		followspline 0 spln2_14 125 wait length -64
 	}
 
 	trigger run_110
 	{
-		followspline 0 spln2_15 80 wait length -64
+		followspline 0 spln2_15 125 wait length -64
 	}
 
 	trigger run_111
 	{
-		followspline 0 spln2_16 80 wait length -64
+		followspline 0 spln2_16 125 wait length -64
 	}
 
 	trigger run_112
 	{
-		followspline 0 spln2_17 80 wait length -64
+		followspline 0 spln2_17 125 wait length -64
 	}
 
 	trigger run_113
 	{
-		followspline 0 spln2_18 80 wait length -64
+		followspline 0 spln2_18 125 wait length -64
 	}
 
 	trigger run_114
 	{
-		followspline 0 spln2_19 80 wait length -64
+		followspline 0 spln2_19 125 wait length -64
 	}
 
 	trigger run_115
 	{
-		followspline 0 spln2_20 80 wait length -64
+		followspline 0 spln2_20 125 wait length -64
 	}
 
 	trigger run_116
 	{
-		followspline 0 spln2_21 80 wait length -64
+		followspline 0 spln2_21 125 wait length -64
 	}
 
 	trigger run_117
 	{
-		followspline 0 spln2_22 80 wait length -64
+		followspline 0 spln2_22 125 wait length -64
 	}
 
 	trigger run_118
 	{
-		followspline 0 spln2_23 80 wait length -64
+		followspline 0 spln2_23 125 wait length -64
 	}
 
 	trigger run_119
 	{
-		followspline 0 spln2_24 80 wait length -64
+		followspline 0 spln2_24 125 wait length -64
 	}
 
 	trigger run_120
 	{
-		followspline 0 spln2_25 80 wait length -64
+		followspline 0 spln2_25 125 wait length -64
 	}
 
 	trigger run_121
 	{
-		followspline 0 spln2_26 80 wait length -64
+		followspline 0 spln2_26 125 wait length -64
 	}
 
 	trigger run_122
 	{
-		followspline 0 spln2_27 80 wait length -64
+		followspline 0 spln2_27 125 wait length -64
 	}
 
 	trigger run_123
 	{
-		followspline 0 spln2_28 80 wait length -64
+		followspline 0 spln2_28 125 wait length -64
 	}
 
 	trigger run_124
 	{
-		followspline 0 spln2_29 80 wait length -64
+		followspline 0 spln2_29 125 wait length -64
 	}
 
 	trigger run_125
 	{
-		followspline 0 spln2_30 80 wait length -64
+		followspline 0 spln2_30 125 wait length -64
 	}
 
 	trigger run_126
 	{
-		followspline 0 spln2_31 80 wait length -64
+		followspline 0 spln2_31 125 wait length -64
 	}
 
 	trigger run_127
 	{
-		followspline 0 spln2_32 80 wait length -64
+		followspline 0 spln2_32 125 wait length -64
 	}
 
 	trigger run_128
 	{
-		followspline 0 spln2_33 80 wait length -64
+		followspline 0 spln2_33 125 wait length -64
 	}
 
 	trigger run_129
 	{
-		followspline 0 spln2_35 80 wait length -64
+		followspline 0 spln2_35 125 wait length -64
 	}
 
 	trigger run_130
 	{
-		followspline 0 spln2_36 80 wait length -64
+		followspline 0 spln2_36 125 wait length -64
 	}
 
 	trigger run_131
 	{
-		followspline 0 spln2_37 80 wait length -64
+		followspline 0 spln2_37 125 wait length -64
 	}
 
 	trigger run_132
 	{
-		followspline 0 spln2_38 80 wait length -64
+		followspline 0 spln2_38 125 wait length -64
 	}
 
 	trigger run_133
 	{
-		followspline 0 spln2_39 80 wait length -64 roll 0 -1 dampin dampout
+		followspline 0 spln2_39 125 wait length -64 roll 0 -1 dampin dampout
 	}
 }
 
@@ -4520,6 +5303,8 @@ tbdoor1_trigger1
 	spawn
 	{
 		accum 3 set 0			// Initial state of lever. (0=down, 1=up)
+    trigger tbdoor1_trigger1 up
+
 	}
 	trigger main
 	{
@@ -4661,7 +5446,9 @@ tbdoor1-9
 		playsound sound/movers/misc/garage_door_start_01.wav volume 96
 		wait 50
 		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 512
-		followpath 1 tbdrspln1-3 50 wait length 16
+		//broke 1 gate
+		//followpath 1 tbdrspln1-3 50 wait length 16
+		//broke 1 gate
 		followpath 1 tbdrspln1-4 50 wait length 16
 		trigger tbflywheel1 stop	// Turn off flywheel
 		globalaccum 4 set 0		// Flexible door 1 has stopped moving
@@ -4676,7 +5463,9 @@ tbdoor1-9
 		wait 50
 		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 512
 		followpath 0 tbdrspln1-4 50 wait length 16
-		followpath 0 tbdrspln1-3 50 wait length 16
+		//broke 1 gate		
+		//followpath 0 tbdrspln1-3 50 wait length 16
+		//broke 1 gate
 		trigger tbflywheel1 stop	// Turn off flywheel
 		globalaccum 4 set 0		// Flexible door 1 has stopped moving
 		stopsound			// Kill all currently playing sounds belonging to this entity only
