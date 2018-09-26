@@ -12,6 +12,7 @@
 // mortis - Wed Jul 19 10:57:18 added 2 of arni's extra axis spawns + routine
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs
 // Harlekin - Fri Sept 19 2008 added Nullskillz Allied Hut Spawn
+// Harlekin - Timebonus
 // harlekin - added arni - 08.07.2006 - Tank drives alone
 // harlekin - added arni - 09.07.2006 - Broke one garage gate to only close half way
 // harlekin - disable rear allied spawns completely after allied team has breached the Tunnel Doors
@@ -19,12 +20,188 @@
 // Harlekin - added StinVec Assault Bridge for Axis in Fueldump
 // Harlekin - added 2 spawns at axis cp
 // Harlekin - added Health & Ammo @ allied cp & @ axis second spawn.
-// x0rnn - corrected "fueljump1" playerclip so it actually works
+// x0rnn - fixed arni's "fueljump1" anti-trickjump playerclip
+// x0rnn - Allies spawn in the tunnel instead of the "Tunnel Store Room" after Depot Gate is destroyed
 
 game_manager
 {
 	spawn
 	{
+		// allied tunnel spawn
+		create
+		{
+			classname "team_WOLF_objective"
+			scriptname "alliedtunnelspawn"
+			targetname "alliedtunnelspawn"
+			origin "-6518 -1692 392"
+			spawnflags 2
+			description "Tunnel Spawn"
+		}
+
+		// allied spawn #1
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns1"
+			origin "-6409 -1259 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #2
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns2"
+			origin "-6432 -1353 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #3
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns3"
+			origin "-6290 -1199 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #4
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns4"
+			origin "-6133 -1239 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #5
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns5"
+			origin "-6033 -1254 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #6
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns6"
+			origin "-5951 -1278 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #7
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns7"
+			origin "-5972 -1373 352"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #8
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns8"
+			origin "-6041 -1362 384"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #9
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns9"
+			origin "-6077 -1441 384"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #10
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns10"
+			origin "-5981 -1470 384"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied spawn #11
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns11"
+			origin "-5820 -1317 384"
+			spawnflags 2
+			angle "180"
+		}
+
+		// allied spawn #12
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns12"
+			origin "-5816 -1438 384"
+			spawnflags 2
+			angle "180"
+		}
+
+		// allied spawn #13
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns13"
+			origin "-5808 -1532 384"
+			spawnflags 2
+			angle "180"
+		}
+
+		// allied spawn #14
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns14"
+			origin "-5819 -1630 384"
+			spawnflags 2
+			angle "180"
+		}
+
+		// allied spawn #15
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedtunnelspawns"
+			scriptName "alliedtunnelspawns15"
+			origin "-5825 -1721 384"
+			spawnflags 2
+			angle "180"
+		}
 
 //----START----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
         create
@@ -552,6 +729,17 @@ game_manager
 			classname "team_CTF_bluespawn"
 			angle "90"
 		}
+
+		create
+		{
+			spawnflags "3"
+			scriptname "alliedrearspawn_new"
+			targetname "alliedrearspawn_new"
+			origin "-3293 -8332 416"
+			classname "team_CTF_bluespawn"
+			angle "90"
+		}
+
 		       setstate alliedstart_wobj_new invisible
 		       setstate alliedrearspawn_new invisible
 		// ----- Allied Hut Spawn END -----
@@ -614,6 +802,10 @@ game_manager
 
 		wm_teamvoiceannounce 1 "fueldump_allies_bridge_construct"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3Initial Map time 12 min"
+		wm_announce "^3Timebonus: +8 min Tunnel Door, +5 min Depot Gate & +3 min Depot Side Wall"
+		// ----- Harlekin Timebonus Announce -----
 	}
 
 
@@ -632,6 +824,18 @@ game_manager
 	{
 		wm_announce	"Allied team has breached the Tunnel Doors!"
 		setstate tunneldoor_toi invisible
+		// ----- Harlekin Timebonus Tunnel Doors -----
+		wm_announce "^3+8 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		wm_announce "^3The Allies has to destroy the Depot Gate for 5 min extra time!"
+		// ----- Harlekin Timebonus Tunnel Doors -----
 
 		// rain - fixed axis spawn point
 		setautospawn "Tunnel Store Room" 1
@@ -665,7 +869,17 @@ game_manager
 	trigger objective3
 	{
 		wm_announce	"Allied team has breached the Depot Gates!"
+		trigger alliedtunnelspawn gate_breached
 		setstate depotgate_toi invisible
+		// ----- Harlekin Timebonus Depot Gate -----
+		wm_announce "^3+5 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		wm_announce "^3The Allies has to destroy the Depot Side Wall for 3 min extra time!"
+		// ----- Harlekin Timebonus Depot Gate -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "fueldump_axis_gates_destroyed"
@@ -723,6 +937,12 @@ game_manager
 	{
 		wm_announce	"Allied team has breached the Depot Side Wall!"
 		setstate depotsidewall_toi invisible
+		// ----- Harlekin Timebonus Depot Side Wall -----
+		wm_announce "^3+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Depot Side Wall -----
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "fueldump_axis_fueldump_defend"
 
@@ -740,6 +960,83 @@ game_manager
 		// mortis reduced waitstate
 		wait 100
 		wm_endround
+	}
+}
+
+alliedtunnelspawn
+{
+	spawn
+	{
+		accum 1 set 0
+		set
+		{
+			description "Tunnel Spawn"
+			message "Tunnel Spawn"
+		}
+		wait 50
+		setstate alliedtunnelspawn invisible
+		setstate alliedtunnelspawns invisible
+	}
+
+	trigger exiting_tunnel
+	{
+		accum 1 abort_if_bitset 0
+		accum 1 bitset 0
+		trigger self update
+	}
+
+	trigger allied_cp_built
+	{
+		accum 1 abort_if_bitset 1
+		accum 1 bitset 1
+		trigger self update
+	}
+
+	trigger allied_cp_destroyed
+	{
+		accum 1 abort_if_not_bitset 1
+		accum 1 bitreset 1
+		trigger self update
+	}
+
+	trigger gate_breached
+	{
+		accum 1 abort_if_bitset 2
+		accum 1 bitset 2
+		trigger self update
+	}
+	trigger update
+	{
+		accum 1 trigger_if_equal 0 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 1 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 2 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 3 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 4 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 5 alliedtunnelspawn enable_set_default
+		accum 1 trigger_if_equal 6 alliedtunnelspawn disable
+		accum 1 trigger_if_equal 7 alliedtunnelspawn enable_not_default
+	}
+
+	trigger disable
+	{
+		setstate alliedtunnelspawn invisible
+		setstate alliedtunnelspawns invisible
+	}
+
+	trigger enable_set_default
+	{
+		setstate alliedtunnelspawn default
+		setstate alliedtunnelspawns default
+		setautospawn "Tunnel Spawn" 1
+		setstate tunnel_wobj invisible
+	}
+
+	trigger enable_not_default
+	{
+		setstate alliedtunnelspawn default
+		setstate alliedtunnelspawns default
+		setautospawn "Garage HQ" 1
+		setstate tunnel_wobj invisible
 	}
 }
 
@@ -834,12 +1131,14 @@ cp_axis_obj
 	{               
 		setstate cp_axis_obj default
 		setstate cp_axis_spawn default
+		wm_announce "^1Axis CP Spawn enabled (2 positions availabe)!"
 	}
 
 	trigger off
 	{
 		setstate cp_axis_obj invisible
 		setstate cp_axis_spawn invisible
+		wm_announce "Axis CP Spawn disabled!"
 	}
 }
 // ----- Harlekin Extra AMMO @ ALLIED CP ----- End
@@ -1183,6 +1482,8 @@ allied_radio_built
 
 		//bani
 		trigger fueldumphq_obj on
+
+		trigger alliedtunnelspawn allied_cp_built
 	}
 
 	death
@@ -1195,6 +1496,8 @@ allied_radio_built
 
 		//bani
 		trigger fueldumphq_obj off
+
+		trigger alliedtunnelspawn allied_cp_destroyed
 	}
 }
 
@@ -2826,7 +3129,7 @@ tank
 		 setstate alliedstart_wobj_new default
 		 setstate alliedrearspawn_new default
      setautospawn "Allied Hut" 1
-     wm_announce	"^3Allied team has gained 3 spawns at the River Hut!"
+     wm_announce	"^3Allied team has gained 4 spawns at the River Hut!"
 // harlekin set autospawn to river hut
 	}
 
@@ -3356,6 +3659,8 @@ tank
 		setautospawn "Axis Fuel Dump" 0
 		wm_announce "The Allies have exited the tunnel!" 
 		wm_announce "The Allies are attempting to send in reinforcements from the command post!"
+
+		trigger alliedtunnelspawn exiting_tunnel
 
 		trigger self run_continue
 	}
