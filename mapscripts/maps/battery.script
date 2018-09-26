@@ -444,6 +444,29 @@ game_manager
             spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
             angle      "270"
         }
+        
+        // Harlekin - Roof over alies west beach spawn
+        create
+        {
+          scriptName "spawnroof1"
+          classname "func_fakebrush"
+          origin "544 -760 1000"
+          contents 1  // SOLID
+          mins "-380 -430 -44"
+          maxs "380 430 44"
+        }
+		
+        // Harlekin - Roof over alies east beach spawn
+
+        create
+        {
+          scriptName "spawnroof2"
+          classname "func_fakebrush"
+          origin "4565 -620 1000"
+          contents 1  // SOLID
+          mins "-580 -250 -44"
+          maxs "580 250 44"
+        }
 
         // Game rules
         wm_axis_respawntime    30
@@ -509,25 +532,25 @@ game_manager
         wait 2000
 
         // Ragnar: Make players aware of changes.
-        wm_announce "The server is running ^3Ragnars Battery Script^7."
-        wm_announce "Changes:"
-        wm_announce "* After Allies built the Beach Assault Ramp for the 5th time it can only be destroyed"
-        wm_announce "  by dynamite."
-        wm_announce "* Assault Ramp near the North-West MG Nest available (see the command map for location)."
-        wm_announce "  Allies can build the Bunker Assault Ramp by using the materials inside the bunker."
-        wm_announce "* Axis can rebuild the Backdoor."
-        wm_announce "  Allies need dynamite to destroy the Backdoor for the first time."
-        wm_announce "  For all subsequent attacks also satchels can be used."
-        wm_announce "* Axis can spawn near the backdoor as long as the Axis command post is built."
-        wm_announce "* Axis MG nests and the command post are built on map start."
-        wm_announce "* The Generator does not open or close the backdoor, only doors near the Gun and at the"
-        wm_announce "  bunker front close and open as usual."
-        wm_announce "* The MG42 nests in the East Bunker (near the Command Post) are removed."
-        wm_announce "* Frontline mod."
-        wm_announce "* Script includes all ETPro map script fixes."
-        wm_announce "* Script includes mortis' map fixes."
-        wm_announce "Check ^3http://forum.splatterladder.com/index.php?showtopic=6662^7 for feedback, updates"
-        wm_announce "and bug reports."
+        // wm_announce "The server is running ^3Ragnars Battery Script^7."
+        // wm_announce "Changes:"
+        // wm_announce "* After Allies built the Beach Assault Ramp for the 5th time it can only be destroyed"
+        // wm_announce "  by dynamite."
+        // wm_announce "* Assault Ramp near the North-West MG Nest available (see the command map for location)."
+        // wm_announce "  Allies can build the Bunker Assault Ramp by using the materials inside the bunker."
+        // wm_announce "* Axis can rebuild the Backdoor."
+        // wm_announce "  Allies need dynamite to destroy the Backdoor for the first time."
+        // wm_announce "  For all subsequent attacks also satchels can be used."
+        // wm_announce "* Axis can spawn near the backdoor as long as the Axis command post is built."
+        // wm_announce "* Axis MG nests and the command post are built on map start."
+        // wm_announce "* The Generator does not open or close the backdoor, only doors near the Gun and at the"
+        // wm_announce "  bunker front close and open as usual."
+        // wm_announce "* The MG42 nests in the East Bunker (near the Command Post) are removed."
+        // wm_announce "* Frontline mod."
+        // wm_announce "* Script includes all ETPro map script fixes."
+        // wm_announce "* Script includes mortis' map fixes."
+        // wm_announce "Check ^3http://forum.splatterladder.com/index.php?showtopic=6662^7 for feedback, updates"
+        // wm_announce "and bug reports."
 
         // *----------------------------------- vo ------------------------------------------*
         wm_teamvoiceannounce 1 "battery_allies_ramp_construct"
@@ -722,49 +745,28 @@ eastbeach_wobj
     {
         // The number of set bits indicates the position of the forward spawn.
         accum 7 trigger_if_equal 0 eastbeach_wobj set_default
-        accum 7 trigger_if_equal 1 eastbeach_wobj set_1     // 1 bit set.
-        accum 7 trigger_if_equal 2 eastbeach_wobj set_1     // 1 bit set.
-        accum 7 trigger_if_equal 3 eastbeach_wobj set_2     // 2 bits set.
-        accum 7 trigger_if_equal 4 eastbeach_wobj set_1     // 1 bit set.
-        accum 7 trigger_if_equal 5 eastbeach_wobj set_2     // 2 bits set.
-        accum 7 trigger_if_equal 6 eastbeach_wobj set_2     // 2 bits set.
+        accum 7 trigger_if_equal 1 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 2 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 3 eastbeach_wobj set_default     // 2 bits set.
+        accum 7 trigger_if_equal 4 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 5 eastbeach_wobj set_default     // 2 bits set.
+        accum 7 trigger_if_equal 6 eastbeach_wobj set_default     // 2 bits set.
         accum 7 trigger_if_equal 7 eastbeach_wobj set_3     // 3 bits set.
     }
 
     // Set back to default position.
     trigger set_default
     {
-        wm_announce "Enable default East Beach spawn for Allies."
-
-        setstate forward_spawns_1 invisible
-        setstate forward_spawns_2 invisible
-        setstate forward_spawns_3 invisible
-    }
-
-    // Set to lowest forward spawn.
-    trigger set_1
-    {
-        wm_announce "Enable Allied forward spawn 1."
-
-        setstate forward_spawns_1 default
-        setstate forward_spawns_2 invisible
-        setstate forward_spawns_3 invisible
-    }
-
-    // Set to middle forward spawn.
-    trigger set_2
-    {
-        wm_announce "Enable Allied forward spawn 2."
-
         setstate forward_spawns_1 default
         setstate forward_spawns_2 default
         setstate forward_spawns_3 invisible
     }
 
+
     // Set to top forward spawn.
     trigger set_3
     {
-        wm_announce "Enable Allied forward spawn 3."
+        wm_announce "Enabled Allied forward spawn."
 
         setstate forward_spawns_1 default
         setstate forward_spawns_2 default
@@ -912,8 +914,7 @@ westbunker_flag
 
      trigger write_color_ramp_note
      {
-        wm_announce "^1Note: ^3Allies can construct a Bunker Assault Ramp. The materials to do so are inside the bunker"
-        wm_announce "      ^3near the North-West MG (check command map). Axis can destroy it with satchel or dynamite."
+        wm_announce "Allies can construct a Bunker Assault Ramp (check command map)."
         accum 7 set 0                       // 0 indicates that the following flag captures are not capture #1.
      }
 
@@ -1335,9 +1336,7 @@ backdoor
 
      trigger write_color_built_note
      {
-        wm_announce "^1Note: ^3Axis have rebuilt the Backdoor. But the rebuilt Backdoor is weaker"
-        wm_announce "      ^3than the old one - it can be destroyed with satchels."
-
+        wm_announce "Axis have rebuilt a weaker Backdoor, it can be destroyed with satchels."
         constructible_class 2               // Make destroyable by satchel.
         accum 7 set 0                       // 0 indicates that the following backdoor deaths are not death #1.
      }
@@ -1355,7 +1354,7 @@ backdoor
 
      trigger write_color_death_note
      {
-        wm_announce "^1Note: ^3Allies have destroyed the Backdoor - Axis need to rebuild it."
+        wm_announce "Allies have destroyed the Backdoor - Axis need to rebuild it."
      }
 
      trigger write_plain_death_note
@@ -1508,8 +1507,7 @@ bunkerplanks
 
      trigger write_color_built_note
      {
-        wm_announce "^1Note: ^3The Allied Bunker Assault Ramp has been constructed."
-        wm_announce "      ^3Axis can destroy it with satchel or dynamite."
+        wm_announce "The Allied Bunker Assault Ramp has been constructed."
         accum 7 set 0                       // 0 indicates that the following ramp builds are not build #1.
      }
 
@@ -1634,66 +1632,41 @@ beachplanks
         // Commented some triggers out to reduce spam.
         // accum 7 trigger_if_equal 0 beachplanks built_count_1
         // accum 7 trigger_if_equal 1 beachplanks built_count_2
-        // accum 7 trigger_if_equal 2 beachplanks built_count_3
-        // accum 7 trigger_if_equal 3 beachplanks built_count_4
-        accum 7 trigger_if_equal 4 beachplanks built_count_5
+        accum 7 trigger_if_equal 2 beachplanks built_count_3
     }
 
     trigger destroyed_count_dispatch
     {
         // Commented some triggers out to reduce spam.
         // accum 7 trigger_if_equal 1 beachplanks destroyed_count_1
-        // accum 7 trigger_if_equal 2 beachplanks destroyed_count_2
-        // accum 7 trigger_if_equal 3 beachplanks destroyed_count_3
-        accum 7 trigger_if_equal 4 beachplanks destroyed_count_4
+        accum 7 trigger_if_equal 2 beachplanks destroyed_count_2
     }
 
     trigger built_count_1
     {
-        wm_announce "^1Beach Assault Ramp built for the 1st time."
+        wm_announce "Beach Assault Ramp built for the 1st time."
     }
 
     trigger built_count_2
     {
-        wm_announce "^1Beach Assault Ramp built for the 2nd time."
+        wm_announce "Beach Assault Ramp built for the 2nd time."
     }
 
     trigger built_count_3
     {
-        wm_announce "^1Beach Assault Ramp built for the 3rd time."
-    }
-
-    trigger built_count_4
-    {
-        wm_announce "^1Beach Assault Ramp built for the 4th time."
-    }
-
-    trigger built_count_5
-    {
-        constructible_class 3                                   // Beachplanks were built for the 5th time, make Beachplanks destroyable by dyno only.
-        wm_announce "^1Note: ^3Beach Assault Ramp built for the 5th time. Allies now know how to build"
-        wm_announce "      ^3a sturdier ramp - Axis can destroy it with dynamite only from now on."
+        constructible_class 3                                   // Beachplanks were built for the 3rd time, make Beachplanks destroyable by dyno only.
+        wm_announce "^3A sturdier Beach Assault Ramp is built."
+        wm_announce "^3Axis can destroy it with dynamite only from now on."
     }
 
     trigger destroyed_count_1
     {
-        wm_announce "^1Beach Assault Ramp destroyed for the 1st time."
+        wm_announce "Beach Assault Ramp destroyed for the 1st time."
     }
 
     trigger destroyed_count_2
     {
-        wm_announce "^1Beach Assault Ramp destroyed for the 2nd time."
-    }
-
-    trigger destroyed_count_3
-    {
-        wm_announce "^1Beach Assault Ramp destroyed for the 3rd time."
-    }
-
-    trigger destroyed_count_4
-    {
-        wm_announce "^1Note: ^3Beach Assault Ramp destroyed for the 4th time."
-        wm_announce "      ^3This one looked sturdier than the last ones."
+        wm_announce "Beach Assault Ramp destroyed for the 2nd time."
     }
     // Ragnar end: New triggers.
 }
