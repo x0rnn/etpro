@@ -317,7 +317,7 @@ game_manager
 		// Allied takes control of depot
 
 		// Some kind of UI pop-up to alert players
-		wm_announce	"Allies capture the Depot Yard!"
+		wm_announce	"Allies captured the Depot Yard!"
 
 		// Ragnar_40k
 		trigger axistowermarker enable
@@ -345,7 +345,7 @@ game_manager
 		// Axis takes control of depot
 
 		// Some kind of UI pop-up to alert players
-		wm_announce	"Axis captures the Depot Yard!"
+		wm_announce	"Axis captured the Depot Yard!"
 
 		// Ragnar_40k
 		trigger axistowermarker disable
