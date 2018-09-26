@@ -3,13 +3,17 @@
 // the resulting choice of spawnpoints is approximately the same
 // bani - Mon Mar  1 00:38:32 PST 2004 - fix map bugs, falling deaths
 // rain - Thu Apr  1 21:46:24 EST 2004 - fix weird underwater movement
-// bugs
+// Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
+// Harlekin -  added nullskillz team door hack
+// Harlekin - Timebonus
+// x0rnn - added allied closer spawn after the old city wall is destroyed, added 2nd axis spawn above axis garrison
+// x0rnn - removed 8 default spawns above axis garrison so only 2 players can spawn there instead of 10
 
 game_manager
 {
 	spawn
 	{
-		// allied closer spawn, enabled after the old city wall is destroyed
+		// allied closer spawn
 		create
 		{
 			classname "team_WOLF_objective"
@@ -62,6 +66,40 @@ game_manager
 			origin "7520 4276 -196"
 			spawnflags 3
 			angle "180"
+		}
+
+		// delete default spawns above axis garrison
+		delete
+		{
+			origin "7544 4160 -196"
+		}
+		delete
+		{
+			origin "7472 4164 -196"
+		}
+		delete
+		{
+			origin "7548 4096 -196"
+		}
+		delete
+		{
+			origin "7476 4100 -196"
+		}
+		delete
+		{
+			origin "7540 4024 -196"
+		}
+		delete
+		{
+			origin "7476 4024 -196"
+		}
+		delete
+		{
+			origin "7396 4024 -196"
+		}
+		delete
+		{
+			origin "7396 4088 -196"
 		}
 
 		// axis spawn #2
@@ -130,6 +168,42 @@ game_manager
 			maxs "10 2 11"
 		}
 
+		// Harlekin - Roof over axis spawn
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "7400 4810 200"
+			contents 1  // SOLID
+			mins "-500 -450 -88"
+			maxs "500 450 88"
+		}
+		
+		// Harlekin - Roof over allies spawn
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "1000 2950 200"
+			contents 1  // SOLID
+			mins "-850 -750 -88"
+			maxs "850 750 88"
+		}
+
+		//jade - roof over flag spawn
+		create
+		{
+			scriptName "flagspawnroof"
+			classname "func_fakebrush"
+            targetname "flagspawnroof"
+			origin "4300 7000 130"
+			contents 1  // SOLID
+			mins "-1000 -700 -88"
+			maxs "1000 630 88"
+		}
+        setstate flagspawnroof invisible
+
+
 		accum 1 set 0		// State of objective number one
 		accum 6 set 0		// Current number of water pumps built
 		accum 7 set 0		// Value used in checking whether or not to announce "Axis have damaged both water pumps!"
@@ -141,7 +215,7 @@ game_manager
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
 		wm_number_of_objectives 8
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	12
 
 		// Objectives
 		// 1: Primary1 : Destroy the North gun
@@ -225,8 +299,29 @@ game_manager
 		wm_teamvoiceannounce 1 "oasis_allies_pumps_repair"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +8 min Old City Wall"
+		wm_announce "^3	  *  +5 min first Anti Tank Gun"
+		// ----- Harlekin Timebonus Announce -----
 	}
 
+	// *add*: Trigger to handle timebonus for first destroyed Gun. - harlekin
+	trigger anti_tank_gun_timebonus
+	{
+		accum 2 abort_if_bitset 2
+		accum 2 bitset 2
+		wm_announce "^1+5 min Timebonus!"
+
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+	}
+	// *add*: End of added triggers. - harlekin
+	//*******************************************************************************************
 	trigger 75mm_gun_counter
 	{
 		globalaccum 2 abort_if_not_equal 1		// north gun destroyed?
@@ -434,7 +529,20 @@ oldcitywall //Broken section of Old City wall
 
 		trigger oldcityflag kill
 
-		wm_announce "Allies have breached the Old City wall"
+		wm_announce "Allies have breached the Old City wall!"
+		// ----- Harlekin Timebonus Old City wall -----
+		wm_announce "^1+8 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Old City wall -----
+
+
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paks_defend"
@@ -463,6 +571,9 @@ oldcitywall //Broken section of Old City wall
 		// ***** nUllSkillZ START *****
 		trigger team_only_door_1 setinv
 		// ***** nUllSkillZ END *****
+        
+        //jade - trigger for roof over flag spawn
+        setstate flagspawnroof default
 
 		trigger alliedcloserspawn enable
 	}
@@ -909,7 +1020,9 @@ pak75_clip_1
 		togglespeaker pak75_expl_1
 
 		wm_announce "Allies have destroyed the North Anti-Tank Gun!"
-
+		// ----- Harlekin Timebonus gun -----
+		trigger game_manager anti_tank_gun_timebonus	// *add*: Apply timebous for first destroyed Anti-Tank Gun.
+		// ----- Harlekin Timebonus gun -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paksouth_defend"
@@ -975,7 +1088,9 @@ pak75_clip_2
 		togglespeaker pak75_expl_2
 
 		wm_announce "Allied team has destroyed the South Anti-Tank Gun!"
-
+		// ----- Harlekin Timebonus gun -----
+		trigger game_manager anti_tank_gun_timebonus	// *add*: Apply timebous for first destroyed Anti-Tank Gun.
+		// ----- Harlekin Timebonus gun -----
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paknorth_defend"
 
