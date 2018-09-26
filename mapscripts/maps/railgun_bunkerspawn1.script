@@ -480,7 +480,7 @@ alliedbunkerspawn
 	{
 		setstate alliedbunkerspawn default
 		setstate alliedbunkerspawns default
-		wm_announce "^1Allied Bunker Spawn enabled (2 positions availabe)!"
+		wm_announce "^1Allied Bunker Spawn enabled (2 positions available)!"
 	}
 
 	trigger disable_permanent
@@ -508,7 +508,7 @@ axistowermarker
 		accum 0 set 0
 		setstate axistowermarker default
 		setstate axistowerspawns default
-		wm_announce "^1Axis Tower Spawn enabled (6 positions availabe)!"
+		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
 	}
 
 	trigger enable
@@ -516,7 +516,7 @@ axistowermarker
 		accum 0 abort_if_equal 1
 		setstate axistowermarker default
 		setstate axistowerspawns default
-		wm_announce "^1Axis Tower Spawn enabled (6 positions availabe)!"
+		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
 	}
 
 	trigger disable
