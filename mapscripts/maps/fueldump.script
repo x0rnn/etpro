@@ -21,12 +21,93 @@
 // Harlekin - added 2 spawns at axis cp
 // Harlekin - added Health & Ammo @ allied cp & @ axis second spawn.
 // x0rnn - fixed arni's "fueljump1" anti-trickjump playerclip
+// x0rnn - added 1 extra Allied spawn in the Allied Hut before bridge (now there are 4)
 // x0rnn - Allies spawn in the tunnel instead of the "Tunnel Store Room" after Depot Gate is destroyed
+// Harlekin - added 3 allied spawns in tunnel cave storage after side wall is breached
+// Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
+// Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
 
 game_manager
 {
 	spawn
 	{
+		// ----- Harlekin Cave Storage Spawn -----
+		
+		create
+		{
+			classname "info_limbo_camera"
+			origin "-8103 -4365 560"
+			targetname "alliedcavespawn_wobj_camera_new"
+			target "alliedcavespawn"
+			scriptname "alliedcavespawn_wobj_camera_new"
+		}
+		
+		create
+		{
+			classname "team_WOLF_objective"
+			scriptname "alliedcavespawn"
+			targetname "alliedcavespawn"
+			origin "-8189 -4105 506"
+			spawnflags 2
+			description "Cave Storage Spawn"
+		}
+
+		// allied Cave Storage Spawn #1
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedcavespawns"
+			scriptName "alliedcavespawns1"
+			origin "-8220 -4060 495"
+			spawnflags 2
+			angle "270"
+		}
+
+		// allied Cave Storage Spawn #2
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedcavespawns"
+			scriptName "alliedcavespawns2"
+			origin "-8120 -4060 495"
+			spawnflags 2
+			angle "270"
+		}
+	
+		// allied Cave Storage Spawn #3
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedcavespawns"
+			scriptName "alliedcavespawns3"
+			origin "-8120 -4160 495"
+			spawnflags 2
+			angle "270"
+		}
+		
+		// allied Cave Storage Spawn #4
+//		create
+//		{
+//			classname "team_CTF_bluespawn"
+//			targetname "alliedcavespawns"
+//			scriptName "alliedcavespawns4"
+//			origin "-8120 -4160 495"
+//			spawnflags 2
+//			angle "270"
+//		}			
+		// ----- Harlekin Cave Storage Spawn -----
+		
+		// allied tunnel spawn
+		
+		create
+		{
+			classname "info_limbo_camera"
+			origin "-6883 -1880 500"
+			targetname "alliedtunnelspawn_wobj_camera_new"
+			target "alliedtunnelspawn"
+			scriptname "alliedtunnelspawn_wobj_camera_new"
+		}
+
 		// allied tunnel spawn
 		create
 		{
@@ -450,15 +531,22 @@ game_manager
 
 //Harlekin AMMO & Health Allies END
 
+	// ----- Arni Extra Spawn @ Axis Truck -----
+			create
+		{
+			classname "info_limbo_camera"
+			origin "-10386 -6601 300"
+			targetname "fueldumpxt_wobj_camera_new"
+			target "fueldumpxt_obj"
+			scriptname "fueldumpxt_wobj_camera_new"
+		}
 
-
-	// ----- Arni Extra Spawn @ Axis Truck ----- 
            create
            {
                    scriptName "fueldumpxt_obj"
                    classname "team_WOLF_objective"
                    targetname "fueldumpxt_obj"
-                   origin "-10556 -6692 5"        // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+                   origin "-10556 -6692 220"        // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
                    spawnflags 1        // TEAM_AXIS(2)
            }
 
@@ -558,13 +646,21 @@ game_manager
 		// fueldump anti-trickjump player clips - courtesy arni end
 
 		// ----- Allied Command Post Spawn -----
+		create
+		{
+			classname "info_limbo_camera"
+			origin "-10000 -3000 800"
+			targetname "fueldumphq_obj_wobj_camera_new"
+			target "fueldumphq_obj"
+			scriptname "fueldumphq_obj_wobj_camera_new"
+		}
 
 		create
 		{
 			scriptName "fueldumphq_obj"
 			classname "team_WOLF_objective"
 			targetname "fueldumphq_obj"
-			origin "-10853 -2036 6"	// z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+			origin "-10853 -2036 584"	// z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
 			spawnflags 2	// TEAM_ALLIES(2)
 		}
 
@@ -682,7 +778,7 @@ game_manager
 		create
 		{
 			classname "info_limbo_camera"
-			origin "-3712 -7040 1000" //"-2560 -7040 1008"
+			origin "-3712 -7040 1000"
 			targetname "alliedstart_wobj_camera_new"
 			target "alliedstart_wobj_new"
 			scriptname "alliedstart_wobj_camera_new"
@@ -746,7 +842,7 @@ game_manager
 
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	20
+		wm_allied_respawntime	15 // Harlekin Changed from 20 to 15
 		wm_number_of_objectives 7
 		wm_set_round_timelimit	12
 
@@ -805,6 +901,7 @@ game_manager
 		// ----- Harlekin Timebonus Announce -----
 		wm_announce "^3Initial Map time 12 min"
 		wm_announce "^3Timebonus: +8 min Tunnel Door, +5 min Depot Gate & +3 min Depot Side Wall"
+		wm_announce "^3Allied respawn time is set to 15 until the Tunnel Door is destroyed!"
 		// ----- Harlekin Timebonus Announce -----
 	}
 
@@ -835,6 +932,8 @@ game_manager
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		wm_announce "^3The Allies has to destroy the Depot Gate for 5 min extra time!"
+		wm_allied_respawntime	20
+		wm_announce "^3Allied respawn time changed to 20!"
 		// ----- Harlekin Timebonus Tunnel Doors -----
 
 		// rain - fixed axis spawn point
@@ -943,6 +1042,9 @@ game_manager
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus Depot Side Wall -----
+		// ----- Harlekin Cave Storage Spawn -----
+		trigger alliedcavespawn enable
+		// ----- Harlekin Cave Storage Spawn -----
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "fueldump_axis_fueldump_defend"
 
@@ -1039,6 +1141,30 @@ alliedtunnelspawn
 		setstate tunnel_wobj invisible
 	}
 }
+
+		// ----- Harlekin Cave Storage Spawn -----
+alliedcavespawn
+{
+	spawn
+	{
+		set
+		{
+			description "Cave Storage Spawn"
+			message "Cave Storage Spawn"
+		}
+		wait 50
+		setstate alliedcavespawn invisible
+		setstate alliedcavespawns invisible
+	}
+
+	trigger enable
+	{
+		setstate alliedcavespawn default
+		setstate alliedcavespawns default
+		wm_announce "^1Allied Cave Storage Spawn enabled (3 positions availabe)!"
+	}
+}
+		// ----- Harlekin Cave Storage Spawn -----
 
 //bani
 fueldumphq_obj
