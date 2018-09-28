@@ -22,7 +22,7 @@ function et_ClientBegin(clientNum)
 		filestr = et.trap_FS_Read(fd, len)
 		for d,m,y,reason in string.gfind(filestr, cl_guid .. "\t(%d+)\/(%d+)\/(%d+)\t([^\n]+)") do
 			if reason ~= nil then
-				dt = {year=y, month=m, day=d}	
+				dt = {year=y, month=m, day=d}
 				if os.time(dt) >= os.time(os.date("!*t")) then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7automuted until ^1" .. d .. "/" .. m .. "/" .. y .. "^7 for: ^1" .. reason .. "\"\n")
 					et.gentity_set(clientNum, "sess.muted", 1)
@@ -53,5 +53,32 @@ function et_ClientCommand(cno, cmd)
 			end
 			return 1
 		end
+	else
+		if string.lower(cmd) == "callvote" then
+			if string.lower(et.trap_Argv(1)) == "unmute" then
+				clean_name = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(tonumber(et.trap_Argv(2))), "name"))
+				cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(tonumber(et.trap_Argv(2))), "cl_guid")
+				if cl_guid ~= "" then
+					fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+					if len ~= -1 then
+						filestr = et.trap_FS_Read(fd, len)
+						for d,m,y,reason in string.gfind(filestr, cl_guid .. "\t(%d+)\/(%d+)\/(%d+)\t([^\n]+)") do
+							if reason ~= nil then
+								dt = {year=y, month=m, day=d}
+								if os.time(dt) >= os.time(os.date("!*t")) then
+									et.trap_SendServerCommand(-1, "chat \"You can't unmute " .. clean_name .. ".\"\n")
+								end
+								filestr = nil
+								et.trap_FS_FCloseFile(fd)
+								return 1
+							end
+						end
+					else
+						et.trap_FS_FCloseFile(fd)
+					end
+				end
+			end
+		end
 	end
+	return(0)
 end
