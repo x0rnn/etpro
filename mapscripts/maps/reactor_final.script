@@ -7,6 +7,45 @@ game_manager
 {
 	spawn 
 	{
+		// x0rnn - 4 additional allied forward spawns (now 12)
+		create
+		{
+			scriptName "allied_forward_spawnblob"
+			classname "team_CTF_bluespawn"
+			targetname "forward_spawnblob"
+			origin "10 -816 280"
+			angle 90
+			spawnflags 1
+		}
+		create
+		{
+			scriptName "allied_forward_spawnblob"
+			classname "team_CTF_bluespawn"
+			targetname "forward_spawnblob"
+			origin "-54 -816 280"
+			angle 90
+			spawnflags 1
+		}
+		create
+		{
+			scriptName "allied_forward_spawnblob"
+			classname "team_CTF_bluespawn"
+			targetname "forward_spawnblob"
+			origin "362 -816 280"
+			angle 90
+			spawnflags 1
+		}
+		create
+		{
+			scriptName "allied_forward_spawnblob"
+			classname "team_CTF_bluespawn"
+			targetname "forward_spawnblob"
+			origin "290 -816 280"
+			angle 90
+			spawnflags 1
+		}
+
+		// x0rnn - additional axis spawn with 6 positions in lower barracks
 		create
 		{
 			scriptName "axis_spawnblob_lower"
