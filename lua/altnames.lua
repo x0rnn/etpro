@@ -1,6 +1,7 @@
 -- altnames.lua by x0rnn
 -- saves all unique GUID and player name pairs to a text file
 -- !altnames <clientNum> (in console, doesn't work in chat for some reason) will list all the names the player used on the server
+-- eh, seems it's buggy for names containing *, [, (..., will write them to file even if they are already there.
 
 filename = "altnames.log"
 
@@ -74,7 +75,6 @@ function et_ClientCommand(id, command)
 			if len ~= -1 then
 				filestr = et.trap_FS_Read(fd, len)
 				et.trap_FS_FCloseFile(fd)
-				player_names = {}
 				i = 1
 				player_name_tbl = {}
 				for v in string.gfind(filestr, cl_guid .. "\t([^\n]+)") do
