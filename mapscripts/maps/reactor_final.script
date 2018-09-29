@@ -1,7 +1,8 @@
 // ============================================================================ 
-// Map: Reactor_b4 (working name)
+// Map: Reactor_final (working name)
 // Author:  Ifurita
 // ============================================================================ 
+// x0rnn - added 4 additional forward allied spawns and additional 6 axis spawns in lower barracks
 
 game_manager
 {
