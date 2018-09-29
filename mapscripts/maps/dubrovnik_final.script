@@ -8,10 +8,22 @@
 // ============================================================================
 // Harlekin - Sat Feb 3 2007 Playerclip to prevent jumping on the roof
 // Mateos - Wed April 4 2012 Playerclip like Harlekin, see below
+// x0rnn - added 1 additional allied spawn (now 12)
+
 game_manager
 {
 		spawn
 	   	{
+		create
+		{
+			scriptName "allied_cave_blob"
+			classname "team_CTF_bluespawn"
+			targetname "allied_cave_blob"
+			origin "1250 -2334 40"
+			angle 90
+			spawnflags 3
+		}
+
 		// Harlekin - Prevent people get on the roofs
 		create
 		{
