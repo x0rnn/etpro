@@ -3,17 +3,19 @@
 
 filename = "votemap.log"
 
+banner = "^7[^1!!!^7]^1H^7irntot vote system options"
+no_change = "No custom maps"	-- 0
 maps = {
-"adlernest",
-"braundorf_b4",
-"bremen_b3",
-"et_beach",
-"et_ice",
-"frostbite",
-"sos_secret_weapon",
-"sp_delivery_te",
-"supply",
-"tc_base"
+"adlernest",			-- 1
+"braundorf_b4",			-- 2
+"bremen_b3",			-- 3
+"et_beach",				-- 4
+"et_ice",				-- 5
+"frostbite",			-- 6
+"sos_secret_weapon",	-- 7
+"sp_delivery_te",		-- 8
+"supply",				-- 9
+"tc_base"				-- 10
 }
 map_cnt = 0
 for index in pairs(maps) do
@@ -42,7 +44,7 @@ function votemap(id, choice)
 							flag = true
 							break
 						end
-						if v == "no change" then
+						if v == no_change then
 							flag2 = true
 							break
 						end
@@ -50,25 +52,25 @@ function votemap(id, choice)
 					if flag2 == false then
 						if flag == false then
 							fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
-							count = et.trap_FS_Write(cl_guid .. "	no change\n", string.len(cl_guid .. "	no change\n"), fd)
+							count = et.trap_FS_Write(cl_guid .. "	" .. no_change .. "\n", string.len(cl_guid .. "	" .. no_change .. "\n"), fd)
 							votes_left = 3 - i
 							if votes_left ~= 0 then
 								et.trap_SendServerCommand(id, "chat \"You have " .. votes_left .. " votes left.\"\n")
 							end
-							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7voted for: ^3no change^7. Type ^3!votemap ^7or ^3!voteresults ^7for more info.\"\n")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7voted for: ^3" .. no_change .. "^7. Type ^3!votemap ^7or ^3!voteresults ^7for more info.\"\n")
 						else
 							et.trap_SendServerCommand(id, "chat \"You have already voted 3 times.\"\n")
 						end
 					else
-						et.trap_SendServerCommand(id, "chat \"You have already voted for no change.\"\n")
+						et.trap_SendServerCommand(id, "chat \"You have already voted for ^3" .. no_change .. "\"\n")
 					end
 					filestr = nil
 					et.trap_FS_FCloseFile(fd)
 				else
 					fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
-					count = et.trap_FS_Write(cl_guid .. "	no change\n", string.len(cl_guid .. "	no change\n"), fd)
+					count = et.trap_FS_Write(cl_guid .. "	" .. no_change .. "\n", string.len(cl_guid .. "	" .. no_change .. "\n"), fd)
 					et.trap_SendServerCommand(id, "chat \"You have 2 votes left.\"\n")
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7voted for: ^3no change^7. Type ^3!votemap ^7or ^3!voteresults ^7for more info.\"\n")
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7voted for: ^3" .. no_change .. "^7. Type ^3!votemap ^7or ^3!voteresults ^7for more info.\"\n")
 					et.trap_FS_FCloseFile(fd)
 				end
 			else
@@ -163,13 +165,13 @@ function votemap(id, choice)
 end
 
 function freq(ele, t)
-	count = 0
+	cnt = 0
 	for k,v in pairs(t) do
 		if ele == t[k] then
-			count = count + 1
+			cnt = cnt + 1
 		end
 	end
-	return count
+	return cnt
 end
 
 function getKeysSortedByValue(tbl, sortFunction)
@@ -184,14 +186,15 @@ end
 function et_ClientCommand(id, command)
 	if et.trap_Argv(0) == "say" then
 		if et.trap_Argv(1) == "!votemap" then
-			et.trap_SendServerCommand(id, "chat \"^7[^1!!!^7]^1H^7irntot vote system options:\"\n")
-			et.trap_SendServerCommand(id, "chat \"^50^7: no change\"\n")
+			et.trap_SendServerCommand(id, "chat \"" .. banner.. ":\"\n")
+			et.trap_SendServerCommand(id, "chat \"^50^7: " .. no_change .. "\"\n")
 			for n = 1, map_cnt do
 				et.trap_SendServerCommand(id, "chat \"^5" .. n .. "^7: " .. maps[n] .. "\"\n")
 			end
+			et.trap_SendServerCommand(id, "chat \"Example: to vote for ^3supply^7, type ^3!votemap 9^7 (^2IN CONSOLE!^7)\"\n")
 			et.trap_SendServerCommand(id, "chat \"^3!voteresults ^7to show vote results.\"\n")
 				if et.trap_Argc() ~= 3 and et.trap_Argc() ~= 4 then
-					et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2in console!^7)\"\n")
+					et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2IN CONSOLE!^7)\"\n")
 				else
 					if et.trap_Argc() == 3 then
 						num = tonumber(et.trap_Argv(2))
@@ -202,13 +205,13 @@ function et_ClientCommand(id, command)
 								et.trap_SendServerCommand(id, "chat \"Invalid voting number.\"\n")
 							end
 						else
-							et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2in console!^7)\"\n")
+							et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2IN CONSOLE!^7)\"\n")
 						end
 					elseif et.trap_Argc() == 4 then
 						if et.trap_Argv(2) == "new" then
 							votemap(id, et.trap_Argv(3))
 						else
-							et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2in console!^7)\"\n")
+							et.trap_SendServerCommand(id, "chat \"Usage: !votemap <^3#^7> or !votemap new <^3mapname^7> (^1no spaces^7) for maps not on the list (^2IN CONSOLE!^7)\"\n")
 						end
 					end
 				end
@@ -247,7 +250,7 @@ function et_ClientCommand(id, command)
 					tbl_cnt = tbl_cnt + 1
 				end
 				for j = 1, tbl_cnt do
-					et.trap_SendServerCommand(id, "chat \"" .. output_tbl[j] .. "\"")
+					et.trap_SendServerCommand(-1, "chat \"" .. output_tbl[j] .. "\"")
 				end
 				filestr = nil
 			else
