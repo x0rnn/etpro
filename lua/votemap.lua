@@ -104,7 +104,7 @@ function votemap(id, choice)
 							et.trap_SendServerCommand(id, "chat \"You have already voted 3 times.\"\n")
 						end
 					else
-						et.trap_SendServerCommand(id, "chat \"You have already voted for " .. maps[num] .. "\"\n")
+						et.trap_SendServerCommand(id, "chat \"You have already voted for ^3" .. maps[num] .. "\"\n")
 					end
 					filestr = nil
 					et.trap_FS_FCloseFile(fd)
@@ -150,7 +150,7 @@ function votemap(id, choice)
 					et.trap_SendServerCommand(id, "chat \"You have already voted 3 times.\"\n")
 				end
 			else
-				et.trap_SendServerCommand(id, "chat \"You have already voted for " .. choice .. "\"\n")
+				et.trap_SendServerCommand(id, "chat \"You have already voted for ^3" .. choice .. "\"\n")
 			end
 			filestr = nil
 			et.trap_FS_FCloseFile(fd)
