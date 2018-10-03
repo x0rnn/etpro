@@ -1,9 +1,23 @@
 -- altnames.lua by x0rnn
 -- saves all unique GUID and player name pairs to a text file
 -- !altnames <clientNum> (in console, doesn't work in chat for some reason) will list all the names the player used on the server
--- eh, seems it's buggy for names containing *, [, (..., will write them to file even if they are already there.
 
 filename = "altnames.log"
+
+replacements = {
+["-"] = "%-",
+["+"] = "%+",
+["="] = "%=",
+["<"] = "%<",
+[">"] = "%>",
+["?"] = "%?",
+["*"] = "%*",
+["("] = "%(",
+[")"] = "%)",
+["["] = "%[",
+["]"] = "%]",
+["_"] = "%_"
+}
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("altnames.lua "..et.FindSelf())
@@ -16,7 +30,8 @@ function et_ClientBegin(clientNum)
 	fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
 	if len ~= -1 then
 		filestr = et.trap_FS_Read(fd, len)
-		for v in string.gfind(filestr, cl_guid .. "\t" .. clean_name .. "\n") do
+		clean_name2 = string.gsub(clean_name, "[-+=<>?*[%]()_]", function(str) return replacements[str] end)
+		for v in string.gfind(filestr, cl_guid .. "\t" .. clean_name2 .. "\n") do
 			if v == cl_guid .. "\t" .. clean_name .."\n" then
 				flag = true
 				break
@@ -27,6 +42,7 @@ function et_ClientBegin(clientNum)
 			count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
 		end
 		filestr = nil
+		filestr2 = nil
 		et.trap_FS_FCloseFile(fd)
 	else
 		et.trap_FS_FCloseFile(fd)
