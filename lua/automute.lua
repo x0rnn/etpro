@@ -9,6 +9,7 @@
 -- instead of perma-muting, just add 10 years to the current date e.g. 2028
 
 filename = "automuted.txt"
+unmute_tries = {}
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("automute.lua "..et.FindSelf())
@@ -44,11 +45,23 @@ function et_ClientCommand(cno, cmd)
 		elseif string.lower(cmd) == "callvote" then
 			if string.lower(et.trap_Argv(1)) == "unmute" then
 				if cno == tonumber(et.trap_Argv(2)) then
-					msg = string.format("cpm  \"" .. string.format(et.Info_ValueForKey(et.trap_GetUserinfo(cno), "name")) .. "^7 got bummed for trying to unmute himself. What a peon.\n")
-					et.trap_SendServerCommand(-1, msg)
-					et.G_Damage(cno, 80, 1022, 1000, 8, 34)
-					soundindex = et.G_SoundIndex("/sound/etpro/osp_goat.wav")
-					et.G_Sound(cno, soundindex)
+					if unmute_tries[cno] == nil then
+						unmute_tries[cno] = 1
+					else
+						unmute_tries[cno] = unmute_tries[cno] + 1
+					end
+					if unmute_tries[cno] <= 3 then
+						msg = string.format("cpm  \"" .. string.format(et.Info_ValueForKey(et.trap_GetUserinfo(cno), "name")) .. "^7 got bummed for trying to unmute himself. What a peon.\n")
+						et.trap_SendServerCommand(-1, msg)
+						et.G_Damage(cno, 80, 1022, 1000, 8, 34)
+						soundindex = et.G_SoundIndex("/sound/etpro/osp_goat.wav")
+						et.G_Sound(cno, soundindex)
+						if unmute_tries[cno] >= 3 then
+							et.trap_SendServerCommand(cno, "cpm \"^1You cannot unmute yourself. Next time you try, you will get kicked.\n\"")
+						end
+					else
+						et.trap_DropClient(cno, "You cannot unmute yourself, stop trying.", 900) --15 minutes
+					end
 				end
 			end
 			return 1
