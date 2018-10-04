@@ -314,6 +314,7 @@ game_manager
 		// ----- Harlekin Timebonus Announce -----
 		wm_announce "^3Initial Map time 12 min"
 		wm_announce "^3Timebonus: +8 min reaching the Depot Yard"
+		setautospawn	"Axis Construction Site"	0
 	}
 
 	trigger enable_gun
@@ -2241,6 +2242,8 @@ train1
 
 		trigger train1 dispatch_allies
 		trigger train1 dispatch_axis
+
+		trigger switch_invtrig1 axis_want_tower
 	}
 
 	trigger run_Prestage34
