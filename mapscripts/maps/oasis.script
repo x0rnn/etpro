@@ -8,12 +8,22 @@
 // Harlekin - Timebonus
 // x0rnn - added allied closer spawn after the old city wall is destroyed, added 2nd axis spawn above axis garrison
 // x0rnn - removed 8 default spawns above axis garrison so only 2 players can spawn there instead of 10
+// allied spawntime is 15 untill wall is destroyed, then 20
 
 game_manager
 {
 	spawn
 	{
 		// allied closer spawn
+		create
+		{
+			classname "info_limbo_camera"
+			origin "5777 6900 -400"
+			targetname "alliedcloserspawn_wobj_camera_new"
+			target "alliedcloserspawn"
+			scriptname "alliedcloserspawn_wobj_camera_new"
+		}
+		
 		create
 		{
 			classname "team_WOLF_objective"
@@ -213,7 +223,7 @@ game_manager
 
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	20
+		wm_allied_respawntime	15 // x0rnn changed from 20 to 15
 		wm_number_of_objectives 8
 		wm_set_round_timelimit	12
 
@@ -304,6 +314,7 @@ game_manager
 		wm_announce "^3	  Timebonus"
 		wm_announce "^3	  *  +8 min Old City Wall"
 		wm_announce "^3	  *  +5 min first Anti Tank Gun"
+		wm_announce "^3Allied respawn time is set to 15 until the Old City Wall is destroyed!"
 		// ----- Harlekin Timebonus Announce -----
 	}
 
@@ -398,7 +409,8 @@ alliedcloserspawn
 	{
 		setstate alliedcloserspawn default
 		setstate alliedcloserspawns default
-		wm_announce "^1Allied Wall Service Room Spawn enabled (2 positions availabe)!"
+		wm_announce "^1Allied Wall Service Room Spawn enabled (2 positions available)!"
+		setautospawn "Wall Service Room" 1
 	}
 }
 
@@ -541,8 +553,8 @@ oldcitywall //Broken section of Old City wall
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus Old City wall -----
-
-
+		wm_allied_respawntime	20
+		wm_announce "^3Allied respawn time changed to 20!"
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paks_defend"
