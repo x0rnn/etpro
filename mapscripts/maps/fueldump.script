@@ -1044,6 +1044,7 @@ game_manager
 		// ----- Harlekin Timebonus Depot Side Wall -----
 		// ----- Harlekin Cave Storage Spawn -----
 		trigger alliedcavespawn enable
+		trigger alliedtunnelspawn sidewall_breached
 		// ----- Harlekin Cave Storage Spawn -----
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "fueldump_axis_fueldump_defend"
@@ -1107,6 +1108,14 @@ alliedtunnelspawn
 		accum 1 bitset 2
 		trigger self update
 	}
+
+	trigger sidewall_breached
+	{
+		accum 1 abort_if_bitset 3
+		accum 1 bitset 3
+		trigger self update
+	}
+
 	trigger update
 	{
 		accum 1 trigger_if_equal 0 alliedtunnelspawn disable
@@ -1117,6 +1126,8 @@ alliedtunnelspawn
 		accum 1 trigger_if_equal 5 alliedtunnelspawn enable_set_default
 		accum 1 trigger_if_equal 6 alliedtunnelspawn disable
 		accum 1 trigger_if_equal 7 alliedtunnelspawn enable_not_default
+		accum 1 trigger_if_equal 13 alliedtunnelspawn enable_set_default
+		accum 1 trigger_if_equal 15 alliedtunnelspawn disable_tunnelspawn
 	}
 
 	trigger disable
@@ -1137,6 +1148,14 @@ alliedtunnelspawn
 	{
 		setstate alliedtunnelspawn default
 		setstate alliedtunnelspawns default
+		setautospawn "Garage HQ" 1
+		setstate tunnel_wobj invisible
+	}
+
+	trigger disable_tunnelspawn
+	{
+		setstate alliedtunnelspawn invisible
+		setstate alliedtunnelspawns invisible
 		setautospawn "Garage HQ" 1
 		setstate tunnel_wobj invisible
 	}
@@ -1161,7 +1180,7 @@ alliedcavespawn
 	{
 		setstate alliedcavespawn default
 		setstate alliedcavespawns default
-		wm_announce "^1Allied Cave Storage Spawn enabled (3 positions availabe)!"
+		wm_announce "^1Allied Cave Storage Spawn enabled (3 positions available)!"
 	}
 }
 		// ----- Harlekin Cave Storage Spawn -----
@@ -1257,7 +1276,7 @@ cp_axis_obj
 	{               
 		setstate cp_axis_obj default
 		setstate cp_axis_spawn default
-		wm_announce "^1Axis CP Spawn enabled (2 positions availabe)!"
+		wm_announce "^1Axis CP Spawn enabled (2 positions available)!"
 	}
 
 	trigger off
