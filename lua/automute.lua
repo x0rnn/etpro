@@ -6,7 +6,7 @@
 -- 01234567890123456789ABCDEF012345	16/01/2020	being an idiot
 -- separate fields with tabs not spaces
 -- expire date cannot be more than 19 years over the current date for some reason
--- instead of perma-muting, just add 10 years to the current date e.g. 2028
+-- instead of perma-muting, just add 10 years to the current date e.g. 05/10/2028
 
 filename = "automuted.txt"
 unmute_tries = {}
