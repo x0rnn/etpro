@@ -42,7 +42,6 @@ function et_ClientBegin(clientNum)
 			count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
 		end
 		filestr = nil
-		filestr2 = nil
 		et.trap_FS_FCloseFile(fd)
 	else
 		et.trap_FS_FCloseFile(fd)
