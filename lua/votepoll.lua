@@ -263,11 +263,12 @@ function et_ClientCommand(id, command)
 				if enable_custom_votes == 1 then
 					et.trap_SendServerCommand(id, "chat \"Usage: ^5" .. vote_cmd .. " ^7<^3#^7> (^2IN CONSOLE!^7)\"\n")
 					et.trap_SendServerCommand(id, "chat \"Usage for choices not on the list: ^5" .. vote_cmd .. " new ^7<^3choice^7> (^1no spaces^7) (^2IN CONSOLE!^7)\"\n")
+					et.trap_SendServerCommand(id, "chat \"Example 1: to vote for ^3supply^7, type ^3" .. vote_cmd .. " 9^7 (^2IN CONSOLE!^7)\"\n")
+					et.trap_SendServerCommand(id, "chat \"Example 2: to vote for ^3baserace^7, type ^3" .. vote_cmd .. " new baserace ^7(^1no spaces^7) ^7(^2IN CONSOLE!^7)\"\n")
 				else
 					et.trap_SendServerCommand(id, "chat \"Usage: ^5" .. vote_cmd .. " ^7<^3#^7> (^2IN CONSOLE!^7)\"\n")
+					et.trap_SendServerCommand(id, "chat \"Example: to vote for ^3supply^7, type ^3" .. vote_cmd .. " 9^7 (^2IN CONSOLE!^7)\"\n")
 				end
-				et.trap_SendServerCommand(id, "chat \"Example 1: to vote for ^3supply^7, type ^3" .. vote_cmd .. " 9^7 (^2IN CONSOLE!^7)\"\n")
-				et.trap_SendServerCommand(id, "chat \"Example 2: to vote for ^3baserace^7, type ^3" .. vote_cmd .. " new baserace ^7(^1no spaces^7) ^7(^2IN CONSOLE!^7)\"\n")
 				et.trap_SendServerCommand(id, "chat \"^3!voteresults ^7to show vote results.\"\n")
 			elseif et.trap_Argc() == 3 then
 				num = tonumber(et.trap_Argv(2))
