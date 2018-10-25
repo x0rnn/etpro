@@ -8,12 +8,56 @@
 // Harlekin - Timebonus
 // x0rnn - added allied closer spawn after the old city wall is destroyed, added 2nd axis spawn above axis garrison
 // x0rnn - removed 8 default spawns above axis garrison so only 2 players can spawn there instead of 10
-// allied spawntime is 15 untill wall is destroyed, then 20
+// x0rnn - added allied forward spawn (4 players) when allied CP is built
 
 game_manager
 {
 	spawn
 	{
+		// allied forward spawn #1
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedforwardspawn"
+			scriptName "alliedforwardspawn"
+			origin "1838 2612 -437"
+			spawnflags 2
+			angle "90"
+		}
+
+		// allied forward spawn #2
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedforwardspawn"
+			scriptName "alliedforwardspawn"
+			origin "1912 2593 -447"
+			spawnflags 2
+			angle "90"
+		}
+
+		// allied forward spawn #3
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedforwardspawn"
+			scriptName "alliedforwardspawn"
+			origin "1847 2596 -443"
+			spawnflags 2
+			angle "90"
+		}
+
+		// allied forward spawn #4
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedforwardspawn"
+			scriptName "alliedforwardspawn"
+			origin "2078 2672 -454"
+			spawnflags 2
+			angle "90"
+		}
+
 		// allied closer spawn
 		create
 		{
@@ -223,7 +267,7 @@ game_manager
 
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	15 // x0rnn changed from 20 to 15
+		wm_allied_respawntime	20
 		wm_number_of_objectives 8
 		wm_set_round_timelimit	12
 
@@ -314,7 +358,6 @@ game_manager
 		wm_announce "^3	  Timebonus"
 		wm_announce "^3	  *  +8 min Old City Wall"
 		wm_announce "^3	  *  +5 min first Anti Tank Gun"
-		wm_announce "^3Allied respawn time is set to 15 until the Old City Wall is destroyed!"
 		// ----- Harlekin Timebonus Announce -----
 	}
 
@@ -553,8 +596,6 @@ oldcitywall //Broken section of Old City wall
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus Old City wall -----
-		wm_allied_respawntime	20
-		wm_announce "^3Allied respawn time changed to 20!"
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paks_defend"
@@ -1403,6 +1444,7 @@ allied_radio_built_model
 		sethqstatus 1 1
 
 		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+		trigger allied_camp_wobj allied_cp_built
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
@@ -1421,6 +1463,7 @@ allied_radio_built_model
 	{
 		// Some kind of UI pop-up to alert players
 		wm_announce	"Axis team has destroyed the Allied Command Post!"
+		trigger allied_camp_wobj allied_cp_destroyed
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 1 "allies_hqt_compost_construc"
@@ -2013,13 +2056,51 @@ axis_garrison_wobj
 
 allied_camp_wobj
 {
-	spawn
-	{
-		set
-		{
-			origin "1153 2879 -383"
-		}
-	}
+    spawn
+    {
+        accum 1 set 0
+        trigger self update
+
+        set
+        {
+            origin "2004 3111 -416"
+        }
+		wait 50
+		setstate alliedforwardspawn invisible
+		setstate alliedforwardspawn invisible
+    }
+
+    trigger allied_cp_destroyed
+    {
+        accum 1 abort_if_not_bitset 0
+	    accum 1 bitreset 0
+        trigger self update
+    }
+
+    trigger allied_cp_built
+    {
+        accum 1 abort_if_bitset 0
+	    accum 1 bitset 0
+        trigger self update
+    }
+
+    trigger update
+    {
+        accum 1 trigger_if_equal 0 allied_camp_wobj set_default
+        accum 1 trigger_if_equal 1 allied_camp_wobj set_1
+    }
+
+    trigger set_default
+    {
+        setstate alliedforwardspawn invisible
+    }
+
+    trigger set_1
+    {
+        wm_announce "Enabled Allied forward spawn."
+
+        setstate alliedforwardspawn default
+    }
 }
 
 // ======================================================
