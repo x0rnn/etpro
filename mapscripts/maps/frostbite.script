@@ -1,3 +1,5 @@
+// x0rnn - changed allied st to 25
+
 game_manager
 {
 	spawn
@@ -6,7 +8,7 @@ game_manager
 	
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	30
+		wm_allied_respawntime	25
 		wm_number_of_objectives 6
 		wm_set_round_timelimit	15 //10
 
