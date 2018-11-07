@@ -747,10 +747,10 @@ eastbeach_wobj
         accum 7 trigger_if_equal 0 eastbeach_wobj set_default
         accum 7 trigger_if_equal 1 eastbeach_wobj set_default     // 1 bit set.
         accum 7 trigger_if_equal 2 eastbeach_wobj set_default     // 1 bit set.
-        accum 7 trigger_if_equal 3 eastbeach_wobj set_default     // 2 bits set.
+        accum 7 trigger_if_equal 3 eastbeach_wobj set_2     // 2 bits set.
         accum 7 trigger_if_equal 4 eastbeach_wobj set_default     // 1 bit set.
-        accum 7 trigger_if_equal 5 eastbeach_wobj set_default     // 2 bits set.
-        accum 7 trigger_if_equal 6 eastbeach_wobj set_default     // 2 bits set.
+        accum 7 trigger_if_equal 5 eastbeach_wobj set_2     // 2 bits set.
+        accum 7 trigger_if_equal 6 eastbeach_wobj set_2     // 2 bits set.
         accum 7 trigger_if_equal 7 eastbeach_wobj set_3     // 3 bits set.
     }
 
@@ -758,10 +758,19 @@ eastbeach_wobj
     trigger set_default
     {
         setstate forward_spawns_1 default
-        setstate forward_spawns_2 default
+        setstate forward_spawns_2 invisible
         setstate forward_spawns_3 invisible
     }
 
+    // Set to middle forward spawn.
+    trigger set_2
+    {
+        wm_announce "Enabled Allied forward spawn 2."
+
+        setstate forward_spawns_1 default
+        setstate forward_spawns_2 default
+        setstate forward_spawns_3 invisible
+    }
 
     // Set to top forward spawn.
     trigger set_3
