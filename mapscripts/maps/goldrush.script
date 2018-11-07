@@ -3,10 +3,12 @@
 // harlekin - Fri Jan 30 2009 - added 4 South Courtyard spawn for axis after allies moved the truck
 // harlekin - Fri Jan 30 2009 - removed wait at allies_win
 // Harlekin – This script prevents spawn camping of the Allies team after they moved the Truck with the gold crates.
-// Harlekin - 2 spawns aper at the South Courtyard after the truck moved the first time.
-// Harlekin - 2 more spawns aper after the truck is past barrier 1
+// Harlekin - 2 spawns appear at the South Courtyard after the truck moved the first time.
+// Harlekin - 2 more spawns appear after the truck is past barrier 1
 // Harlekin - as soon as the truck reaches barrier 2 allies spawn at their first spawn
-// Harlekin - Anti spawn kill roofs over all spawns. The roof over the Tank Spawn aper after the tank is repaired and moved out of the yard.
+// Harlekin - Anti spawn kill roofs over all spawns. The roof over the Tank Spawn appear after the tank is repaired and moved out of the yard.
+// Harlekin - Timebonus
+// x0rnn - allied spawnroof disabled after truck with gold is near truck barrier #2
 
 game_manager
 {
@@ -117,6 +119,7 @@ game_manager
 		create
 		{
 			scriptName "spawnroof3"
+			targetname "spawnroof3"
 			classname "func_fakebrush"
 			origin "-3360 -218 500"
 			contents 1  // SOLID
@@ -217,6 +220,16 @@ game_manager
 		wm_announce "Axis get 2 spawns @ South Courtyard after Allies moved the truck."
 		wm_announce "Axis get another 2 spawns @ South Courtyard after the truck is past barrier 1."
 		// ----- Harlekin South Courtyard Announce End -----
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +5 min Tank"
+		wm_announce "^3	  *  +4 min Barrier 1"
+		wm_announce "^3	  *  +3 min Barrier 2"
+		wm_announce "^3	  *  +2 min Gold 1"
+		wm_announce "^3	  *  +2 min Gold 2"
+		wm_announce "^3	  *  +2 min Stolen Truck"
+		// ----- Harlekin Timebonus Announce -----
 	}
 
 	trigger allies_win
@@ -238,6 +251,14 @@ game_manager
 	{
 		accum 4 abort_if_not_equal 0
 		wm_announce "Allied team has stolen the Tank!"
+		// ----- Harlekin Timebonus tank -----
+		wm_announce "^1+5 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus tank -----
 
 		wm_objective_status 1 0 2
 		wm_objective_status 1 1 1
@@ -868,6 +889,15 @@ tank
 		wm_teamvoiceannounce 1 "goldrush_allies_tank_barrier1"
 		// *---------------------------------------------------------------------------------*
 
+		// ----- Harlekin Timebonus first barrier -----
+		wm_announce "Allied team has moved the tank past the first barrier!"
+		wm_announce "^1+4 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus first barrier -----
+
 		accum 1 bitset 2
 		followspline 0 spln26 50 wait length 32
 		accum 1 bitreset 2
@@ -1389,6 +1419,13 @@ tank
 
 		wm_teamvoiceannounce 1 "goldrush_allies_tank_barrier2"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin Timebonus second barrier -----
+		wm_announce "Allied team has moved the tank past the second barrier!"
+		wm_announce "^1+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus second barrier -----
 
 		accum 1 bitset 2
 		followspline 0 spln72 50 wait length 32
@@ -2302,6 +2339,13 @@ truck
 		wm_announce "The Axis are sending reinforcements to stop the Truck!"
 		// ----- Harlekin Truck Spawn Wave 1 End -----
 
+		// ----- Harlekin Timebonus stolen truck -----
+		wm_announce "Allied team has stolen the truck!"
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus stolen truck -----
+
 		accum 1 bitset 2
 		followspline 0 tspln_1 125 wait length 304 wait roll 0 2 dampin
 		accum 1 bitreset 2
@@ -2490,7 +2534,9 @@ truck
 		accum 3 set 17
 		// ----- Harlekin Autospawn Allied Spawn -----
 		setautospawn	"Allied Spawn"	1
-		wm_announce "The Allies send now reinforcements from the Allied Spawn."
+		wm_announce "The Allies are sending reinforcements from the Allied Spawn."
+		wm_announce "^3Allied spawnroof protection disabled."
+		setstate spawnroof3 invisible // x0rnn - disable allied spawnroof
 		// ----- Harlekin Autospawn Allied Spawn -----
 		trigger truck stuck_check_barrier4_built_msg
 
@@ -3498,6 +3544,12 @@ gold_crate
 	{
 		wm_announce "Allied team has secured the first Gold Crate!"
 
+		// ----- Harlekin Timebonus first Gold Crate -----
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus first Gold Crate -----
+
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "goldrush_axis_gold1_secured"
 
@@ -3508,6 +3560,12 @@ gold_crate
 	trigger secured2
 	{
 		wm_announce "Allied team has secured the second Gold Crate!"
+
+		// ----- Harlekin Timebonus second Gold Crate -----
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus second Gold Crate -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "goldrush_axis_gold2_secured"
