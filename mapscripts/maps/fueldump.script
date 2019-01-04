@@ -619,8 +619,8 @@ game_manager
                    classname "func_fakebrush"
                    origin "-8920 -5120 646"
                    contents 65536  // CONTENTS_PLAYERCLIP      // high fueljump
-                   mins "-520 -2 -30"
-                   maxs "370 2 30"
+                   mins "-520 -2 -100"
+                   maxs "370 2 100"
            }
 
            create
