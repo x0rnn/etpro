@@ -1,0 +1,1235 @@
+//copied from adlernest scriptfix: sidewall: set "health 10000" so it cannot be shot resulting in crash bug - thanks fnTc^h3ll
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// *** MAIN OBJECTIVES *** /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+game_manager
+{
+	spawn
+	{
+		// Set scenario information
+		wm_axis_respawntime 20
+		wm_allied_respawntime 15
+		wm_number_of_objectives 7
+		wm_set_round_timelimit 20
+
+		//Adlernest mapscript by Dersaidin, modified by KiSsMySeXyAsS a.k.a. MorFeus a.k.a. MorpHDoc
+
+		// 0  is axis
+		wm_set_defending_team 0
+		wm_setwinner 0
+
+		//Controls
+		wm_objective_status 1 1 0
+		wm_objective_status 1 0 0
+		//CP
+		wm_objective_status 2 1 0
+		wm_objective_status 2 0 0
+		//Take Docs
+		wm_objective_status 3 1 0
+		wm_objective_status 3 0 0
+		//Cap Docs
+		wm_objective_status 4 1 0
+		wm_objective_status 4 0 0
+		//Docs Transmission
+		wm_objective_status 5 1 0
+		wm_objective_status 5 0 1
+		//Main Door
+		wm_objective_status 6 1 0
+		wm_objective_status 6 0 1
+		//Fire the rocket
+		wm_objective_status 7 1 0
+		wm_objective_status 7 0 1
+
+
+		//main opjective is to Begin Transmission
+		wm_set_main_objective 5 1
+		wm_set_main_objective 5 0
+
+		// Controls
+		accum 1 set 0
+		//Allied CP built once
+		globalaccum 2 set 0
+		//Take docs
+		accum 3 set 0
+		//Cap Docs
+		accum 4 set 0
+		//Docs Transmission Activated
+		globalaccum 5 set 0
+		//Maindoorr, 1=open 0=closed 2=working
+		accum 6 set 0
+		//Maindoorl, 1=open 0=closed 2=working
+		accum 6 set 0
+		//Allied CP _IS_ built
+		globalaccum 7 set 0
+		//Roof block _IS_ removed
+		globalaccum 8 set 0
+		//Transmission started
+		globalaccum 9 set 0
+		
+				
+		wait 3000
+		trigger game_manager startvos
+
+		wait 500
+		trigger tank_turret facewall
+
+		setstate rocket invisible
+		setstate blast invisible
+		setstate axis_roof_wobj invisible
+		setstate allies_roof_wobj invisible
+		setstate ammoladder2 invisible	
+		setstate antenna_trigger_allies invisible
+		setstate antenna_trigger_axis invisible
+
+		wait 500
+		setautospawn	"Axis Spawn"	0
+		setautospawn	"Tank Spawn"	1
+		wait 150
+
+		
+	}
+
+	trigger startvos
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "adlernest_roof_b4_axis_controls_defend"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "adlernest_roof_b4_allies_controls_destroy"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "adlernest_roof_b4_axis_controls_defend"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "adlernest_roof_b4_allies_controls_destroy"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+
+
+	trigger axis_object_stolen
+	{
+		//wm_announce	"Allies have stolen the documents!"
+		wm_objective_status 3 1 1
+		accum 3 set 1
+	}
+
+	trigger axis_object_returned
+	{
+		//wm_announce	"The documents have been returned!"
+		wm_objective_status 3 1 0
+		accum 3 set 0
+		accum 4 set 0
+	}
+
+
+	trigger cap_docs
+	{
+		//cap docs: true
+		wm_objective_status 4 1 1
+		wm_objective_status 4 0 2
+		//cap docs: true
+		accum 4 set 1
+	
+	}	
+
+	trigger start_countdown
+	{
+		
+		globalaccum 9 set 1				// enable 20 second countdown
+		globalaccum 5 set 20				// set time to 20 seconds
+		wm_announce "^1The transmission will be completed in 20 seconds!"
+		wm_announce "^3Axis must interrupt the transmission!"
+		trigger self check_countdown
+	}
+
+	trigger stop_countdown
+	{
+		globalaccum 9 set 0				// disable countdown
+	}
+
+	trigger check_countdown
+	{
+		globalaccum 9 abort_if_equal 0			// is the countdown enabled?
+		wait 1000
+		globalaccum 5 inc -1
+		globalaccum 5 trigger_if_equal 15 game_manager countdown_15
+		globalaccum 5 trigger_if_equal 10 game_manager countdown_10
+		globalaccum 5 trigger_if_equal 5 game_manager countdown_5
+		globalaccum 5 trigger_if_equal 4 game_manager countdown_4
+		globalaccum 5 trigger_if_equal 3 game_manager countdown_3
+		globalaccum 5 trigger_if_equal 2 game_manager countdown_2
+		globalaccum 5 trigger_if_equal 1 game_manager countdown_1
+		globalaccum 5 trigger_if_equal 0 game_manager checkgame
+		trigger self check_countdown
+	}
+
+	trigger countdown_15
+	{
+		wm_announce "^1 15s..."
+	}
+	trigger countdown_10
+	{
+		wm_announce "^1 10s..."
+	}
+	trigger countdown_5
+	{
+		wm_announce "^1 5s..."
+	}
+	trigger countdown_4
+	{
+		wm_announce "^1 4s..."
+	}
+	trigger countdown_3
+	{
+		wm_announce "^1 3s..."
+	}
+	trigger countdown_2
+	{
+		wm_announce "^1 2s..."
+	}
+	trigger countdown_1
+	{
+		wm_announce "^1 1s..."
+	}
+	
+	trigger checkgame
+	{
+		wm_announce "^1 Allies have successfully transmitted the documents!"
+		disablespeaker alarm
+		wait 500
+		wm_setwinner 1
+		wait 500
+		wm_endround
+	}
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// *** OTHER OBJECTIVES *** /////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+doorcontrols
+{
+	spawn
+	{
+		wait 200
+		
+		constructible_class 3
+	}
+	death
+	{
+		wm_announce "The Doors are opening!!"
+		
+		trigger phasedoor1 move_up
+		trigger phasedoor2 move_up
+		trigger phasedoor3 move
+		kill balcony
+		kill axismgdoor
+		kill radardoor
+						
+		wm_objective_status 1 1 1		
+		wm_objective_status 1 0 2
+		
+		// Open phase doors
+				
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
+
+		wm_removeteamvoiceannounce 0 "adlernest_roof_b4_axis_controls_defend"
+		wm_removeteamvoiceannounce 1 "adlernest_roof_b4_allies_controls_destroy"
+		// *---------------------------------------------------------------------------------*
+		
+		//remove roofblock, unless removed when docs were delivered before blowing the controls
+		globalaccum 8 abort_if_equal 1
+		globalaccum 8 set 1
+		kill roofblock	
+
+	}
+}
+
+documents
+{
+    spawn
+    {
+	    wait 200
+    }
+    trigger stolen 
+    {
+    	//when the objective is taken 
+    	// Hide command map marker of docs at table
+    	setstate documents_CMM invisible 
+	}
+	trigger dropped
+	{
+		//when the player carrying the objective is killed 
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_objective_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+	trigger returned
+	{
+		//when defending team touches the dropped objective
+		// Show command map marker of docs at table
+		setstate documents_CMM default
+	} 
+	trigger captured
+	{
+		//when the objective is delivered to its deliverypoint 
+	
+		wm_objective_status 4 1 1		
+		wm_objective_status 4 0 2
+
+		globalaccum 2 set 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_lost"
+		wm_teamvoiceannounce 1 "allies_hq_objective_captured"
+		// *---------------------------------------------------------------------------------*
+		wm_announce "The documents have been delivered!"
+		wait 700
+		wm_announce "^1Activate the radar on the roof to begin the transmission!"
+		wait 700
+		wm_announce "^1Activate the radar on the roof to begin the transmission!"
+		wait 700
+		wm_announce "^1Activate the radar on the roof to begin the transmission!"
+		wait 700
+		wm_announce "^1Activate the radar on the roof to begin the transmission!"
+		wait 700
+
+		alertentity axis_roof
+		alertentity allied_roof
+
+		setstate antenna_trigger_allies default
+		setstate axis_roof_wobj default
+		setstate allies_roof_wobj default
+		setstate trans_cmm invisible
+
+		setautospawn "Axis Roof" 0
+		setautospawn "Allies Roof" 1	
+		wm_axis_respawntime 15
+		wm_allied_respawntime 15
+
+		globalaccum 8 abort_if_equal 1
+		globalaccum 8 set 1
+		kill roofblock
+
+		
+
+	}
+}
+
+transmitter_obj
+{
+	spawn
+	{
+	}
+	death
+	{
+		
+	trigger game_manager cap_docs
+
+	}
+}
+
+antenna
+{
+	spawn
+	{
+		globalaccum 5 set 0
+	}
+
+	trigger axis
+	{
+		wm_announce "^3Axis have interrupted the transmission!"
+		wm_objective_status 		5 0 1
+		wm_objective_status 		5 1 2
+
+		setstate antenna_trigger_allies default
+		setstate antenna_trigger_axis invisible
+		disablespeaker alarm
+
+		trigger game_manager stop_countdown
+
+		wait 1000
+		//accum 2 set 0
+		//globalaccum 1 inc -1
+		//accum 5 set 0
+		resetscript
+	}
+
+	trigger allies
+	{
+		
+		wm_announce "^1Allies have begun the transmission!"
+		wm_objective_status 		5 0 2
+		wm_objective_status 		5 1 1
+		
+		setstate antenna_trigger_allies invisible
+		setstate antenna_trigger_axis default
+		enablespeaker alarm	
+
+		//globalaccum 1 inc 1
+		trigger game_manager start_countdown
+
+		wait 1000
+		//accum 2 set 0
+		//accum 5 set 1
+		resetscript
+	}
+
+}
+
+
+antenna_activator_allies
+{
+	trigger allies
+	{
+		trigger antenna allies
+	}
+}
+
+antenna_activator_axis
+{
+	trigger axis
+	{
+		trigger antenna axis
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////*** DOORS STUFF ***//////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+phasedoor1
+{
+	spawn
+	{
+		wait 200
+		gotomarker phasedoor1_pc2 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker phasedoor1_pc1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+phasedoor2
+{
+	spawn
+	{
+		wait 200
+		gotomarker phasedoor2_pc2 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker phasedoor2_pc1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+phasedoor3
+{
+	spawn
+	{
+		wait 200
+		gotomarker phasedoor3_pc2 1000
+	}
+	
+	trigger move
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker phasedoor3_pc1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+
+
+maindoor_button
+{
+	spawn
+	{
+		wait 200
+	}
+	
+	activate
+	{		
+		trigger maindoorr move_up
+		trigger maindoorl move_up
+		
+		trigger maindoorr move_down
+		trigger maindoorl move_down
+	}
+}
+
+
+maindoor_lever
+{
+	spawn
+	{
+		wait 200
+		trigger maindoor_lever move_down
+	}
+	
+	trigger move_down
+	{
+		wait 200
+		faceangles 0 0 -1 750
+	}
+	
+	trigger move_up
+	{
+		wait 200
+		faceangles 0 0 -25 750
+	}
+}
+
+maindoor_lever1
+{
+	spawn
+	{
+		wait 200
+		trigger maindoor_lever1 move_down
+	}
+	
+	trigger move_down
+	{
+		wait 200
+		faceangles -1 0 0 750
+	}
+	
+	trigger move_up
+	{
+		wait 200
+		faceangles -25 0 0 750
+	}
+}
+
+maindoorr
+{
+	spawn
+	{
+		wait 200
+		gotomarker maindoorr_pc2 1000
+	}
+	
+	trigger move_up
+	{
+		// open
+		// abort if working or opened
+		accum 6 abort_if_equal 2
+		accum 6 abort_if_equal 1
+		// set status working
+		accum 6 set 2
+		
+		trigger maindoor_lever move_up
+		trigger maindoor_lever1 move_up
+		wm_objective_status 6 1 1
+		wm_objective_status 6 0 0
+		
+		wait 500
+		playsound sound/movers/misc/big_gate1.wav
+		wait 400
+		playsound sound/movers/misc/big_gate2.wav looping forever
+		gotomarker maindoorr_pc1 45 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav
+		// set status opened
+		accum 6 set 1
+	}
+	
+	trigger move_down
+	{
+		// close
+		// abort if working or closed
+		accum 6 abort_if_equal 2
+		accum 6 abort_if_equal 0
+		// set status working
+		accum 6 set 2
+		
+		trigger maindoor_lever move_down
+		trigger maindoor_lever1 move_down
+		wm_objective_status 6 1 0
+		wm_objective_status 6 0 1
+		
+		wait 500
+		playsound sound/movers/misc/big_gate1.wav
+		wait 400
+		playsound sound/movers/misc/big_gate2.wav looping forever
+		gotomarker maindoorr_pc2 45 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav
+		// set status closed
+		accum 6 set 0
+	}
+}
+
+maindoorl
+{
+	spawn
+	{
+		wait 200
+		gotomarker maindoorl_pc2 1000
+	}
+	
+	trigger move_up
+	{
+		// open
+		// abort if working or opened
+		accum 6 abort_if_equal 2
+		accum 6 abort_if_equal 1
+		// set status working
+		accum 6 set 2
+		
+		wm_announce "Main blast door opening!"
+		
+		wait 500
+		playsound sound/movers/misc/big_gate1.wav
+		wait 400
+		playsound sound/movers/misc/big_gate2.wav looping forever
+		gotomarker maindoorl_pc1 45 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav
+		// set status opened
+		accum 6 set 1
+	}
+	
+	trigger move_down
+	{
+		// close
+		// abort if working or closed
+		accum 6 abort_if_equal 2
+		accum 6 abort_if_equal 0
+		// set status working
+		accum 6 set 2
+		
+		wm_announce "Main blast door closing!"
+		
+		wait 500
+		playsound sound/movers/misc/big_gate1.wav
+		wait 400
+		playsound sound/movers/misc/big_gate2.wav looping forever
+		gotomarker maindoorl_pc2 45 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav
+		// set status closed
+		accum 6 set 0
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////*** ROCKET / MISSILE / LADDER STUFF ***///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+rocket_button
+{
+	spawn
+	{
+		wait 200
+	}
+	
+	activate
+	{		
+		trigger rocket move
+		wait 200
+		kill rocket_button
+		wm_announce "^1THE MISSILE HAS BEEN LAUNCHED!"
+	}
+}
+
+
+rocket
+{
+	spawn
+	{
+		wait 200
+		gotomarker rocket_pc2 1000
+	}
+	
+	trigger move
+	{
+		wait 5000
+		
+		setstate rocket default
+		playsound sound/weapons/rocket/rocket_fly.wav looping forever
+		gotomarker rocket_pc1 1000 
+		wait 1600
+		alertentity roofexplosion
+		stopsound
+		playsound sound/weapons/rocket/rocket_expl.wav
+		wait 500	
+		setstate rocket invisible
+		setstate blast default
+		alertentity rocket_explo
+		alertentity rocketblast
+		wait 500
+		setstate blast invisible
+		trigger ammoladder move
+		wm_objective_status 7 1 1		
+		wm_objective_status 7 0 2
+	}
+}
+		
+roofexplosion
+{
+	spawn
+	{
+		wait 7000
+	}
+	death
+	{
+		wait 200
+	}
+}
+
+rocketblast
+{
+	spawn
+	{
+		wait 200
+	}
+	death
+	{
+		wait 200
+	}
+}
+
+rocket_explo
+{
+	
+	spawn
+	{
+		wait 200
+	}
+	death
+	{
+		wait 200
+	}
+}	
+
+ammoladder
+{
+	spawn
+	{
+		wait 200
+		gotomarker ladder_pc2 1000
+	}
+	
+	trigger move
+	{
+		wait 200
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker ladder_pc1 200 
+		stopsound	
+		playsound sound/movers/misc/garage_door_end_01.wav
+		setstate ammoladder2 default
+	}
+}
+
+tunnelbarrier
+{
+	spawn
+	{
+		wait 200
+
+		constructible_class 2
+
+		trigger tunnelbarrier setup
+	}
+
+	trigger setup
+	{
+		setstate tunnel_barrier_materials_1 invisible
+		setstate tunnel_barrier_clip_1 invisible
+		setstate tunnel_barrier_flag_1 invisible
+	}
+
+	buildstart final
+	{
+		setstate tunnel_barrier_materials_1 default
+		setstate tunnel_barrier_clip_1 default
+		setstate tunnel_barrier_flag_1 default
+	}
+
+	built final
+	{
+		setstate tunnel_barrier_materials_1 invisible
+		setstate tunnel_barrier_clip_1 invisible
+		setstate tunnel_barrier_flag_1 invisible
+
+		wm_announce	"Axis have built the Tunnel Barrier!"
+
+	}
+
+	death
+	{
+		setstate tunnel_barrier_materials_1 default
+		setstate tunnel_barrier_clip_1 default
+		setstate tunnel_barrier_flag_1 default
+
+		wm_announce	"Allies have blown the Tunnel Barrier!"
+
+	}
+
+	decayed final
+	{
+		setstate tunnel_barrier_materials_1 default
+		setstate tunnel_barrier_clip_1 default
+		setstate tunnel_barrier_flag_1 default
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+////////////////////// *** ALLIED CP CP *** /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+allied_radio_built
+{
+   spawn
+   {
+      wait 400
+
+      constructible_class 2
+
+      trigger allied_radio_built setup
+      
+      disablespeaker allied_compost_sound    
+   }
+
+   trigger setup
+   {     
+      setchargetimefactor 1 soldier 1
+      setchargetimefactor 1 lieutenant 1
+      setchargetimefactor 1 medic 1
+      setchargetimefactor 1 engineer 1
+      setchargetimefactor 1 covertops 1
+      sethqstatus 1 0
+   }
+
+   buildstart final
+   {
+      trigger allied_radio_built_model trans
+      trigger neutral_radio_closed_model  hide
+   }
+
+   built final
+   {
+      trigger allied_radio_built_model show
+      trigger allied_radio_built_model enable_allied_features
+
+      enablespeaker allied_compost_speaker
+   }
+
+   decayed final
+   {
+      trigger allied_radio_built_model hide
+      trigger neutral_radio_closed_model show
+   }
+
+   death
+   {
+      trigger allied_radio_built_model hide
+      trigger allied_radio_built_model disable_allied_features
+      trigger neutral_radio_closed_model show
+
+      disablespeaker allied_compost_sound
+   }
+}
+
+allied_radio_built_model
+{
+   spawn
+   {
+      wait 400
+      setstate allied_radio_built_model invisible
+      globalaccum 2 set 0
+   }
+
+   trigger show
+   {
+      setstate allied_radio_built_model default
+      setstate allied_radio_built default
+      
+      setstate alliedhqradio_toi default
+   }
+
+   trigger hide
+   {
+      setstate allied_radio_built_model invisible
+      //setstate allied_radio_built invisible
+      //setstate alliedhqradio_toi invisible
+   }
+
+   trigger trans
+   {
+      setstate allied_radio_built_model underconstruction
+      setstate allied_radio_built default
+      
+      //setstate alliedhqradio_toi invisible
+   }
+
+   trigger enable_allied_features
+   {
+	   
+      setchargetimefactor 1 soldier 0.75
+      setchargetimefactor 1 lieutenant 0.75
+      setchargetimefactor 1 medic 0.75
+      setchargetimefactor 1 engineer 0.75
+      setchargetimefactor 1 covertops 0.75
+      sethqstatus 1 1
+
+      wm_announce   "Allied Command Post constructed. Charge speed increased!"
+      
+      globalaccum 7 set 1
+            
+      // *----------------------------------- vo ------------------------------------------*
+	wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+      
+	wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+	wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+      // *----------------------------------- vo ------------------------------------------*
+
+      wm_objective_status 2 0 2
+      wm_objective_status 2 1 1
+      
+      // ENABLE NEW SPAWN
+      trigger cp_spawn_wobj on
+      
+      // If first time, then set new spawn as default
+      globalaccum 2 abort_if_equal 1
+      globalaccum 2 set 1      
+      
+      setautospawn    "CP Spawn"   1
+   }
+
+   trigger disable_allied_features
+   {
+      // Some kind of UI pop-up to alert players
+      wm_announce   "Axis team has destroyed the Allied Command Post!"
+
+      //DISABLE NEW SPAWN
+      trigger cp_spawn_wobj off
+      
+      globalaccum 7 set 0
+      
+      // *----------------------------------- vo ------------------------------------------*    
+      wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+	  wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+      // *----------------------------------- vo ------------------------------------------*
+
+      setchargetimefactor 1 soldier 1
+      setchargetimefactor 1 lieutenant 1
+      setchargetimefactor 1 medic 1
+      setchargetimefactor 1 engineer 1
+      setchargetimefactor 1 covertops 1
+      sethqstatus 1 0
+
+      wm_objective_status 2 0 0
+      wm_objective_status 2 1 0
+   }
+} 
+
+neutral_radio_closed_model
+{
+   spawn
+   {
+      wait 400
+      //setstate neutral_radio_closed_model default
+      trigger neutral_radio_closed_model show
+                  
+      sethqstatus 0 0
+
+      wm_objective_status 2 1 0
+      wm_objective_status 2 0 0     
+      
+      //setstate alliedhqradio_toi default
+      //setstate alliedhqradio_toi invisible
+      
+   }
+
+   trigger show
+   {
+      setstate neutral_radio_closed_model default
+      //setstate neutral_radio_closed default
+      
+      //setstate alliedhqradio_toi invisible
+   }
+
+   trigger hide
+   {
+      setstate neutral_radio_closed_model invisible
+      //setstate neutral_radio_closed invisible
+   }
+} 
+
+neutral_radio_closed
+{
+   spawn
+   {
+      wait 400    
+   }
+}
+
+cp_spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	  setstate cp_spawn_spawns invisible
+	}
+} 
+
+cp_spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	  setstate cp_spawn_wobj invisible
+	}
+	trigger off
+    {
+      setstate cp_spawn_wobj invisible
+      setstate cp_spawn_spawns invisible
+	  alertentity cp_spawn_spawns
+	  wm_announce "Allied Command Post spawn disabled!"
+    }
+    trigger on
+    {
+      setstate cp_spawn_wobj default
+      setstate cp_spawn_spawns default
+	  alertentity cp_spawn_spawns
+      wm_announce "Allied Command Post spawn active!"
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+allied_spawn
+{
+   	spawn
+	{
+	  wait 200
+	}
+} 
+
+allied_spawn_flag
+{
+   	spawn
+	{
+	  wait 200
+	}
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////// *** AXIS CP CP *** /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+axis_cp_built
+{
+	spawn
+	{
+		wait 50
+		constructible_class 2
+		constructible_chargebarreq 1.0
+		constructible_constructxpbonus 7
+		constructible_destructxpbonus 7
+		trigger self closed
+	}
+
+	buildstart final
+	{
+		trigger self underconstruction
+	}
+	built final
+	{
+		trigger self fixed
+		trigger self enable
+
+	}
+	decayed final
+	{
+		trigger self closed
+	}
+	death
+	{
+		trigger self damaged
+		trigger self disable
+	}
+
+	trigger underconstruction
+	{
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_built_model underconstruction
+		setstate axis_cp_damaged_model invisible
+	}
+	trigger closed
+	{
+		setstate axis_cp_closed_model default
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_damaged_model invisible
+	}
+	trigger fixed
+	{
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_built_model default
+		setstate axis_cp_damaged_model invisible
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+      		// *----------------------------------- vo ------------------------------------------*
+
+		wm_announce   "Axis Command Post constructed. Charge speed increased!"
+
+	}
+	trigger damaged
+	{
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_damaged_model default
+
+		 // *----------------------------------- vo ------------------------------------------*    
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"     		 
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+      		// *----------------------------------- vo ------------------------------------------*
+
+		wm_announce   "Allied team has destroyed the Axis Command Post!"
+
+	}
+
+	trigger enable
+	{
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+		//enablespeaker sound_cp_axis
+	}
+	trigger disable
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 1 0
+		//disablespeaker sound_cp_axis
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////*** TANK STUFF ***///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+tank_turret
+{
+	spawn
+	{
+		wait 200
+	}
+	
+	trigger facewall
+	{
+		trigger tank_turret spin_start
+		faceangles 0 150 0 1000
+		trigger tank_turret spin_stop
+		trigger tank_turret spin_fire
+		alertentity sidewall
+	}
+	
+	trigger spin_fire
+	{
+		playsound sound/vehicles/tank/tank_fire.wav volume 560
+	}
+
+	trigger spin_start
+	{
+		stopsound
+		playsound sound/vehicles/tank/turret_spin.wav looping volume 155
+	}
+
+	trigger spin_stop
+	{
+		stopsound
+		playsound sound/vehicles/tank/turret_end.wav volume 135
+	}
+}
+
+sidewall
+{
+	spawn
+	{
+		set
+		{
+			health "10000"
+		}
+		wait 200
+	}
+	death
+	{
+		alertentity sidewall_explo
+	}
+}
+
+sidewall_explo
+{
+	spawn
+	{
+		wait 200
+	}
+}
+
