@@ -1,6 +1,8 @@
--- altnames.lua by x0rnn
+-- altnames.lua by x0rnn, limited to players with level > x in shrubbot.cfg
 -- saves all unique GUID and player name pairs to a text file
 -- !altnames <clientNum> (in console, doesn't work in chat for some reason) will list all the names the player used on the server
+-- modify etadmin_mod/bin/shrub_management.pl line 161 to:
+-- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
 
 filename = "altnames.log"
 shrubbot = "shrubbot.cfg"
