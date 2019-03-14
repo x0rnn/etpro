@@ -1,4 +1,4 @@
--- automute.lua by x0rnn
+-- automute.lua by x0rnn -- use shrubbot version instead
 -- create a filename called "automuted.txt"
 -- the format must be:
 -- guid	dd/mm/yyyy	reason
