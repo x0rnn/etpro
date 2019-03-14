@@ -252,11 +252,12 @@ function getConfig(map)
 -- Seawall Battery
     elseif map == "battery" then
         c.spawns[1] = {name = "Axis Main Bunker", state = PROTECT_AXIS, pos = {3000, -5300, 1016}, radius2 = 400}
-        c.spawns[2] = {name = "Allied East Beach", state = PROTECT_ALLIES, pos = {4565, -620, 113}, radius2 = 550}
-        c.spawns[3] = {name = "Allied West Beach", state = PROTECT_ALLIES, pos = {544, -760, 113}, radius2 = 400}
-        c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
-        c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
-        c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
+        c.spawns[2] = {name = "Allied East Beach", state = PROTECT_ALLIES, pos = {4565, -620, 113}, radius2 = 450}
+        c.spawns[3] = {name = "Allied East Beach 2", state = PROTECT_ALLIES, pos = {5136, -1184, 488}, radius2 = 450}
+        c.spawns[4] = {name = "Allied West Beach", state = PROTECT_ALLIES, pos = {544, -760, 113}, radius2 = 400}
+        c.spawns[5] = {name = "Command Post spawnt", state = NO_PROTECT}
+        c.spawns[6] = {name = "West Bunker Allies", state = NO_PROTECT}
+        c.spawns[7] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
 -- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
@@ -291,9 +292,26 @@ function getConfig(map)
 -- Adlernest B4 16.11.2008
     elseif map == "adlernest" then
         c.spawns[1] = {state = PROTECT_ALLIES, radius2 = 570}
-        c.spawns[4] = {name = "Tank", state = PROTECT_ALLIES, pos = {2513,-321,-95}, radius2 = 540}
+        c.spawns[4] = {name = "Tank", state = PROTECT_ALLIES, pos = {2513, -321,-95}, radius2 = 540}
         c.spawns[2] = {state = NO_PROTECT}
-        c.spawns[3] = {name = "Axis", state = PROTECT_AXIS, pos = {-1534,-305, 72}, radius2 = 820}
+        c.spawns[3] = {name = "Axis", state = PROTECT_AXIS, pos = {-1534, -305, 72}, radius2 = 820}
+-- Adlernest_roof_b4
+    elseif map == "adlernest_roof_b4" then
+        c.spawns[1] = {name = "Tank", state = PROTECT_ALLIES, pos = {3476, -1037, -95}, radius2 = 800}
+        c.spawns[2] = {name = "CP Spawn", state = NO_PROTECT}
+        c.spawns[3] = {name = "Axis1", state = PROTECT_AXIS, pos = {-1949, -725, 72}, radius2 = 334}
+        c.spawns[4] = {name = "Axis2", state = PROTECT_AXIS, pos = {-1925, -50, 72}, radius2 = 334}
+        c.spawns[5] = {name = "Axis3", state = PROTECT_AXIS, pos = {-978, -445, 72}, radius2 = 334}
+        c.spawns[6] = {name = "Axis4", state = PROTECT_AXIS, pos = {-1464, -596, 72}, radius2 = 334}
+        c.spawns[7] = {name = "Axis5", state = PROTECT_AXIS, pos = {-1241, -212, 72}, radius2 = 334}
+        c.spawns[8] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 72}, radius2 = 447}
+        c.spawns[9] = {name = "Allies Roof1", state = PROTECT_ALLIES, pos = {520, -2522, 546}, radius2 = 650}
+        c.spawns[10] = {name = "Allies Roof2", state = PROTECT_ALLIES, pos = {-29, -2296, 296}, radius2 = 200}
+        c.spawns[11] = {name = "Axis Roof1", state = PROTECT_AXIS, pos = {-1543, 264, 72}, radius2 = 293}
+        c.spawns[12] = {name = "Axis Roof2", state = PROTECT_AXIS, pos = {-1543, 567, 72}, radius2 = 365}
+        c.spawns[13] = {name = "Axis Roof3", state = PROTECT_AXIS, pos = {-1277, -386, 296}, radius2 = 400}
+        c.spawns[14] = {name = "Axis Roof4", state = PROTECT_AXIS, pos = {-1701, -149, 296}, radius2 = 200}
+
 -- Braundorf B4 16.11.2008
         elseif map == "braundorf_b4" or map == "braundorf_final" then
         c.spawns[1] = {name = "Factory District", state = NO_PROTECT, pos = {3505, -2355, 320}, radius2 = 375}
@@ -407,6 +425,13 @@ function getConfig(map)
         c.spawns[1] = {name = "Allies", state = PROTECT_ALLIES}
         c.spawns[2] = {name = "Outpost", state = NO_PROTECT} --Axis/Allies
         c.spawns[3] = {name = "Axis", state = PROTECT_AXIS}
+        c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "captured the Outpost"}
+-- Venice TC RC2
+    elseif map == "venice_tcrc2_v1" then
+        c.spawns[1] = {name = "Allied", state = PROTECT_ALLIES, pos = {-2464, -1202, -213}, radius2 = 483}
+        c.spawns[2] = {name = "Outpost", state = NO_PROTECT, pos = {517, 1286, -135}, radius2 = 381} --Axis/Allies
+        c.spawns[3] = {name = "Axis Spawn North", state = PROTECT_AXIS, pos = {4859, 1708, -199}, radius2 = 500}
+        c.spawns[4] = {name = "Axis Spawn South", state = PROTECT_AXIS, pos = {2544, -2784, -215}, radius2 = 800}
         c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "captured the Outpost"}
 -- Reactor
     elseif map == "reactor_final" then
