@@ -236,7 +236,7 @@ function getConfig(map)
     elseif map == "caen2" then
         c.spawns[1] = {name = "TOWN", state = NO_PROTECT}
         c.spawns[2] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {-1690, -2200, 310}, radius2 = 600}
-        c.spawns[3] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {-2120, 6130, 570}, radius2 = 600}
+        c.spawns[3] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {-2120, 6130, 570}, radius2 = 523}
         c.actions[1] = {spawn = 1, newstate = PROTECT_AXIS, trigger = "The Axis are moving the Tank!"} 
 -- snatch3 29.04.2010
     elseif map == "snatch3" then
