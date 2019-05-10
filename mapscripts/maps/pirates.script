@@ -1,0 +1,1077 @@
+//Pirates Final
+
+game_manager
+{
+	spawn
+	{
+
+        // Harlekin - Roof over alies beach spawn
+        create
+        {
+          scriptName "spawnroof1"
+          classname "func_fakebrush"
+          origin "1524 -874 1000"
+          contents 1  // SOLID
+          mins "-325 -450 -44"
+          maxs "325 450 44"
+        }
+		
+		// Game rules
+		wm_axis_respawntime	25
+		wm_allied_respawntime	20
+		wm_number_of_objectives 6
+		wm_set_round_timelimit	15
+
+		// Objectives
+		// 1: Capture old city spawn
+		// 2: Destroy main entrance
+		// 3: Destroy side entrance
+		// 4: Steal goldbars
+		// 5: Allied command post
+		// 6: Axis command post
+
+		wm_set_main_objective		1	0
+		wm_set_main_objective		1	1
+
+		wm_objective_status 1 1 0
+		wm_objective_status 1 0 0
+		wm_objective_status 2 1 0
+		wm_objective_status 2 0 0
+		wm_objective_status 3 1 0
+		wm_objective_status 3 0 0
+		wm_objective_status 4 1 0
+		wm_objective_status 4 0 0
+		wm_objective_status 5 1 0
+		wm_objective_status 5 0 0
+		wm_objective_status 6 1 0
+		wm_objective_status 6 0 0
+
+		// Stopwatch mode defending team (0=Axis, 1=Allies)
+		wm_set_defending_team	0
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies)
+		wm_setwinner	0
+
+		accum 1 set 0		        // Set counter for the gold bars secured
+		globalaccum 1 set 0		// Set counter for the gold bars stolen
+		globalaccum 2 set 0		// set counter for entrances destroyed
+
+		wait 500
+		// spawns:
+		// Beach Spawn 	- Allied
+		// Old City 	- Axis / Allied
+		// Courtyard 	- Allied
+		// Seaport 	- Axis
+		
+		setautospawn "Beach Spawn" 1
+		setautospawn "Old City" 0
+
+		disablespeaker allies_compost_sound
+		disablespeaker axis_compost_sound
+
+		setstate dummygate invisible
+
+		// Change objective Icon
+		remapshader "sprites/objective" "pirates/objective"
+
+		// Change flags
+		remapshader "models/multiplayer/flagpole/american" "textures/pirates/env/p_usaflag"		
+		remapshader "models/multiplayer/flagpole/german" "textures/pirates/env/p_axisflag"
+
+		remapshader "models/mapobjects/flag/flag_dam" "textures/pirates/env/p_flag"
+		
+		remapshaderflush
+
+		// wait for everything to settle
+		wait 500
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "pirates_axis_city_defend"
+		wm_addteamvoiceannounce 0 "pirates_axis_entrances_defend"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "pirates_allies_city_capture"
+		wm_addteamvoiceannounce 1 "pirates_allies_entrances_destroy"
+
+		wm_teamvoiceannounce 0 "pirates_axis_city_defend"
+		wm_teamvoiceannounce 0 "pirates_axis_entrances_defend"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "pirates_allies_city_capture"
+		wm_teamvoiceannounce 1 "pirates_allies_entrances_destroy"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger stolen_gold
+	{
+		accum 1 inc 1			// one gold bar secured
+		accum 1 trigger_if_equal 1 game_manager crate1_secured
+		accum 1 trigger_if_equal 2 game_manager crate2_secured
+
+		trigger game_manager checkgame		// Check for end of game
+	}	
+
+	trigger checkgame
+	{
+		accum 1 abort_if_not_equal 2
+		wm_setwinner	1
+		wm_announce "Allied team secured both Gold Crates!"
+
+		wait 2000
+		wm_endround
+	}
+
+
+////////****** VO Crate Sounds & setstates***********
+
+	trigger crate1_stolen
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold1_taken"
+		wm_teamvoiceannounce 1 "pirates_allies_gold1_taken"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger crate2_stolen
+	{
+		trigger goldbars_cm_marker hide
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold2_taken"
+		wm_teamvoiceannounce 1 "pirates_allies_gold2_taken"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger crate1_secured
+	{
+		trigger gold_crate_1 visible
+		trigger gold_trans_1 invisible		
+
+		wm_announce "Allied team has secured the first Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold1_secured"
+		wm_teamvoiceannounce 1 "pirates_allies_gold1_secured"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger crate2_secured
+	{
+		trigger gold_crate_2 visible
+		trigger gold_trans_2 invisible
+		
+		wm_announce "Allied team has secured the second Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold2_secured"
+		wm_teamvoiceannounce 1 "pirates_allies_gold2_secured"
+
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger crate1_dropped
+	{
+		wm_announce "Allied team has dropped the first Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold1_lost"
+		wm_teamvoiceannounce 1 "pirates_allies_gold1_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger crate2_dropped
+	{
+		wm_announce "Allied team has dropped the second Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold2_lost"
+		wm_teamvoiceannounce 1 "pirates_allies_gold2_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger crate1_returned
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold1_returned"
+		wm_teamvoiceannounce 1 "pirates_allies_gold1_returned"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger crate2_returned
+	{
+		trigger goldbars_cm_marker show		
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold2_returned"
+		wm_teamvoiceannounce 1 "pirates_allies_gold2_returned"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+////////****** END VO Crate Sounds**********
+
+////////====== VO entrance Sounds=======
+
+	trigger vo_entrance
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_gold_defend"
+		wm_teamvoiceannounce 1 "pirates_allies_gold_get"
+		
+		wm_addteamvoiceannounce 0 "pirates_axis_gold_defend"
+		wm_addteamvoiceannounce 1 "pirates_allies_gold_get"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_removeteamvoiceannounce 0 "pirates_axis_entrances_defend"
+		wm_removeteamvoiceannounce 0 "pirates_axis_city_defend"
+
+		wm_removeteamvoiceannounce 1 "pirates_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 1 "pirates_allies_city_capture"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+
+////////====== END VO entrance Sounds=======
+	
+
+		
+
+	trigger maindoor1_destroyed
+	{
+		wm_objective_status 2 1 1
+		wm_objective_status 2 0 2
+
+		wm_objective_status 1 1 1
+		wm_objective_status 1 0 2
+
+		wm_set_main_objective		3	0
+		wm_set_main_objective		3	1
+
+		
+		
+		
+		setstate dummygate default
+
+		
+		wm_announce	"Allies have breached the Main Entrance and secured the Old City!"
+
+		wait 1000
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "pirates_axis_entrance1_destroyed"
+		wm_teamvoiceannounce 1 "pirates_allies_entrance1_destroyed"
+		// *---------------------------------------------------------------------------------*
+
+		globalaccum 2 trigger_if_equal 1 game_manager vo_entrance
+
+		trigger tdoor_main boom_door_is_gone
+		alertentity team_side_explo
+		
+		globalaccum 2 abort_if_greater_than 1
+		trigger flag kill
+		
+		trigger beach_wobj off // no more beach spawn 
+		 
+		
+	}
+
+	trigger sidedoor1_destroyed
+	{
+		wm_objective_status 3 1 1
+		wm_objective_status 3 0 2
+
+		wm_objective_status 1 1 1
+		wm_objective_status 1 0 2
+
+		wm_set_main_objective		4	0
+		wm_set_main_objective		4	1
+
+		
+
+		wm_announce	"Allies have breached the Side Entrance and secured the Old City!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		
+		wm_teamvoiceannounce 0 "pirates_axis_entrance2_destroyed"
+		wm_teamvoiceannounce 1 "pirates_allies_entrance2_destroyed"
+
+		// *---------------------------------------------------------------------------------*
+
+		globalaccum 2 trigger_if_equal 1 game_manager vo_entrance
+
+		trigger tdoor_side boom_door_is_gone 
+		alertentity team_main_explo
+
+		globalaccum 2 abort_if_greater_than 1
+		trigger flag kill
+
+		trigger beach_wobj off // no more spawning on the beach
+		
+	}
+
+	
+}
+
+
+// ================================================
+// =============== ENTRANCES =================
+// ================================================
+
+maindoor1 // Front door of complex
+{
+	spawn
+	{
+		wait 50
+		constructible_class	3
+	}
+
+	death
+	{
+		globalaccum 2 inc 1
+		alertentity maindoor_rubble1
+		trigger game_manager maindoor1_destroyed
+	}
+}
+
+sidedoor1 // Side door of complex
+{
+	spawn
+	{
+		wait 50
+		constructible_class	3
+	}
+
+	death
+	{
+		globalaccum 2 inc 1
+		alertentity sidedoor_rubble1
+		trigger game_manager sidedoor1_destroyed
+	}
+}
+
+// ================================================
+// =========== SPAWN POINT CONTROLS ===============
+// ================================================
+flag
+{
+	spawn
+	{
+		accum 0 set 0	// 0-Axis, 1-Allied
+	}
+
+	trigger axis_capture	// Flag has been claimed by an axis player
+	{
+		accum 0 abort_if_equal 0 // Do Axis already own the flag?
+
+		accum 0 set 0 // Axis own the flag
+		wm_announce	"Axis reclaim the Old City!"
+
+
+		wm_objective_status 1 1 2
+		wm_objective_status 1 0 1
+
+		
+		setautospawn "Beach Spawn" 1
+		setautospawn "Old City" 0
+
+		alertentity flag_wobj
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "pirates_axis_city_defend"
+
+		wm_addteamvoiceannounce 1 "pirates_allies_city_capture"
+
+		wm_teamvoiceannounce 0 "pirates_axis_city_captured"
+
+		wm_teamvoiceannounce 1 "pirates_allies_city_lost"
+
+		wm_removeteamvoiceannounce 0 "pirates_axis_entrances_defend"
+
+		wm_removeteamvoiceannounce 1 "pirates_allies_entrances_destroy"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_capture	// Flag has been claimed by an allied player
+	{
+		accum 0 abort_if_equal 1 // Do Allies already own flag?
+
+		accum 0 set 1 // Allied own the flag
+		wm_announce	"Allies capture the Old City!"
+
+		wm_objective_status 1 1 1
+		wm_objective_status 1 0 2
+
+		// spawns:
+		// Beach Spawn
+		// Old City
+		// Seaport
+		setautospawn "Old City" 1
+		setautospawn "Seaport" 0
+
+		alertentity flag_wobj
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "pirates_axis_entrances_defend"
+		wm_addteamvoiceannounce 1 "pirates_allies_entrances_destroy"		
+
+		wm_teamvoiceannounce 0 "pirates_axis_city_lost"
+		wm_teamvoiceannounce 0 "pirates_axis_entrances_defend"
+
+		wm_teamvoiceannounce 1 "pirates_allies_city_captured"
+		wm_teamvoiceannounce 1 "pirates_allies_entrances_destroy"
+
+		wm_removeteamvoiceannounce 0 "pirates_axis_city_defend"
+		wm_removeteamvoiceannounce 1 "pirates_allies_city_capture"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger kill
+	{
+		trigger flag force_allied
+		globalaccum 2 set 1
+		remove
+	}
+
+	trigger force_allied
+	{
+		accum 0 abort_if_equal 1 // Do Allies already own flag?
+
+		wm_objective_status 1 1 1
+		wm_objective_status 1 0 2
+
+		// spawns:
+		// Beach Spawn
+		// Old City
+		// Seaport
+		setautospawn "Old City" 1
+		setautospawn "Seaport" 0
+
+		alertentity flag_wobj
+		alertentity fortspawns
+	}
+
+}
+
+// *********************************************
+// ************** COMMAND POST *****************
+// *********************************************
+axis_radio_destroyed
+{
+	spawn
+	{
+		wait 200
+		accum 0 set 0
+		setstate axis_radio_destroyed invisible
+		setstate axis_radio_destroyed_model invisible
+	}
+
+	trigger hide
+	{
+		setstate axis_radio_destroyed invisible
+		setstate axis_radio_destroyed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 0
+		setstate axis_radio_destroyed default
+		setstate axis_radio_destroyed_model default
+	}
+
+	trigger enable
+	{
+		accum 0 set 1
+	}
+
+	trigger disable
+	{
+		accum 0 set 0
+	}
+}
+
+allied_radio_destroyed
+{
+	spawn
+	{
+		wait 200
+		accum 0 set 0
+		setstate allied_radio_destroyed invisible
+		setstate allied_radio_destroyed_model invisible
+	}
+
+	trigger hide
+	{
+		setstate allied_radio_destroyed invisible
+		setstate allied_radio_destroyed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 0
+		setstate allied_radio_destroyed default
+		setstate allied_radio_destroyed_model default
+	}
+
+	trigger enable
+	{
+		accum 0 set 1
+	}
+
+	trigger disable
+	{
+		accum 0 set 0
+	}
+}
+
+neutral_radio_closed
+{
+	spawn
+	{
+		accum 0 set 0
+	}
+
+	trigger hide
+	{
+		setstate neutral_radio_closed invisible
+		setstate neutral_radio_closed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 1
+		setstate neutral_radio_closed default
+		setstate neutral_radio_closed_model default
+	}
+
+	trigger disable
+	{
+		accum 0 set 1
+	}
+}
+
+allied_radio_built
+{
+	spawn
+	{
+		wait 50
+		constructible_class	2
+		trigger allied_radio_built setup
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+	}
+
+	buildstart final
+	{
+		trigger allied_radio_built_model trans
+		trigger axis_radio_destroyed hide
+		trigger allied_radio_destroyed hide
+		trigger neutral_radio_closed hide
+	}
+
+	built final
+	{
+		trigger allied_radio_built_model show
+		trigger allied_radio_destroyed enable
+		trigger axis_radio_destroyed disable
+		trigger neutral_radio_closed 	disable
+		trigger allied_radio_built_model enable_allied_features
+		
+		trigger alliedcpspawns_obj on
+		enablespeaker allies_compost_sound
+	}
+
+	decayed final
+	{
+		trigger allied_radio_built_model hide
+		trigger allied_radio_destroyed show
+		trigger axis_radio_destroyed show
+		trigger neutral_radio_closed show
+	}
+
+	death
+	{
+		trigger allied_radio_built_model hide
+		trigger allied_radio_destroyed show
+		trigger allied_radio_built_model disable_allied_features
+
+		trigger alliedcpspawns_obj off
+		disablespeaker allies_compost_sound
+	}
+}
+
+axis_radio_built
+{
+	spawn
+	{
+		wait 50
+		constructible_class	2
+
+		wait 150
+		trigger axis_radio_built setup
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+	}
+
+	buildstart final
+	{
+		trigger axis_radio_built_model trans
+		trigger axis_radio_destroyed hide
+		trigger allied_radio_destroyed hide
+		trigger neutral_radio_closed hide
+	}
+
+	built final
+	{
+		trigger axis_radio_built_model show
+		trigger axis_radio_destroyed enable
+		trigger allied_radio_destroyed enable
+		trigger neutral_radio_closed 	disable
+		trigger axis_radio_built_model enable_axis_features
+
+		enablespeaker axis_compost_sound
+	}
+
+	decayed final
+	{
+		trigger axis_radio_built_model hide
+		trigger axis_radio_destroyed show
+		trigger allied_radio_destroyed show
+		trigger neutral_radio_closed show
+	}
+
+	death
+	{
+		trigger axis_radio_built_model hide
+		trigger axis_radio_destroyed show
+		trigger axis_radio_built_model disable_axis_features
+
+		disablespeaker axis_compost_sound
+	}
+}
+
+axis_radio_built_model
+{
+	spawn
+	{
+		accum 1 set 0
+		wait 200
+		setstate axis_radio_built_model invisible
+	}
+
+	trigger show
+	{
+		setstate axis_radio_built_model default
+	}
+
+	trigger hide
+	{
+		setstate axis_radio_built_model invisible
+	}
+
+	trigger trans
+	{
+		setstate axis_radio_built_model underconstruction
+	}
+
+	trigger enable_axis_features
+	{
+		// axis built it
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		wm_objective_status	5 1 2
+		wm_objective_status	5 0 1
+		wm_objective_status	6 1 2
+		wm_objective_status	6 0 1
+
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger disable_axis_features
+	{
+		// axis lost it
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+
+		wm_objective_status	5 1 0
+		wm_objective_status	5 0 0
+		wm_objective_status	6 1 0
+		wm_objective_status	6 0 0
+
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+allied_radio_built_model
+{
+	spawn
+	{
+		accum 1 set 0
+		accum 2 set 0 // state of command post as far as the VO is concerned (0=not built, 1=built) - Wils
+		wait 200
+		setstate allied_radio_built_model invisible
+	}
+
+	trigger show
+	{
+		setstate allied_radio_built_model default
+		enablespeaker neutral_radio_sound
+	}
+
+	trigger hide
+	{
+		setstate allied_radio_built_model invisible
+		disablespeaker neutral_radio_sound
+	}
+
+	trigger trans
+	{
+		setstate allied_radio_built_model underconstruction
+	}
+
+	trigger alliedcompostvo
+	{
+		accum 2 abort_if_equal 1
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+	}
+		
+	trigger enable_allied_features
+	{
+		// allies built it
+		accum 1 set 1 // Is this ever used? - Wils
+		accum 2 set 1 // State of com post as far as VO is concerned (1=built)
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 0 1
+
+		wm_objective_status	5 1 1
+		wm_objective_status	5 0 2
+		wm_objective_status	6 1 1
+		wm_objective_status	6 0 2
+
+		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger disable_allied_features
+	{
+		// allies lost it
+		accum 2 set 0 // state of com post as far as VO is concerned (0=destroyed)
+		wm_announce	"Axis team has destroyed the Allied Command Post!"
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 0 0
+
+		wm_objective_status	5 1 0
+		wm_objective_status	5 0 0
+		wm_objective_status	6 1 0
+		wm_objective_status	6 0 0
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+
+
+
+alliedcpspawns_obj
+{
+	spawn
+	{
+		wait 50
+		setstate alliedcpspawns_obj invisible
+		setstate alliedcpspawns invisible
+	}
+
+	trigger on
+	{
+		setstate alliedcpspawns_obj default
+		setstate alliedcpspawns default
+	}
+
+	trigger off
+	{
+		setstate alliedcpspawns_obj invisible
+		setstate alliedcpspawns invisible
+	}
+}
+
+alliedcpspawns
+{
+	spawn
+	{
+		wait 50
+		setstate alliedcpspawns invisible
+	}
+}
+
+
+
+beach_wobj
+{
+	spawn
+	{
+		wait 50
+		
+	}
+
+	trigger off
+	{
+		setstate beach_wobj invisible
+		setstate beachspawns invisible
+	}
+}
+
+
+gold_crate_1
+{
+	spawn
+	{
+		trigger gold_crate_1 invisible
+	}
+
+	trigger visible
+	{
+		setstate gold_crate_1 default
+	}
+
+	trigger invisible
+	{
+		setstate gold_crate_1 invisible
+	}
+}
+
+gold_crate_2
+{
+	spawn
+	{
+		trigger gold_crate_2 invisible	
+	}
+
+	trigger visible
+	{
+		setstate gold_crate_2 default
+	}
+
+	trigger invisible
+	{
+		setstate gold_crate_2 invisible
+	}
+}
+
+gold_trans_1
+{
+	trigger visible
+	{
+		setstate gold_trans_1 default
+	}
+
+	trigger invisible
+	{
+		setstate gold_trans_1 invisible
+	}
+}
+
+gold_trans_2
+{
+	trigger visible
+	{
+		setstate gold_trans_2 default
+	}
+
+	trigger invisible
+	{
+		setstate gold_trans_2 invisible
+	}
+}
+
+goldbars_cm_marker
+{
+	spawn
+	{
+		
+	}
+
+	trigger show
+	{
+		setstate goldbars_cm_marker default
+	}
+
+	trigger hide
+	{
+		setstate goldbars_cm_marker invisible
+	}
+}
+
+
+truck_exitpoint // Exit point of map
+{
+	death
+	{
+		trigger game_manager stolen_gold
+	}
+}
+
+
+goldcrate1
+{
+	spawn
+	{
+	}
+
+	trigger stolen
+	{
+		globalaccum 1 inc 1
+		globalaccum 1 trigger_if_equal 1 game_manager crate1_stolen
+		globalaccum 1 trigger_if_equal 2 game_manager crate2_stolen
+	}
+
+	trigger dropped
+	{
+		globalaccum 1 trigger_if_equal 1 game_manager crate1_dropped
+		globalaccum 1 trigger_if_equal 2 game_manager crate2_dropped
+	}
+
+	trigger returned
+	{
+		globalaccum 1 inc -1
+		globalaccum 1 trigger_if_equal 0 game_manager crate1_returned
+		globalaccum 1 trigger_if_equal 1 game_manager crate2_returned
+	}
+}
+
+goldcrate2
+{
+	spawn
+	{
+	}
+
+	trigger stolen
+	{
+		globalaccum 1 inc 1
+		globalaccum 1 trigger_if_equal 1 game_manager crate1_stolen
+		globalaccum 1 trigger_if_equal 2 game_manager crate2_stolen
+	}
+
+	trigger dropped
+	{
+		globalaccum 1 trigger_if_equal 1 game_manager crate1_dropped
+		globalaccum 1 trigger_if_equal 2 game_manager crate2_dropped
+	}
+
+	trigger returned
+	{
+		globalaccum 1 inc -1
+		globalaccum 1 trigger_if_equal 0 game_manager crate1_returned
+		globalaccum 1 trigger_if_equal 1 game_manager crate2_returned
+	}
+}
+
+buoy
+{
+	spawn
+	{
+	 wait 50
+	  
+	 
+	}
+
+	
+}
+
+tdoor_side
+{
+	spawn
+	{
+		wait 50
+	}
+
+	trigger boom_door_is_gone
+	{
+		setstate tdoor_side invisible
+	}
+}
+
+tdoor_main
+{
+	spawn
+	{
+		wait 50
+	}
+
+	trigger boom_door_is_gone
+	{
+		setstate tdoor_main invisible
+	}
+}
+
+
+
+
+
+
+
+
