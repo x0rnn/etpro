@@ -16,8 +16,69 @@
 // mortis - satchel exploit fix part one
 // mortis - satchel exploit fix part two
 // Jump fix 1-4
+// Harlekin - 10th may 2019 - Axis Shelter spawn added (suggested by hazz) after gold is taken
 game_manager {
         spawn {
+
+	// ----- Harlekin Shelter Spawn Start -----
+	// info_limbo_flag
+	create
+	{
+		scriptName "shelterspawn_obj"
+		classname "team_WOLF_objective"
+		targetname "shelterspawn_obj"
+		origin "-278 -1919 64"       // z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+		spawnflags 1        // TEAM_AXIS(2)
+		description "Shelter Spawn"
+	}
+	setstate shelterspawn_obj invisible
+
+	// info_limbo_camera
+	create
+	{
+		classname "info_limbo_camera"
+		origin "-32 -2200 200" //"-2560 -7040 1008"
+		targetname "shelterspawn_obj_camera_new"
+		target "shelterspawn_obj"
+		scriptname "shelterspawn_obj_camera_new"
+	}
+	// spawn 1
+	create
+	{
+		scriptName "shelterspawn_spawn1"
+		classname "team_CTF_redspawn"
+		targetname "shelterspawn_spawn"
+		origin "-478 -1997 30"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+	// spawn 2
+	create
+	{
+		scriptName "shelterspawn_spawn2"
+		classname "team_CTF_redspawn"
+		targetname "shelterspawn_spawn"
+		origin "-478 -1919 30"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+	// spawn 3 - delayed
+	create
+	{
+		scriptName "shelterspawn_spawn3"
+		classname "team_CTF_redspawn"
+		targetname "shelterspawn_spawn"
+		origin "-478 -1842 30"
+		spawnflags 3        // TEAM_AXIS
+		angle "1"
+	}
+
+	setstate shelterspawn_spawn invisible
+	// ----- Harlekin Shelter Spawn END -----
+
+
+
+
                 // mortis - roof clip
                 create
                 {
@@ -916,7 +977,11 @@ crane_enabler {
                 //Let truck continue
                 trigger truck enable_stage3
                 wm_announce "The Allies have loaded the Gold Crate onto the Truck!"
+                wm_announce "Axis gained 3 Spawns at Shelter!"
                 setstate goldcrate invisible
+                setstate shelterspawn_obj default
+                setstate shelterspawn_spawn default
+
             wait 100
                 wm_objective_status         4 0 2
                 wm_objective_status         4 1 1
@@ -1343,7 +1408,6 @@ truck {
         trigger run_18 {
                 accum 1 bitset 2
                 followspline 0 truckpath18 125 wait length 304
-
                 accum 1 bitreset 2
                 trigger self run_continue
         }
@@ -1409,6 +1473,8 @@ truck {
                 // *----------------------------------- vo ------------------------------------------*
                 wm_teamvoiceannounce 0 "axis_truck_barrier1"
                 wm_teamvoiceannounce 1 "allies_truck_barrier1"
+                setautospawn        "Command Post Spawn"        1
+                wm_announce "The Allies are attempting to send in reinforcements from the command post!"
                 // *---------------------------------------------------------------------------------*
 
                 trigger self run_continue
