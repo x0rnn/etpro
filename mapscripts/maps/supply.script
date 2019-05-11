@@ -909,6 +909,9 @@ crane_enabler {
                 accum 2 abort_if_equal 0        //Abort if crane controls not built
                 accum 1 set 0                        //Only do the crane routine once!
                 wm_announce "The Allies have activated the crane!"
+                wm_announce "Axis gained 3 Spawns at Shelter!"
+                setstate shelterspawn_obj default
+                setstate shelterspawn_spawn default
                 // *----------------------------------- vo ------------------------------------------*
                 wm_teamvoiceannounce 0 "axis_gold_taken"
                 wm_teamvoiceannounce 1 "allies_gold_taken"
@@ -977,10 +980,7 @@ crane_enabler {
                 //Let truck continue
                 trigger truck enable_stage3
                 wm_announce "The Allies have loaded the Gold Crate onto the Truck!"
-                wm_announce "Axis gained 3 Spawns at Shelter!"
                 setstate goldcrate invisible
-                setstate shelterspawn_obj default
-                setstate shelterspawn_spawn default
 
             wait 100
                 wm_objective_status         4 0 2
