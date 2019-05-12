@@ -1506,6 +1506,10 @@ allied_compost_built_model
 		alertentity eastbunker_spawns
 		alertentity eastbunker_wobj
 
+		setstate eastbunker_spawns default
+		setstate eastbunker_wobj default
+
+
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
 
@@ -1533,6 +1537,9 @@ allied_compost_built_model
 
 		alertentity eastbunker_spawns
 		alertentity eastbunker_wobj
+
+		setstate eastbunker_spawns invisible
+		setstate eastbunker_wobj invisible
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
@@ -1574,8 +1581,6 @@ axis_compost_built
 	buildstart final
 	{
 		setstate axis_compost_built_model underconstruction
-		setstate neutral_compost_closed_clip invisible
-		setstate neutral_compost_closed_model invisible
 	}
 
 	built final
@@ -1639,6 +1644,10 @@ axis_compost_built_model
 
 		wm_objective_status 6 0 1
 		wm_objective_status 6 1 2
+
+		setstate eastbunker_spawns default
+		setstate eastbunker_wobj default
+
 	}
 
 	trigger disable_axis_features
@@ -1664,6 +1673,10 @@ axis_compost_built_model
 
 		wm_objective_status 6 0 0
 		wm_objective_status 6 1 0
+
+		setstate eastbunker_spawns invisible
+		setstate eastbunker_wobj invisible
+
 	}
 }
 
