@@ -1,11 +1,63 @@
 //
 // Map: Atlantic Seawall Battery
 // BSP: battery
-// 12 may 2019 - harlekin - spawnkill roof added for allied beach
+
 game_manager
 {
 	spawn
 	{
+		//x0rnn - make bunker door constructible
+		create
+		{
+			scriptName "newdoor_toi"
+			targetname "newdoor_toi"
+			classname  "trigger_objective_info"
+			target "newdoor_construct"
+			//origin "1016 -2256 826"
+			//mins "-80 -60 80"
+			//maxs "80 60 80"
+			spawnflags "1"
+			track "Sea Wall Door"
+			infoAxis "Defend the Sea Wall door !"
+			infoAllies "Breach the Sea Wall door !"
+			score "5"
+			//customaxisimage "gfx/limbo/cm_radar_sidedoor"
+			//customalliesimage "gfx/limbo/cm_dynamite"
+			origin     "954 -2170 784"
+            mins       "-40 -40 -100"
+            maxs       "30 10 34"
+		}
+
+        // Clone func_constructible from mg42_clip_3
+        create
+        {
+            model      "*11"
+            scriptname "newdoor_construct"
+            targetname "newdoor_construct"
+            classname  "func_constructible"
+            origin     "1060 -2281 740"
+            spawnflags "5"  // START_BUILT(1) + AXIS_CONSTRUCTIBLE(4)
+        }
+
+		//add sandbags
+        create
+        {
+            scriptname "sandbags"
+            targetname "sandbags"
+            classname  "misc_gamemodel"
+            spawnflags "2"
+            origin     "956 -2168 768"
+            angle      "90"
+            modelscale "0.8"
+			contents 1
+			clipmask 1
+			frames "190"
+            mins "-15 -5 -11"
+            maxs "15 5 15"
+            model      "models/mapobjects/cmarker/cmarker_sandbags.md3"
+            skin       "models/mapobjects/cmarker/axis_sandbags.skin"
+        }
+
         // Harlekin - Roof over alies west beach spawn
         create
         {
@@ -103,6 +155,9 @@ game_manager
 		wm_addteamvoiceannounce 0 "battery_axis_ramp_stop"
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
+
+		setstate eastbunker_spawns invisible
+		setstate eastbunker_wobj invisible
 	}
 
 	trigger westbunker_flagblue
@@ -195,6 +250,91 @@ game_manager
 	}
 }
 
+
+// Ragnar begin: Backdoor script block.
+newdoor_construct
+{
+    spawn
+    {
+        wait 200
+        trigger newdoor_construct setup
+		constructible_chargebarreq 1.25
+
+        constructible_class 3
+    }
+
+    trigger setup
+    {
+        setstate newdoor_construct default
+		setstate sandbags invisible
+        setstate newdoor default
+    }
+
+    buildstart final
+    {
+        setstate newdoor_construct       underconstruction
+		setstate sandbags default
+        setstate newdoor       underconstruction
+    }
+
+    built final
+    {
+	    setstate newdoor default
+		setstate sandbags invisible
+        setstate newdoor_construct default
+
+		wm_announce	"^3Axis have rebuilt the Sea Wall Door!"
+    }
+
+    decayed final
+    {
+        setstate newdoor_construct invisible
+		setstate sandbags default
+        setstate newdoor invisible
+    }
+
+    death
+    {
+        setstate newdoor_construct invisible
+		setstate sandbags default
+        setstate newdoor invisible
+
+		wm_announce	"^3Allies have destroyed the Sea Wall Door! (Axis can rebuild it!)"
+	}
+}
+
+allied_obj1_2_toi
+{
+    spawn
+    {
+        remove
+    }
+}
+
+allied_obj1_2
+{
+    spawn
+    {
+        remove
+    }
+}
+
+//x0rnn - remove cp mg
+//eastbunker_mg42_2
+//{
+//    spawn
+//    {
+//        remove
+//    }
+//}
+//eastbunker_mg42_mount_2
+//{
+//    spawn
+//    {
+//        remove
+//    }
+//}
+
 // ================================================
 // =========== SPAWN POINT CONTROLS ===============
 // ================================================
@@ -214,22 +354,6 @@ allied_lms_spawns
 }
 
 allied_lms_wobj
-{
-	spawn
-	{
-		remove
-	}
-}
-
-axis_lms_spawns
-{
-	spawn
-	{
-		remove
-	}
-}
-
-axis_lms_wobj
 {
 	spawn
 	{
@@ -1508,7 +1632,8 @@ allied_compost_built_model
 
 		setstate eastbunker_spawns default
 		setstate eastbunker_wobj default
-
+		setstate axis_lms_wobj invisible
+		setstate axis_lms_spawns invisible
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
@@ -1537,9 +1662,11 @@ allied_compost_built_model
 
 		alertentity eastbunker_spawns
 		alertentity eastbunker_wobj
-
 		setstate eastbunker_spawns invisible
 		setstate eastbunker_wobj invisible
+		setstate axis_lms_wobj default
+		setstate axis_lms_spawns default
+
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
@@ -1581,6 +1708,8 @@ axis_compost_built
 	buildstart final
 	{
 		setstate axis_compost_built_model underconstruction
+		setstate neutral_compost_closed_clip invisible
+		setstate neutral_compost_closed_model invisible
 	}
 
 	built final
@@ -1630,6 +1759,9 @@ axis_compost_built_model
 		setchargetimefactor 0 covertops 0.75
 		sethqstatus 0 1
 
+		setstate eastbunker_spawns default
+		setstate eastbunker_wobj default
+
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
 
@@ -1644,10 +1776,6 @@ axis_compost_built_model
 
 		wm_objective_status 6 0 1
 		wm_objective_status 6 1 2
-
-		setstate eastbunker_spawns default
-		setstate eastbunker_wobj default
-
 	}
 
 	trigger disable_axis_features
@@ -1658,6 +1786,9 @@ axis_compost_built_model
 		setchargetimefactor 0 engineer 1
 		setchargetimefactor 0 covertops 1
 		sethqstatus 0 0
+
+		setstate eastbunker_spawns invisible
+		setstate eastbunker_wobj invisible
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
@@ -1673,10 +1804,6 @@ axis_compost_built_model
 
 		wm_objective_status 6 0 0
 		wm_objective_status 6 1 0
-
-		setstate eastbunker_spawns invisible
-		setstate eastbunker_wobj invisible
-
 	}
 }
 
