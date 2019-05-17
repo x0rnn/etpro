@@ -233,6 +233,7 @@ function getConfig(map)
         c.spawns[3] = {name = "Security Checkpoint Axis", state = PROTECT_AXIS, pos = {370, 1250, 150}, radius2 = 500}
         c.spawns[4] = {name = "Security Checkpoint Axis", state = PROTECT_AXIS, pos = {-10, 1360, 336}, radius2 = 300}
 -- caen2 29.04.2010
+-- x0rnn 2018/03/22 decreased allied spawn radius
     elseif map == "caen2" then
         c.spawns[1] = {name = "TOWN", state = NO_PROTECT}
         c.spawns[2] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {-1690, -2200, 310}, radius2 = 600}
@@ -258,6 +259,14 @@ function getConfig(map)
         c.spawns[5] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[6] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[7] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
+-- SW Seawall Battery
+    elseif map == "sw_battery" then
+        c.spawns[1] = {name = "Axis Main Bunker", state = PROTECT_AXIS, pos = {3000, -5300, 1016}, radius2 = 400}
+        c.spawns[2] = {name = "Allied East Beach", state = PROTECT_ALLIES, pos = {4565, -620, 113}, radius2 = 550}
+        c.spawns[3] = {name = "Allied West Beach", state = PROTECT_ALLIES, pos = {544, -760, 113}, radius2 = 400}
+        c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
+        c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
+        c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
 -- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
