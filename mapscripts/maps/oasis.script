@@ -17,13 +17,26 @@ game_manager
 	{
 		create
 		{
-			scriptname "antibackplant"
-			targetname "antibackplant"
+			scriptname "antibackplantsouth"
+			targetname "antibackplantsouth"
 			spawnflags 24
 			classname  "trigger_hurt"
 			dmg        15
 			sound      "sound/player/hurt_barbwire.wav"
 			origin     "9832 3936 -256"
+			mins       "-100 -150 -30"
+			maxs       "100 150 30"
+		}
+
+		create
+		{
+			scriptname "antibackplantnorth"
+			targetname "antibackplantnorth"
+			spawnflags 24
+			classname  "trigger_hurt"
+			dmg        15
+			sound      "sound/player/hurt_barbwire.wav"
+			origin     "9832 4702 -256"
 			mins       "-100 -150 -30"
 			maxs       "100 150 30"
 		}
