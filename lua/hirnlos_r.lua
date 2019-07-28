@@ -1,4 +1,5 @@
 -- hirnlos players announcement, version for hirntot server (read version)
+-- symlink hirnlos_announce.txt from hirnlos etpro server folder to hirntot etpro server folder
 
 checkInterval = 120000 -- interval in milliseconds to check hirnlos player count (2 minutes)
 filename = "hirnlos_announce.txt"
