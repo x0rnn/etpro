@@ -9,7 +9,7 @@
 // x0rnn - added allied closer spawn after the old city wall is destroyed, added 2nd axis spawn above axis garrison
 // x0rnn - removed 8 default spawns above axis garrison so only 2 players can spawn there instead of 10
 // x0rnn - added allied forward spawn (4 players) when allied CP is built
-// x0rnn - added backplant protection @ south gun
+// x0rnn - added backplant protection at both guns
 
 game_manager
 {
