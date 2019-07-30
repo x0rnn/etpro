@@ -5,7 +5,7 @@
 -- $Date: 2007-02-28 20:17:56 +0100 (Mi, 28 Feb 2007) $
 -- $Revision: 174 $
 --
-version = "1.0.4"
+version = "1.0.5"
 
 -- kspree.lua logic "stolen" from Vetinari's rspree.lua, who "stole" from etadmin_mod.pl and so on
 -- CONSOLE COMMANDS : ksprees, kspeesall, kspreerecords
@@ -16,7 +16,10 @@ version = "1.0.4"
 -- added: spree announcement can be disabled
 -- FIXME: recordMessage() does not work everytime -- FIXED !!!
 -- FIXME: use wait_table[id] ~= nil --FIXED mmmhhh :/ ???
---
+
+-- x0rnn: added "thanks, [name]" vsay for revives
+-- x0rnn: added topshots (most kills with x, most hs...)
+
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
 --      longest_spree_display     = 0 
@@ -116,6 +119,10 @@ sorry       = true      -- name of ur last tk will be added if u vsay_team "Sorr
 sorry_time      = 9000      -- 9000 = 9 seconds = Nine SECONDS
 sorry_repeat    = false     -- set to true, name will be added everytime u vsay_team "sorry" within "sorry_time" ms
 
+thanks = true
+thanks_time = 5000
+thanks_repeat = false
+
 save_awards = true          -- save Ludicrouskill + Holy Shit + Multi TK in textfile "awards_file"
 awards_file = "awards.txt"
 
@@ -148,14 +155,30 @@ wait_table  = {}
 kmap_record    = false
 srv_records = {}
 kendofmap      = false
-keomap_done    = false
+eomap_done = false
+eomaptime = 0
 gamestate   = -1
 last_b    = ""
 last_killer = {}
 last_tk = {}
+last_revive = {}
 client_msg = {}
+topshot_cmd = "!topshots"
+topshots = {}
+topshot_msg = {}
+axis_time = {}
+allies_time = {}
+mkps = {}
+weaponstats = {}
+endplayers = {}
+endplayerscnt = 0
+tblcount = 0
+medic_table = {}
+last_use = {}
+et.CS_PLAYERS = 689
 
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -167,7 +190,12 @@ function et_InitGame(levelTime, randomSeed, restart)
     for i=0, sv_maxclients-1 do
         killing_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
+        mkps[i] = { [1]=0, [2]=0, [3]=0 }
+        axis_time[i] = 0
+        allies_time[i] = 0
         client_msg[i] = false
+        topshot_msg[i] = false
         if kmultitk_announce then
           kmultitk[i]   = { [1]=0, [2]=0, }
         end
@@ -186,11 +214,41 @@ function et_InitGame(levelTime, randomSeed, restart)
   et.G_Printf("kspree.lua: startup: %d ms\n", et.trap_Milliseconds() - func_start)
 end
 
+function n2b(number) -- thanks to adawolfa
+	local bits = {}
+
+	local i = 1
+	while 2 ^ (i + 1) < number do
+		i = i + 1
+	end
+
+	while i >= 0 do
+		if 2 ^ i <= number then
+			table.insert(bits, 2 ^ i)
+			number = number - 2 ^ i
+		end
+		i = i - 1
+	end
+
+	return bits, table.getn(bits)
+end
+
 function sayClients(pos, msg)
     --et.G_Printf("kspree.lua: sayClients('%s', '%s')\n", pos, msg)
     --et.trap_SendServerCommand(-1, pos.." \""..msg.."^7\"\n")
     local message = string.format("%s \"%s^7\"", pos, msg)
     table.foreach(client_msg,
+    function(id, msg_ok)
+            if msg_ok then
+                et.trap_SendServerCommand(id, message)
+            end
+        end
+    )
+end
+
+function topshot_sayClients(msg)
+    local message = string.format("chat \"%s^7\"", msg)
+    table.foreach(topshot_msg,
     function(id, msg_ok)
             if msg_ok then
                 et.trap_SendServerCommand(id, message)
@@ -233,6 +291,11 @@ function teamName (t)
         t = 3
     end
     return(kteams[t])
+end
+
+local function roundNum(num, n)
+	local mult = 10^(n or 0)
+	return math.floor(num * mult + 0.5) / mult
 end
 
 function getGuid (id)
@@ -330,43 +393,501 @@ function readRecords(file)
     return(count)
 end
 
+function topshots_f(id)
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local i = 0
+	for i=0, sv_maxclients-1 do
+		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
+		if team == 1 or team == 2 then
+			local dg = tonumber(et.gentity_get(i, "sess.damage_given"))
+			local dr = tonumber(et.gentity_get(i, "sess.damage_received"))
+			local tdg = tonumber(et.gentity_get(i, "sess.team_damage"))
+			local tdr = tonumber(et.gentity_get(i, "sess.team_received"))
+			local tk = tonumber(et.gentity_get(i, "sess.team_kills"))
+			local sk = tonumber(et.gentity_get(i, "sess.suicides"))
+			local d = tonumber(et.gentity_get(i, "sess.deaths"))
+			local k = tonumber(et.gentity_get(i, "sess.kills"))
+			local kd = 0
+			if d ~= 0 then
+				kd = k/d
+			else
+				kd = k + 1
+			end
+			
+			-- damage given
+			if dg > max[1] then 
+				max[1] = dg
+				max_id[1] = i
+			end
+			-- damage received
+			if dr > max[2] then 
+				max[2] = dr
+				max_id[2] = i
+			end
+			-- team damage given
+			if tdg > max[3] then 
+				max[3] = tdg
+				max_id[3] = i
+			end
+			-- team damage received
+			if tdr > max[4] then 
+				max[4] = tdr
+				max_id[4] = i
+			end
+			-- teamkills
+			if tk > max[5] then 
+				max[5] = tk
+				max_id[5] = i
+			end
+			-- selfkills
+			if sk > max[6] then 
+				max[6] = sk
+				max_id[6] = i
+			end
+			-- deaths
+			if d > max[7] then 
+				max[7] = d
+				max_id[7] = i
+			end
+			-- kills per minute
+			if team == 1 then
+				if k > 10 then
+					local kpm = k/((axis_time[i]/1000)/60)
+					if kpm > max[8] then
+						max[8] = kpm
+						max_id[8] = i
+					end
+				end
+			elseif team == 2 then
+				if k > 10 then
+					local kpm = k/((allies_time[i]/1000)/60)
+					if kpm > max[8] then
+						max[8] = kpm
+						max_id[8] = i
+					end
+				end
+			end
+			-- quickest lightweapon multikill
+			if topshots[i][14] >= max[9] then 
+				if topshots[i][14] > max[9] then
+					max[9] = topshots[i][14]
+					max[10] = topshots[i][15]
+					max_id[9] = i
+					max_id[10] = i
+				elseif topshots[i][14] == max[9] then
+					if topshots[i][15] < max[10] then
+						max[9] = topshots[i][14]
+						max[10] = topshots[i][15]
+						max_id[9] = i
+						max_id[10] = i
+					end
+				end
+			end
+			-- farthest riflegrenade kill
+			if topshots[i][16] > max[11] then
+				max[11] = topshots[i][16]
+				max_id[11] = i
+			end
+			-- lightweapon kills
+			if topshots[i][1] > max[12] then
+				max[12] = topshots[i][1]
+				max_id[12] = i
+			end
+			-- pistol kills
+			if topshots[i][2] > max[13] then
+				max[13] = topshots[i][2]
+				max_id[13] = i
+			end
+			-- rifle kills
+			if topshots[i][3] > max[14] then
+				max[14] = topshots[i][3]
+				max_id[14] = i
+			end
+			-- riflegrenade kills
+			if topshots[i][4] > max[15] then
+				max[15] = topshots[i][4]
+				max_id[15] = i
+			end
+			-- sniper kills
+			if topshots[i][5] > max[16] then
+				max[16] = topshots[i][5]
+				max_id[16] = i
+			end
+			-- knife kills
+			if topshots[i][6] > max[17] then
+				max[17] = topshots[i][6]
+				max_id[17] = i
+			end
+			-- air support kills
+			if topshots[i][7] > max[18] then
+				max[18] = topshots[i][7]
+				max_id[18] = i
+			end
+			-- mine kills
+			if topshots[i][8] > max[19] then
+				max[19] = topshots[i][8]
+				max_id[19] = i
+			end
+			-- grenade kills
+			if topshots[i][9] > max[20] then
+				max[20] = topshots[i][9]
+				max_id[20] = i
+			end
+			-- panzerfaust kills
+			if topshots[i][10] > max[21] then
+				max[21] = topshots[i][10]
+				max_id[21] = i
+			end
+			-- mortar kills
+			if topshots[i][11] > max[22] then
+				max[22] = topshots[i][11]
+				max_id[22] = i
+			end
+			-- panzerfaust deaths
+			if topshots[i][12] > max[23] then
+				max[23] = topshots[i][12]
+				max_id[23] = i
+			end
+			-- mortar deaths
+			if topshots[i][13] > max[24] then
+				max[24] = topshots[i][13]
+				max_id[24] = i
+			end
+			-- multikills
+			if topshots[i][17] > max[25] then
+				max[25] = topshots[i][17]
+				max_id[25] = i
+			end
+			-- mg42 kills
+			if topshots[i][18] > max[26] then
+				max[26] = topshots[i][18]
+				max_id[26] = i
+			end
+			-- mg42 deaths
+			if topshots[i][19] > max[27] then
+				max[27] = topshots[i][19]
+				max_id[27] = i
+			end
+			-- most revives
+			if topshots[i][20] > max[28] then
+				max[28] = topshots[i][20]
+				max_id[28] = i
+			end
+			-- most revived
+			if topshots[i][21] > max[29] then
+				max[29] = topshots[i][21]
+				max_id[29] = i
+			end
+			-- adrenaline junkie
+			if topshots[i][22] > max[30] then
+				max[30] = topshots[i][22]
+				max_id[30] = i
+			end
+			-- k/d ratio
+			if k > 9 then
+				if kd > max[31] then
+					max[31] = kd
+					max_id[31] = i
+				end
+			end
+			-- most healthpacks taken
+			if topshots[i][23] > max[32] then
+				max[32] = topshots[i][23]
+				max_id[32] = i
+			end
+			-- most ammopacks taken
+			if topshots[i][24] > max[33] then
+				max[33] = topshots[i][24]
+				max_id[33] = i
+			end
+			-- most dynamites planted
+			if topshots[i][25] > max[34] then
+				max[34] = topshots[i][25]
+				max_id[34] = i
+			end
+			-- most dynamites defused
+			if topshots[i][26] > max[35] then
+				max[35] = topshots[i][26]
+				max_id[35] = i
+			end
+			-- most doublekills
+			local dk = topshots[i][27] - topshots[i][17]
+			if dk > max[36] then
+				max[36] = dk
+				max_id[36] = i
+			end
+			-- most shoves
+			if topshots[i][28] > max[37] then
+				max[37] = topshots[i][28]
+				max_id[37] = i
+			end
+			-- most shoved
+			if topshots[i][29] > max[38] then
+				max[38] = topshots[i][29]
+				max_id[38] = i
+			end
+		end
+	end
+	if id == -2 then
+		local ws_max = { 0, 0, 0, 0 }
+		local ws_max_id = { 0, 0, 0, 0}
+		local cnt = 0
+		for cnt=0, sv_maxclients-1 do
+			if endplayers[cnt] then
+				-- highest light weapons accuracy
+				if weaponstats[cnt][2] > 100 then
+					if (weaponstats[cnt][1]/weaponstats[cnt][2])*100 > ws_max[1] then
+						ws_max[1] = (weaponstats[cnt][1]/weaponstats[cnt][2])*100
+						ws_max_id[1] = cnt
+					end
+				end
+				-- highest headshot accuracy
+				if weaponstats[cnt][1] > 10 and weaponstats[cnt][2] > 100 then
+					if (weaponstats[cnt][3]/weaponstats[cnt][1])*100 > ws_max[2] then
+						ws_max[2] = (weaponstats[cnt][3]/weaponstats[cnt][1])*100
+						ws_max_id[2] = cnt
+					end
+				end
+				-- most headshots
+				if weaponstats[cnt][3] > ws_max[3] then
+					ws_max[3] = weaponstats[cnt][3]
+					ws_max_id[3] = cnt
+				end
+				-- most bullets fired
+				if weaponstats[cnt][2] > ws_max[4] then
+					ws_max[4] = weaponstats[cnt][2]
+					ws_max_id[4] = cnt
+				end
+			end
+		end
+		local j = 1
+		for j=1, 38 do
+			if max[j] > 1 then
+				if j ~= 10 and j ~= 25 and j ~= 36 then
+					if j == 8 then
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+					elseif j == 9 then
+						-- dirty "fix" instead of reordering all indexes lol
+						if max[36] > 1 then
+							topshot_sayClients("^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+						end
+						topshot_sayClients("^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+					elseif j == 11 then
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+					elseif j == 30 then
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+					elseif j == 31 then
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+					else
+						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+					end
+				end
+			end
+		end
+		local z = 1
+		for z = 1, 4 do
+			if ws_max[z] > 1 then
+				if z == 1 then
+					topshot_sayClients("^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+				elseif z == 2 then
+					topshot_sayClients("^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+				elseif z == 3 then
+					topshot_sayClients("^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+				elseif z == 4 then
+					topshot_sayClients("^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+				end
+			end
+		end
+	else
+		for j=1, 38 do
+			if max[j] > 1 then
+				if j ~= 10 and j ~= 25 and j ~= 36 then
+					if j == 8 then
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 3) .. "\"\n")
+					elseif j == 9 then
+						-- dirty "fix" instead of reordering all indexes lol
+						if max[36] > 1 then
+							et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+						end
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j].. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+					elseif j == 11 then
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+					elseif j == 30 then
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+					elseif j == 31 then
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " \"\n")
+					else
+						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+					end
+				end
+			end
+		end
+	end
+end
 
 function et_Print(text)
+	if gamestate == 0 then
+		if string.find(text, "Medic_Revive") then
+			local junk1,junk2,medic,zombie = string.find(text, "^Medic_Revive:%s+(%d+)%s+(%d+)")
+			topshots[tonumber(medic)][20] = topshots[tonumber(medic)][20] + 1
+			topshots[tonumber(zombie)][21] = topshots[tonumber(zombie)][21] + 1
+			if thanks then
+				last_revive[tonumber(zombie)] = {playerName(tonumber(medic)) , et.trap_Milliseconds()}
+			end
+		end
+		if string.find(text, "item_health") then
+	        local i, j = string.find(text, "%d+")
+   	     local id = tonumber(string.sub(text, i, j))
+   		 topshots[id][23] = topshots[id][23] + 1
+		end
+        if string.find(text, "weapon_magicammo") then
+   	     local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			topshots[id][24] = topshots[id][24] + 1
+	    end
+		if string.find(text, "Dynamite_Plant") then
+   	     local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			topshots[id][25] = topshots[id][25] + 1
+	    end
+		if string.find(text, "Dynamite_Diffuse") then
+	   	 local i, j = string.find(text, "%d+")   
+		    local id = tonumber(string.sub(text, i, j))
+			topshots[id][26] = topshots[id][26] + 1
+	    end
+		if string.find(text, "etpro event:%s+%d+%s+%d+%s+(.*)shoved") then
+			local junk1,junk2,id1,id2 = string.find(text, "etpro event:%s+(%d+)%s+(%d+)%s+(.*)shoved")
+			topshots[tonumber(id1)][28] = topshots[tonumber(id1)][28] + 1
+			topshots[tonumber(id2)][29] = topshots[tonumber(id2)][29] + 1
+		end
+	end
 
     if kendofmap and string.find(text, "^WeaponStats: ") == 1 then
-
-        if not keomap_done then
-            if kmax_id ~= nil then
-                local re_name = playerName(kmax_id)
-                if re_name == "" then
-                    re_name = "^0MIA" -- missing in action
-                end
-                local longest = ""
-                local max     = findMaxKSpree()
-                if table.getn(max) == 3 then
-                    if kmap_record then
-                        longest = " ^"..kspree_color.."This is a New map record!"
-                        saveStats(kspree_cfg, alltime_stats)
-                    else
-                        longest = string.format(" ^7[record: %d by %s^7 @%s]",
-                                                    max[1], max[3], os.date(date_fmt, max[2]))
-                    end
-                end
-                local msg = string.format("^7Longest killing spree: %s^7 with %d kills!%s",
-                                            re_name, kmax_spree, longest)
-                if kspree_announce then
-                    et.trap_SendConsoleCommand(et.EXEC_APPEND, "qsay \""..msg.."^7\"\n")
-                end
-            end
-            if srv_record then
-                saveStats(record_cfg, srv_records)
-            end
-            keomap_done = true
-        end
+		if endplayerscnt < tblcount then
+			for id, m, bla in string.gfind(text, "WeaponStats: ([%d]+) [%d]+ ([%d]+) ([^\n]+)") do
+				if endplayers[tonumber(id)] then
+					if weaponstats[tonumber(id)] == nil then
+						endplayerscnt = endplayerscnt + 1
+						if tonumber(m)~=0 and tonumber(m)~=1 and tonumber(m)~=2 and tonumber(m)~=4 and tonumber(m)~=8 and tonumber(m)~=16 and tonumber(m)~=32  and tonumber(m)~=64 and tonumber(m)~=128 and tonumber(m)~=256 and tonumber(m)~=512 and tonumber(m)~=1024 and tonumber(m)~=2048 and tonumber(m)~=4096 and tonumber(m)~=8192 and tonumber(m)~=16384 and tonumber(m)~=32768 and tonumber(m)~=65536 and tonumber(m)~=131072 and tonumber(m)~=262144 and tonumber(m)~=524288 and tonumber(m)~=1048576 and tonumber(m)~=2097152 then
+							bits, bits_len = n2b(tonumber(m))
+							local j = 1
+							local knife = false
+							local w = 0
+							for j = 1,bits_len do
+								if bits[j] == 1 or bits[j] == 2 or bits[j] == 4 or bits[j] == 8 or bits[j] == 16 or bits[j] == 32 then
+									if bits[j] == 1 then
+										knife = true
+									else
+										w = w + 1
+									end
+								end
+							end
+							if w ~= 0 then
+								if knife == true then
+									if w == 1 then
+										for hits, shots, hs in string.gfind(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
+										end
+									elseif w == 2 then
+										for hits1,shots1,hs1,hits2,shots2,hs2 in string.gfind(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2), [2]=tonumber(shots1)+tonumber(shots2), [3]=tonumber(hs1)+tonumber(hs2) }
+										end
+									elseif w == 3 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3 in string.gfind(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3) }
+										end
+									elseif w == 4 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4 in string.gfind(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4) }
+										end
+									elseif w == 5 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4,hits5,shots5,hs5 in string.gfind(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4)+tonumber(hits5), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4)+tonumber(shots5), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4)+tonumber(hs5) }
+										end
+									end
+								else
+									if w == 1 then
+										for hits, shots, hs in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
+										end
+									elseif w == 2 then
+										for hits1,shots1,hs1,hits2,shots2,hs2 in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2), [2]=tonumber(shots1)+tonumber(shots2), [3]=tonumber(hs1)+tonumber(hs2) }
+										end
+									elseif w == 3 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3 in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3) }
+										end
+									elseif w == 4 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4 in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4) }
+										end
+									elseif w == 5 then
+										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4,hits5,shots5,hs5 in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4)+tonumber(hits5), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4)+tonumber(shots5), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4)+tonumber(hs5) }
+										end
+									end
+								end
+							else
+								weaponstats[tonumber(id)] = { [1]=0, [2]=0, [3]=0 }
+							end
+						else
+							if tonumber(m) == 2 or tonumber(m) == 4 or tonumber(m) == 8 or tonumber(m) == 16 or tonumber(m) == 32 then
+								for hits, shots, hs in string.gfind(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
+									weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
+								end
+							else
+								weaponstats[tonumber(id)] = { [1]=0, [2]=0, [3]=0 }
+							end
+						end
+					end
+				end
+			end
+			if endplayerscnt == tblcount then
+				eomap_done = true
+				eomaptime = et.trap_Milliseconds() + 1000
+				if kmax_id ~= nil then
+      	          local re_name = playerName(kmax_id)
+  	              if re_name == "" then
+   	                 re_name = "^0MIA" -- missing in action
+ 	               end
+  	              local longest = ""
+  	              local max     = findMaxKSpree()
+  	              if table.getn(max) == 3 then
+   	                 if kmap_record then
+     	                   longest = " ^"..kspree_color.."This is a New map record!"
+   	                     saveStats(kspree_cfg, alltime_stats)
+    	                else
+     	                   longest = string.format(" ^7[record: %d by %s^7 @%s]", max[1], max[3], os.date(date_fmt, max[2]))
+     	               end
+   	             end
+  	              local msg = string.format("^7Longest killing spree: %s^7 with %d kills!%s", re_name, kmax_spree, longest)
+  	              if kspree_announce then
+     	               et.trap_SendConsoleCommand(et.EXEC_APPEND, "qsay \""..msg.."^7\"\n")
+  	              end
+  	          end
+  	          if srv_record then
+   	             saveStats(record_cfg, srv_records)
+  	          end
+			end
+		end
         return(nil)
     end
 
     if text == "Exit: Timelimit hit.\n" or text == "Exit: Wolf EndRound.\n" then
+    	local x = 0
+	    for x=0,sv_maxclients-1 do
+			local team = tonumber(et.gentity_get(x, "sess.sessionTeam"))
+			if team == 1 or team == 2 then
+				endplayers[x] = true
+			end
+		end
+		for _ in pairs(endplayers) do
+			tblcount = tblcount + 1
+		end
         kendofmap = true
         for i = 0, sv_maxclients-1 do
             if killing_sprees[i] > 0 then
@@ -381,29 +902,55 @@ function et_Print(text)
     end
 end
 
-function checkMultiKill (id)
+function checkMultiKill (id, mod)
     local lvltime = et.trap_Milliseconds()
-    local guid = getGuid(id)
     if (lvltime - kmulti[id][1]) < 3000 then
         kmulti[id][2] = kmulti[id][2] + 1
+        if mod==7 or mod==8 or mod==9 or mod==10 or mod==58 or mod==59 then
+        	mkps[id][1] = mkps[id][1] + 1
+        	if mkps[id][2] == 0 then
+   	     	mkps[id][2] = lvltime
+    		else
+    			mkps[id][3] = et.trap_Milliseconds()
+			end
+        	if mkps[id][1] >= 3 then
+	        	if mkps[id][1] >= topshots[id][14] then
+	    	    	if mkps[id][1] > topshots[id][14] then
+   	     			topshots[id][14] = mkps[id][1]
+    					topshots[id][15] = mkps[id][3] - mkps[id][2]
+    	    		elseif mkps[id][1] == topshots[id][14] then
+    					if (mkps[id][3] - mkps[id][2]) < topshots[id][15] then
+    						topshots[id][15] = mkps[id][3] - mkps[id][2]
+    					end
+     	   		end
+     	   	end
+     		end
+        end
 
-        if kmulti[id][2] == 3 then
+		if kmulti[id][2] == 2 then
+			topshots[id][27] = topshots[id][27] + 1
+        elseif kmulti[id][2] == 3 then
             wait_table[id] = {lvltime, 1}
+            topshots[id][17] = topshots[id][17] + 1
         elseif kmulti[id][2] == 4 then
             wait_table[id] = {lvltime, 2}
         elseif kmulti[id][2] == 5 then
             wait_table[id] = {lvltime, 3}
         elseif kmulti[id][2] == 6 then
+            topshots[id][17] = topshots[id][17] + 1
             wait_table[id] = {lvltime, 4}
         elseif kmulti[id][2] == 7 then
             wait_table[id] = {lvltime, 5}
             if save_awards then add_qwnage(id, 1) end
-        elseif kmulti[id][2] == 8 then
+        elseif kmulti[id][2] >= 8 then
             wait_table[id] = {lvltime, 6}
             if save_awards then add_qwnage(id, 2) end
         end
     else
         kmulti[id][2] = 1
+        mkps[id][1] = 1
+        mkps[id][2] = 0
+        mkps[id][3] = 0
     end
     kmulti[id][1] = lvltime
 end
@@ -431,14 +978,23 @@ function checkMultiTk(id)
     kmultitk[id][1] = lvltime
 end
 
+function dist(a, b)
+	ax, ay, az = a[1], a[2], a[3]
+	bx, by, bz = b[1], b[2], b[3]
+	dx = math.abs(bx - ax)
+	dy = math.abs(by - ay)
+	dz = math.abs(bz - az)
+	d = math.sqrt((dx ^ 2) + (dy ^ 2) + (dz ^ 2))
+	return math.floor(d) / 39.37
+end
+
 function et_Obituary(victim, killer, mod)
     if gamestate == 0 then
         local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
-        local weapon = et.gentity_get(victim, "s.weapon")
         if (victim == killer) then -- suicide
 
-            if mod == 37 then
+            if mod == 37 or mod == 64 then
                 if not allow_spree_sk then
                     local max = findMaxKSpree()
                     if table.getn(max) == 3 then
@@ -472,6 +1028,9 @@ function et_Obituary(victim, killer, mod)
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
                 local guid = getGuid(killer)
+                local posk = et.gentity_get(victim, "ps.origin")
+			    local posv = et.gentity_get(killer, "ps.origin")
+                local killdist = dist(posk, posv)
 
                 if srv_record and guid ~= "" then
                     -- guid;multi;mega;ultra;monster;ludicrous;revive;nick;firstseen;lastseen
@@ -507,7 +1066,7 @@ function et_Obituary(victim, killer, mod)
                     last_b = playerName(killer)
                 end
 
-                checkMultiKill(killer)
+                checkMultiKill(killer, mod)
 
                 if kspree_announce then
                   checkKSprees(killer)
@@ -515,13 +1074,77 @@ function et_Obituary(victim, killer, mod)
 
                 checkKSpreeEnd(victim, killer, true)
 
+				-- most lightweapons kills
+				if mod==7 or mod==8 or mod==9 or mod==10 or mod==11 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+					-- most pistol kills
+					if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+						topshots[killer][2] = topshots[killer][2] + 1
+					end
+					topshots[killer][1] = topshots[killer][1] + 1
+				end
+				-- most rifle kills
+				if mod == 12 or mod == 55 or mod == 41 or mod == 42 then
+					topshots[killer][3] = topshots[killer][3] + 1
+				end
+				-- most riflegrenade kills + farthest riflegrenade kill
+				if mod == 43 or mod == 44 then
+					topshots[killer][4] = topshots[killer][4] + 1
+					if killdist > topshots[killer][16] then
+						topshots[killer][16] = killdist
+					end
+				end
+				-- most sniper kills
+				if mod == 51 or mod == 56 then
+					topshots[killer][5] = topshots[killer][5] + 1
+				end
+				-- most knife kills
+				if mod == 6 then
+					topshots[killer][6] = topshots[killer][6] + 1
+				end
+				-- most air support kills
+				if mod == 27 or mod == 30 then
+					topshots[killer][7] = topshots[killer][7] + 1
+				end
+				-- most mine kills
+				if mod == 45 then
+					topshots[killer][8] = topshots[killer][8] + 1
+				end
+				-- most grenade kills
+				if mod == 18 then
+					topshots[killer][9] = topshots[killer][9] + 1
+				end
+				-- most panzer kills
+				if mod == 17 then
+					topshots[killer][10] = topshots[killer][10] + 1
+				end
+				-- most mortar kills
+				if mod == 57 then
+					topshots[killer][11] = topshots[killer][11] + 1
+				end
+				-- most panzer deaths
+				if mod == 17 then
+					topshots[victim][12] = topshots[victim][12] + 1
+				end
+				-- most mortar deaths
+				if mod == 57 then
+					topshots[victim][13] = topshots[victim][13] + 1
+				end
+				-- most mg42 kills
+				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
+					topshots[killer][18] = topshots[killer][18] + 1
+				end
+				-- most mg42 deaths
+				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
+					topshots[victim][19] = topshots[victim][19] + 1
+				end
+
                 -- announce_hp
                 if announce_hp then
                   local killerhp = et.gentity_get(killer, "health")
                   if killerhp < 0 then
-                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"^zAnnounce HP: " .. playerName(killer) ..  " ^zwas dead.\n"))
+                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zwas dead.\n"))
                   else
-                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"^zAnnounce HP: " .. playerName(killer) ..  " ^zhad ^1" .. killerhp .. " ^zHP left.\n"))
+                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zhad ^1" .. killerhp .. " ^zHP left. Distance was ^1" .. roundNum(killdist, 2) .. " ^zm.\n"))
                   end
                 end
             else
@@ -571,10 +1194,23 @@ function checkKSpreeEnd(id, killer, normal_kill)
                 end
 
             else
-                if krecord and killer <= sv_maxclients then
-                    sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s).",
-                                                        m_name, kspree_color, killing_sprees[id], kspree_color))
-                    sayClients(kspree_pos, "^"..kspree_color.."This is a new map record !^7")
+                if killer <= sv_maxclients then
+                	if id == killer then
+                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), killed by suicide.",
+                        m_name, kspree_color, killing_sprees[id], kspree_color))
+                	else
+                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), teamkilled by ^7%s^%s!",
+                        m_name, kspree_color, killing_sprees[id], kspree_color, k_name, kspree_color))
+                	end
+                    if krecord then
+   	  	           sayClients(kspree_pos, "^"..kspree_color.."This is a new map record!^7")
+  		          end
+                else
+                	sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), killed by unknown reasons.",
+                    m_name, kspree_color, killing_sprees[id], kspree_color))
+                    if krecord then
+   	                 sayClients(kspree_pos, "^"..kspree_color.."This is a new map record!^7")
+  	              end
                 end
             end
         end
@@ -645,6 +1281,12 @@ function et_RunFrame(levelTime)
     if math.mod(levelTime, 500) ~= 0 then return end
 
     local ltm = et.trap_Milliseconds()
+	if eomap_done then
+	    if eomaptime < ltm then
+		    eomap_done = false
+			topshots_f(-2)
+	    end
+	end
     gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
     if gamestate == 0 then
         -- wait before display multi/mega/monster/ludicrous-kill AND display highest
@@ -726,7 +1368,7 @@ function et_RunFrame(levelTime)
                 wait_table[id] = nil
             end
 
-            if whichkill == 6 and (startpause + 900) < ltm then
+            if whichkill == 6 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmonster_pos, string.format(kholyshit_msg, m_name))
                     if kmulti_sound then
@@ -737,24 +1379,96 @@ function et_RunFrame(levelTime)
                 wait_table[id] = nil
             end
         end) --end table.foreach
+
+		table.foreach(medic_table,
+  	      function(idx, clientNum)
+	        	if last_use[clientNum] < et.trap_Milliseconds() then
+    	            if et.gentity_get(clientNum, "ps.powerups", 12 ) > 0 then
+    	               last_use[clientNum] = et.trap_Milliseconds() + 6000
+ 	                  topshots[clientNum][22] = topshots[clientNum][22] + 1
+  	              end
+				end
+	        end
+		)
     end -- gamestate
 end
 
 function et_ClientBegin(id)
     updateUInfoStatus(id)
+    
+    local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+    if team == 1 then
+    	axis_time[id] = et.trap_Milliseconds()
+    elseif team == 2 then
+    	allies_time[id] = et.trap_Milliseconds()
+    end
+end
+
+function et_ClientSpawn(id, revived)
+	if revived ~= 1 then
+		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+		if team == 1 and axis_time[id] == 0 then
+			axis_time[id] = et.trap_Milliseconds()
+		elseif team == 2 and allies_time[id] == 0 then
+			allies_time[id] = et.trap_Milliseconds()
+		end
+
+		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + id)
+	    if et.Info_ValueForKey(cs, "c") == "1" then
+	    	local skillz = et.Info_ValueForKey(cs, "s")
+	    	if string.sub (skillz, 3, 3) == "4" then
+  	          if not is_medic(id) then
+    	            last_use[id] = 0
+ 	               table.insert(medic_table, id)
+ 	       	end
+	    	end
+ 	   else
+	        if is_medic(id) then
+  	      	last_use[id] = nil
+ 	           table.remove(medic_table, is_medic(id))
+	        end
+	    end
+	end
 end
 
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
     client_msg[id] = false
+    topshot_msg[id] = false
+    axis_time[id] = 0
+    allies_time[id] = 0
+    mkps[id] = { [1]=0, [2]=0, [3]=0 }
     if great_shot and last_killer[id] ~= nil then
         last_killer[id] = nil
     end
     if sorry and last_tk[id] ~= nil then
         last_tk[id] = nil
     end
+    if thanks and last_revive[id] ~= nil then
+        last_revive[id] = nil
+    end
     if wait_table[id] ~= nil then
         wait_table[id] = nil
+    end
+    if is_medic(id) then
+        	last_use[id] = nil
+            table.remove(medic_table, is_medic(id))
+	end
+end
+
+function is_medic(id)
+    local found =  table.foreach(medic_table,
+        function(idx, clientNum)
+            if clientNum == id then
+            	return idx
+            end
+        end
+    )
+    if found then
+    	return found
+    else
+    	return nil
     end
 end
 
@@ -762,7 +1476,9 @@ function et_ClientCommand(id, command)
 
     if et.trap_Argv(0) == "say" then
         if et.gentity_get(id, "sess.muted") == 1 then return 1 end
-
+		if et.trap_Argv(1) == topshot_cmd then
+			topshots_f(id)
+		end
         if kspree_cmd_enabled and et.trap_Argv(1) == kspree_cmd then
             local map_msg = ""
             local map_max = findMaxKSpree()
@@ -823,11 +1539,34 @@ function et_ClientCommand(id, command)
         end
         return(1)
     end
+    
+     if et.trap_Argv(0) == topshot_cmd then
+        if et.trap_Argv(1) == "" then
+            local status = "^8on^7"
+            if topshot_msg[id] == false then
+                status = "^8off^7"
+            end
+            et.trap_SendServerCommand(id,
+                    string.format("b 8 \"^#(topshots):^7 Messages are %s\"",
+                            status))
+        elseif tonumber(et.trap_Argv(1)) == 0 then
+            setTopshotMsg(id, false)
+            et.trap_SendServerCommand(id,
+                    "b 8 \"^#(topshots):^7 Messages are now ^8off^7\"")
+        else
+            setTopshotMsg(id, true)
+            et.trap_SendServerCommand(id,
+                    "b 8 \"^#(topshots):^7 Messages are now ^8on^7\"")
+        end
+        return(1)
+    end
 
     if et.trap_Argv(0) == "vsay" then
         if not great_shot then return end
+        if et.trap_Argv(1) == nil then return end
 
         local vsaystring = ParseString(et.trap_Argv(1))
+        if vsaystring[1] == nil then return end
         if string.lower(vsaystring[1]) == "greatshot" and last_killer[id] ~= nil and table.getn(vsaystring) < 2 then
             if (et.trap_Milliseconds() - tonumber(last_killer[id][2])) < great_shot_time then
                 local vsaymessage = "Great shot, ^7"..last_killer[id][1].."^r!"
@@ -844,9 +1583,11 @@ function et_ClientCommand(id, command)
     end -- vsay
 
     if et.trap_Argv(0) == "vsay_team" then
-        if not sorry then return end
+        if not sorry and not thanks then return end
+        if et.trap_Argv(1) == nil then return end
 
         local vsaystring = ParseString(et.trap_Argv(1))
+        if vsaystring[1] == nil then return end
         if string.lower(vsaystring[1]) == "sorry" and last_tk[id] ~= nil and table.getn(vsaystring) < 2 then
             if (et.trap_Milliseconds() - tonumber(last_tk[id][2])) < sorry_time then
                 local vsaymessage = "^5Sorry, ^7"..last_tk[id][1].."^5!"
@@ -860,6 +1601,30 @@ function et_ClientCommand(id, command)
                 end
                 if not sorry_repeat then
                   last_tk[id] = nil
+                end
+
+                return(1)
+            else
+                return(0)
+            end
+        elseif string.lower(vsaystring[1]) == "thanks" and last_revive[id] ~= nil and table.getn(vsaystring) < 2 then
+            if (et.trap_Milliseconds() - tonumber(last_revive[id][2])) < thanks_time then
+                local vsaymessage = ""
+                local ppos = et.gentity_get(id,"r.currentOrigin")
+                local zombie_team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+				if zombie_team == 1 then
+					vsaymessage = "^5Danke, ^7"..last_revive[id][1].."^5!"
+				elseif zombie_team == 2 then
+					vsaymessage = "^5Thanks, ^7"..last_revive[id][1].."^5!"
+				end
+                local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+                for t=0, sv_maxclients-1, 1 do
+                    if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
+                    et.trap_SendServerCommand(t, cmd)
+                    end
+                end
+                if not thanks_repeat then
+                  last_revive[id] = nil
                 end
 
                 return(1)
@@ -884,6 +1649,18 @@ function setKSpreeMsg(id, value)
     )
 end
 
+function setTopshotMsg(id, value)
+    topshot_msg[id] = value
+    if value then
+        value = "1"
+    else
+        value = "0"
+    end
+    et.trap_SetUserinfo(id,
+        et.Info_SetValueForKey(et.trap_GetUserinfo(id), "b_topshots", value)
+    )
+end
+
 function updateUInfoStatus(id)
     local rs = et.Info_ValueForKey(et.trap_GetUserinfo(id), "b_ksprees")
     if rs == "" then
@@ -892,6 +1669,15 @@ function updateUInfoStatus(id)
         client_msg[id] = false
     else
         client_msg[id] = true
+    end
+    
+    local ts = et.Info_ValueForKey(et.trap_GetUserinfo(id), "b_topshots")
+    if ts == "" then
+        setTopshotMsg(id, msg_default)
+    elseif tonumber(ts) == 0 then
+        topshot_msg[id] = false
+    else
+        topshot_msg[id] = true
     end
 end
 
