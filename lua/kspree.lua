@@ -78,6 +78,7 @@ kmonster_msg      = "^7!!! ^1MONSTER KILL ^7>>> ^7%s ^7<<< ^1MONSTER KILL^7 !!!"
 kludicrous_msg    = "^7OMG,^1LUDICROUS KILL ^7>>> ^7%s ^7<<< ^1LUDICROUS KILL^7"
 kholyshit_msg   = "^1H O L Y  S H I T ^7>>> ^7%s ^7<<< ^1H O L Y  S H I T^7"
 kmultitk_msg    = "^7!!! ^1Multi Teamkill ^7> ^7%s ^7< ^1Multi Teamkill^7 !!!"
+doublekill_msg = "^7!!!! ^1 Double pistol kill ^7> ^7%s ^7< ^1Double pistol kill^7 !!!!"
 
 firstbloodsound   = "sound/misc/firstblood.wav"
 multisound    = "sound/misc/multikill.wav"
@@ -94,6 +95,7 @@ godlikesound    = "sound/misc/godlike.wav"
 unstoppablesound  = "sound/misc/unstoppable.wav"
 wickedsicksound   = "sound/misc/wickedsick.wav"
 pottersound     = "sound/misc/potter.wav"
+doublekillsound = "sound/misc/doublekill.wav"
 
 killingspree_private  = false    -- send killingspree message + sound to client only, if set to true
                   -- (You are on a killing spree), all other messages are global messages, like rampage and so on
@@ -175,6 +177,7 @@ endplayerscnt = 0
 tblcount = 0
 medic_table = {}
 last_use = {}
+doublekill = {}
 et.CS_PLAYERS = 689
 
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
@@ -190,6 +193,7 @@ function et_InitGame(levelTime, randomSeed, restart)
     for i=0, sv_maxclients-1 do
         killing_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
+        doublekill[i] = { [1]=0 }
         topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
@@ -453,7 +457,12 @@ function topshots_f(id)
 			-- kills per minute
 			if team == 1 then
 				if k > 10 then
-					local kpm = k/((axis_time[i]/1000)/60)
+					local kpm = 0
+					if eomaptime == 0 then
+						kpm = k/(((et.trap_Milliseconds() - axis_time[i])/1000)/60)
+					else
+						kpm = k/(((eomaptime - axis_time[i])/1000)/60)
+					end
 					if kpm > max[8] then
 						max[8] = kpm
 						max_id[8] = i
@@ -461,7 +470,12 @@ function topshots_f(id)
 				end
 			elseif team == 2 then
 				if k > 10 then
-					local kpm = k/((allies_time[i]/1000)/60)
+					local kpm = 0
+					if eomaptime == 0 then
+						kpm = k/(((et.trap_Milliseconds() - allies_time[i])/1000)/60)
+					else
+						kpm = k/(((eomaptime - allies_time[i])/1000)/60)
+					end
 					if kpm > max[8] then
 						max[8] = kpm
 						max_id[8] = i
@@ -926,7 +940,14 @@ function checkMultiKill (id, mod)
      	   	end
      		end
         end
+        
+        if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+        	doublekill[id][1] = doublekill[id][1] + 1
+        end
 
+		if doublekill[id][1] == 2 then
+			wait_table[id] = {lvltime, 666}
+		end
 		if kmulti[id][2] == 2 then
 			topshots[id][27] = topshots[id][27] + 1
         elseif kmulti[id][2] == 3 then
@@ -948,6 +969,9 @@ function checkMultiKill (id, mod)
         end
     else
         kmulti[id][2] = 1
+        if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+        	doublekill[id][1] = 1
+        end
         mkps[id][1] = 1
         mkps[id][2] = 0
         mkps[id][3] = 0
@@ -1199,7 +1223,7 @@ function checkKSpreeEnd(id, killer, normal_kill)
                 		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), killed by suicide.",
                         m_name, kspree_color, killing_sprees[id], kspree_color))
                 	else
-                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), teamkilled by ^7%s^%s!",
+                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), ^1teamkilled ^%sby ^7%s^%s!",
                         m_name, kspree_color, killing_sprees[id], kspree_color, k_name, kspree_color))
                 	end
                     if krecord then
@@ -1374,6 +1398,17 @@ function et_RunFrame(levelTime)
                     if kmulti_sound then
                         --et.G_globalSound(holyshitsound)
                         soundClients(holyshitsound)
+                    end
+                end
+                wait_table[id] = nil
+            end
+
+			if whichkill == 666 and (startpause + 3100) < ltm then
+                if kmulti_announce then
+                    sayClients(kmulti_pos, string.format(doublekill_msg, m_name))
+                    if kmulti_sound then
+                        --et.G_globalSound(doublekillsound)
+                        soundClients(doublekillsound)
                     end
                 end
                 wait_table[id] = nil
