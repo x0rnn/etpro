@@ -18,6 +18,7 @@ version = "1.0.5"
 -- FIXME: use wait_table[id] ~= nil --FIXED mmmhhh :/ ???
 
 -- x0rnn: added "thanks, [name]" vsay for revives
+-- x0rnn: added doublekill announce for 2 pistol kills
 -- x0rnn: added topshots (most kills with x, most hs...)
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
@@ -947,6 +948,7 @@ function checkMultiKill (id, mod)
 
 		if doublekill[id][1] == 2 then
 			wait_table[id] = {lvltime, 666}
+			doublekill[id][1] = 0
 		end
 		if kmulti[id][2] == 2 then
 			topshots[id][27] = topshots[id][27] + 1
@@ -1223,7 +1225,7 @@ function checkKSpreeEnd(id, killer, normal_kill)
                 		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), killed by suicide.",
                         m_name, kspree_color, killing_sprees[id], kspree_color))
                 	else
-                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), ^1teamkilled ^%sby ^7%s^%s!",
+                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), teamkilled by ^7%s^%s!",
                         m_name, kspree_color, killing_sprees[id], kspree_color, k_name, kspree_color))
                 	end
                     if krecord then
