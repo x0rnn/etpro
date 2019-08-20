@@ -211,8 +211,8 @@ function getConfig(map)
         c.spawns[6] = {name = "Axis Bunker3", state = PROTECT_AXIS, pos = {-990, 2038, 470}, radius2 = 300}
         c.spawns[7] = {name = "Boardroom", state = PROTECT_AXIS, pos = {240, 1190, 310}, radius2 = 300}
         c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Allies have secured the Hill Top!"}
--- et_mor2_night_final 28.03.2010
-    elseif map == "et_mor2_night_final" then
+-- et_mor2 28.03.2010
+    elseif map == "et_mor2" then
         c.spawns[1] = {name = "Desert Camp", state = PROTECT_ALLIES, pos = {9590, 1600, -300}, radius2 = 1300}
         c.spawns[2] = {name = "Gate House", state = PROTECT_AXIS, pos = {1720, 700, 30}, radius2 = 470}
         c.spawns[3] = {name = "Gate House2", state = PROTECT_AXIS, pos = {2360, 645, 30}, radius2 = 300}
@@ -267,7 +267,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- WÃ¼rzburg Radar
+-- Würzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -472,6 +472,16 @@ function getConfig(map)
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
         
                 
+-- missile_b3
+    elseif map == "missile_b3" then
+		        c.spawns[1] = {name = "Gate Control Spawn", state = PROTECT_AXIS, radius2 = 700}
+		        c.spawns[3] = {name = "Bunker Spawn", state = PROTECT_ALLIES, radius2 = 700}
+		        c.spawns[5] = {name = "Rocket Hall Spawn", state = PROTECT_AXIS, radius2 = 600}
+				
+    elseif map == "transmitter" then
+		        c.spawns[3] = {name = "Allied Base", state = PROTECT_ALLIES, radius2 = 1000}
+		        c.spawns[2] = {name = "Castle", state = PROTECT_AXIS, radius2 = 400}
+
 -- ET Ice
     elseif map == "et_ice" then
         c.spawns[1] = {name = "Axis North Barracks", state = PROTECT_AXIS, radius2 = 360}
@@ -541,14 +551,18 @@ function getConfig(map)
     elseif map == "italyfp2" then
         c.spawns[3] = {name = "Axis Spawn", pos = {1018, 3096, 98}, state = PROTECT_AXIS, radius2 = 350} --axis
         c.spawns[6] = {name = "Allied CP Spawn", pos = {-1050, -2125, -290}, state = PROTECT_ALLIES, radius2 = 440}
+-- italyfp2
+    elseif map == "italyfp2" then
+        c.spawns[3] = {name = "Axis Spawn", pos = {1018, 3096, 98}, state = PROTECT_AXIS, radius2 = 350} --axis
+        c.spawns[6] = {name = "Allied CP Spawn", pos = {-1050, -2125, -290}, state = PROTECT_ALLIES, radius2 = 440}
         
--- TroopTrain
-    elseif map == "sos_secret_weapon" then
-        c.spawns[1] = {state = NO_PROTECT}
-        c.spawns[2] = {state = NO_PROTECT}
+-- v2base_te 17.06.2019
+    elseif map == "v2base_te" then
+        c.spawns[1] = {name = "Axis Spawn", pos = {-2467, 1427, -215}, state = PROTECT_AXIS, radius2 = 295} --axis
+        c.spawns[2] = {name = "Allies Spawn", pos = {-2047, -1995, 92}, state = PROTECT_ALLIES, radius2 = 200} --allies
         c.spawns[3] = {state = NO_PROTECT}
-        c.spawns[4] = {state = NO_PROTECT}
-        c.spawns[5] = {state = NO_PROTECT}
+        c.spawns[4] = {name = "Allies Spawn", pos = {-2047, -1771, 92}, state = PROTECT_ALLIES, radius2 = 200} --allies
+
 -- sos_secret_weapon
     elseif map == "sos_secret_weapon" then
         c.spawns[1] = {state = NO_PROTECT}
