@@ -11,7 +11,8 @@ game_manager
 {
 	spawn
 	{
-		create
+
+	create
 		{
 			scriptName "alliesspawnroof"
 			classname "func_fakebrush"
@@ -21,7 +22,7 @@ game_manager
 			maxs "1000 1150 10"
 		}
 
-		create
+        create
 		{
 			scriptName "playerclip"
 			classname "func_fakebrush"
@@ -30,12 +31,12 @@ game_manager
 			mins "-520 -20 -400"
 			maxs "520 20 400"
 		}
-
+		
 		create
 		{
 			scriptname "axisspawn"
 			classname "team_CTF_redspawn"
-			origin "-2230 1514 -256"
+			origin "-2320 1320 -256"
 			angle 360
 			spawnflags 3
 		}
@@ -43,7 +44,7 @@ game_manager
 		{
 			scriptname "axisspawn"
 			classname "team_CTF_redspawn"
-			origin "-2230 1410 -256"
+			origin "-2320 1416 -256"
 			angle 360
 			spawnflags 3
 		}
@@ -51,7 +52,7 @@ game_manager
 		{
 			scriptname "axisspawn"
 			classname "team_CTF_redspawn"
-			origin "-2230 1322 -256"
+			origin "-2320 1512 -256"
 			angle 360
 			spawnflags 3
 		}
@@ -60,7 +61,7 @@ game_manager
 		{
 			scriptname "alliesspawn"
 			classname "team_CTF_bluespawn"
-			origin "-1928 -1688 56"
+			origin "-2192 -1728 52"
 			angle 360
 			spawnflags 3
 		}
@@ -68,7 +69,7 @@ game_manager
 		{
 			scriptname "alliesspawn"
 			classname "team_CTF_bluespawn"
-			origin "-1928 -1936 56"
+			origin "-2192 -1648 52"
 			angle 360
 			spawnflags 3
 		}
@@ -76,7 +77,7 @@ game_manager
 		{
 			scriptname "alliesspawn"
 			classname "team_CTF_bluespawn"
-			origin "-1920 -2032 56"
+			origin "-1920 -2040 52"
 			angle 360
 			spawnflags 3
 		}
@@ -85,8 +86,8 @@ game_manager
 		{
 			scriptname "alliesflagspawn"
 			classname "team_CTF_bluespawn"
-			targetname "forward_spawn"
-			origin "1164 1600 432"
+			targetname "forwardspawn1_spawns"
+			origin "1204 1652 440"
 			angle 225
 			spawnflags 1
 		}
@@ -94,8 +95,8 @@ game_manager
 		{
 			scriptname "alliesflagspawn"
 			classname "team_CTF_bluespawn"
-			targetname "forward_spawn"
-			origin "1220 1600 432"
+			targetname "forwardspawn1_spawns"
+			origin "1204 1572 440"
 			angle 225
 			spawnflags 1
 		}
@@ -103,8 +104,8 @@ game_manager
 		{
 			scriptname "alliesflagspawn"
 			classname "team_CTF_bluespawn"
-			targetname "forward_spawn"
-			origin "1148 1520 432"
+			targetname "forwardspawn1_spawns"
+			origin "1204 1508 440"
 			angle 225
 			spawnflags 1
 		}
@@ -113,8 +114,8 @@ game_manager
 		{
 			scriptname "axisflagspawn"
 			classname "team_CTF_redspawn"
-			targetname "forward_spawn"
-			origin "1168 1604 436"
+			targetname "forwardspawn1_spawns"
+			origin "1208 1504 440"
 			angle 225
 			spawnflags 1
 		}
@@ -122,8 +123,8 @@ game_manager
 		{
 			scriptname "axisflagspawn"
 			classname "team_CTF_redspawn"
-			targetname "forward_spawn"
-			origin "1224 1604 436"
+			targetname "forwardspawn1_spawns"
+			origin "1208 1568 440"
 			angle 225
 			spawnflags 1
 		}
@@ -131,15 +132,15 @@ game_manager
 		{
 			scriptname "axisflagspawn"
 			classname "team_CTF_redspawn"
-			targetname "forward_spawn"
-			origin "1152 1524 436"
+			targetname "forwardspawn1_spawns"
+			origin "1208 1648 440"
 			angle 225
 			spawnflags 1
 		}
 
 		// Game rules
 		wm_number_of_objectives 7
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	18
 		wm_set_main_objective 1 0 1
 		wm_set_main_objective 1 1 2
 		wm_objective_status 1 0 1  // Obj1, Axis in control of Docs.
@@ -188,17 +189,16 @@ game_manager
 
 		// Winner on expiration of round timer (0=Axis, 1=Allies)
 		wm_setwinner	0
-
-		wait 500
-		setautospawn	"Axis Spawn"	0
-		setautospawn	"Allied Spawn"	1
-
-		wait 2000
+		
+		wait 2500
+		wm_addteamvoiceannounce 0 "radar_axis_entrances_defend"
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "radar_allies_entrances_destroy"
 		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
 		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 0 "radar_axis_entrances_defend"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
-		
+		wm_teamvoiceannounce 1 "radar_allies_entrances_destroy"
 
 	}
 	trigger objective1
@@ -241,8 +241,6 @@ game_manager
 	{
 		wm_objective_status 4 0 1  // Obj4, Axis have captured the tower.
 		wm_objective_status 4 1 2  // Obj4, Allies have not captured the tower.
-
-
 		wm_announce	"Axis captures the Tower!"
 	}
 
@@ -260,6 +258,10 @@ game_manager
 	wm_objective_status 3 0 2  // Obj3, Axis have lost the Base Wall.
 	wm_objective_status 3 1 1  // Obj3, Allies have destroyed the Base Wall.
 	wait 200
+	wm_addteamvoiceannounce 0 "radar_axis_entrance1_destroyed"
+	wm_addteamvoiceannounce 1 "radar_allies_entrance1_destroyed"
+	wm_teamvoiceannounce 0 "radar_axis_entrance1_destroyed"
+	wm_teamvoiceannounce 1 "radar_allies_entrance1_destroyed"
 	trigger game_manager checkgame	
 	}
 	trigger objective3
@@ -324,69 +326,50 @@ transmitter_obj
 }
 
 
-// ================================================
-// ============    FORWARD SPAWN     ==============
-// ================================================
-
-forward_spawn
+// ============================================================================
+// Forward Spawn point - Initially neutral
+//
+// ============================================================================
+forwardspawn1_flag
 {
 	spawn
 	{
-	// accum 4 set 2	// 0-Axis, 1-Allied
+		wait 200
+		accum 0 set 2			// Who owns flag: 0-Axis, 1-Allied
+		accum 9 set 0			// Axis have not captures flag once yet
+		accum 8 set 0			// Allies have not captured flag once yet
+		setstate forwardspawn1_wobj invisible //remove Axis flag command map marker until captured
+		setautospawn "Allied Spawn" 1
+		setautospawn "Axis Spawn" 0
+	}
+	trigger axis_capture				// Touched by an Axis player
+	{
+		accum 0 abort_if_equal 0 		// do Axis own flag?
+		accum 0 set 0 				// Axis own the flag
+		wm_announce "Axis capture the Tower Spawn!"
+		setstate forwardspawn1_wobj default
+		setautospawn "Forward Spawn"	0	// Set Axis to forward spawn
+		setautospawn "Allied Spawn" 1       // Set Allies Spawn
+		alertentity forwardspawn1_wobj		// Switch command map marker
+		accum 8 abort_if_equal 1			// Abort if Allies have captured flag once
+		accum 9 abort_if_equal 1			//Abort if axis have captured flag once
+		alertentity forwardspawn1_wobj
+		accum 9 set 1					//Allies have captured at least once
 	}
 
-
-	trigger axis_capture
+	trigger allied_capture				// Touched by an allied player
 	{
-
-		accum 4 abort_if_not_equal 1
-
-		accum 4 set 0
-
-		trigger game_manager axis_flag
-
-		setautospawn	"Forward Spawn"	0
-		setautospawn	"Allied Spawn"	1
-
-		wait 1000
-
-		// *----------------------------------- vo ------------------------------------------*
-		//wm_teamvoiceannounce 0 "radar_axis_bunker_stop"
-
-		//wm_teamvoiceannounce 1 "radar_allies_bunker_capture"
-
-		//wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
-
-		//wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
-		// *---------------------------------------------------------------------------------*
-	}
-
-	trigger allied_capture
-	{
-
-		accum 4 abort_if_not_equal 0
-
-		accum 4 set 1
-
-		trigger game_manager allies_flag
-
-		setautospawn	"Axis Spawn"	0
-		setautospawn	"Forward Spawn"	1
-
-		wait 1000
-
-		// *----------------------------------- vo ------------------------------------------*
-		//wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
-
-		//wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
-
-		//wm_addteamvoiceannounce 0 "radar_axis_bunker_captured"
-
-		//wm_addteamvoiceannounce 1 "radar_allies_bunker_captured"
-		// *---------------------------------------------------------------------------------*
-
+		accum 0 abort_if_equal 1 		// do Allies own flag?
+		accum 0 set 1 				// Allies own the flag
+		wm_announce "Allies capture the Tower Spawn!"
+		setstate forwardspawn1_wobj default
+		alertentity forwardspawn1_wobj	// Switch command map marker
+		setautospawn "Forward Spawn"	1	// Set Allies to forward spawn
+		setautospawn "Axis Spawn" 0         // Set Axis Spawn
+		accum 8 set 1				//Allies have captured flag at least once
 	}
 }
+
 
 axis_radio_destroyed 
 { 
@@ -994,6 +977,115 @@ allied_mg2
 		setstate allied_mg2_materials invisible
 		setstate allied_mg2_materials_clip invisible
 		setstate allied_mg2_flag invisible
+
+
+		// *----------------------------------- vo ------------------------------------------*
+		//wm_removeteamvoiceannounce 0 "goldrush_axis_tankbar_construct"
+		//wm_removeteamvoiceannounce 0 "goldrush_axis_tankbars_construct"
+
+		//wm_removeteamvoiceannounce 1 "goldrush_allies_tankbar_destroy"
+		//wm_removeteamvoiceannounce 1 "goldrush_allies_tankbars_destroy"
+		// *---------------------------------------------------------------------------------*
+
+		remove
+	}
+}
+
+allied_mg3_toi
+{
+	trigger rubble_corner3
+	{
+		wait 850
+	}
+}
+allied_mg3
+{
+	spawn
+	{
+		wait 400
+		trigger allied_mg2 setup
+
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setstate allied_mg3_materials default
+		setstate allied_mg3_materials_clip default
+		setstate allied_mg3_flag default
+
+
+
+	}
+
+	buildstart final
+	{
+		setstate allied_mg3_materials default
+		setstate allied_mg3_materials_clip default
+		setstate allied_mg3_flag default
+
+
+	}
+
+	built final
+	{
+		setstate allied_mg3_materials invisible
+		setstate allied_mg3_materials_clip invisible
+		setstate allied_mg3_flag invisible
+
+
+
+
+
+		wm_announce "The Radio Ladder has been constructed."
+
+		// *----------------------------------- vo ------------------------------------------*
+		//wm_teamvoiceannounce 0 "goldrush_axis_tankbar_constructed"
+
+		//wm_removeteamvoiceannounce 0 "goldrush_axis_tankbar_construct"
+		//wm_removeteamvoiceannounce 0 "goldrush_axis_tankbars_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate allied_mg3_materials default
+		setstate allied_mg3_materials_clip default
+		setstate allied_mg3_flag default
+
+
+
+
+	}
+
+	death
+	{
+		setstate allied_mg3_materials default
+		setstate allied_mg3_materials_clip default
+		setstate allied_mg3_flag default
+
+
+
+
+
+
+		wm_announce "The Radio Ladder has been destroyed."
+
+		// *----------------------------------- vo ------------------------------------------*
+		//wm_addteamvoiceannounce 0 "goldrush_axis_tankbar_construct"
+
+		//wm_teamvoiceannounce 0 "goldrush_axis_tankbar_destroyed"
+
+		//wm_teamvoiceannounce 1 "goldrush_allies_tankbar_destroyed"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger remove
+	{
+		setstate allied_mg3_toi invisible
+		setstate allied_mg3_materials invisible
+		setstate allied_mg3_materials_clip invisible
+		setstate allied_mg3_flag invisible
 
 
 		// *----------------------------------- vo ------------------------------------------*
