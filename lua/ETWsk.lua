@@ -267,7 +267,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- Würzburg Radar
+-- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -565,11 +565,18 @@ function getConfig(map)
 
 -- sos_secret_weapon
     elseif map == "sos_secret_weapon" then
-        c.spawns[1] = {state = NO_PROTECT}
+        c.spawns[1] = {state = "Allies Spawn", pos = {2270, -2214, 68}, state = PROTECT_ALLIES, radius2 = 600}
         c.spawns[2] = {state = NO_PROTECT}
-        c.spawns[3] = {state = NO_PROTECT}
-        c.spawns[4] = {state = NO_PROTECT}
-        c.spawns[5] = {state = NO_PROTECT}
+        c.spawns[3] = {state = "Axis Spawn", pos = {-1847, 2307, 68}, state = PROTECT_AXIS, radius2 = 500}
+
+-- pirates
+    elseif map == "pirates" then
+        c.spawns[1] = {state = "Old City", state = NO_PROTECT}
+        c.spawns[2] = {state = "Seaport", state = PROTECT_AXIS, radius2 = 450}
+        c.spawns[3] = {name = "Beach Spawn", state = PROTECT_ALLIES, radius2 = 430}
+        c.spawns[4] = {name = "Courtyard", state = NO_PROTECT}
+
+
 -- goldendunk_a2
     elseif map == "goldendunk_a2" then
         c.spawns[1] = {name = "Axis Spawn1", pos = {-2370, 750, 60}, state = PROTECT_AXIS, radius2 = 250} 
