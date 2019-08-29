@@ -576,6 +576,12 @@ function getConfig(map)
         c.spawns[3] = {name = "Beach Spawn", state = PROTECT_ALLIES, radius2 = 430}
         c.spawns[4] = {name = "Courtyard", state = NO_PROTECT}
 
+-- eagles_2ways_b3
+    elseif map == "eagles_2ways_b3" then
+        c.spawns[1] = {state = "Axis 2", pos = {-4363, -2043, 2208}, state = PROTECT_AXIS, radius2 = 500}
+        c.spawns[2] = {state = "Allied 3", state = NO_PROTECT, pos = {-3506, -2322, 1776}, radius2 = 450}
+		c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "Allied 3"}
+
 
 -- goldendunk_a2
     elseif map == "goldendunk_a2" then
