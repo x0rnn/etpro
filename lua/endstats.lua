@@ -627,7 +627,9 @@ function et_Obituary(victim, killer, mod)
 				end
             else
                 checkKSpreeEnd(victim)
-                death_sprees[victim] = death_sprees[victim] + 1
+                if killer ~= 1022 then
+					death_sprees[victim] = death_sprees[victim] + 1
+                end
             end
             killing_sprees[victim] = 0
             death_sprees[killer] = 0
