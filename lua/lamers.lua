@@ -1,21 +1,39 @@
 -- lamers.lua by x0rnn
--- x% chance (default 10%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 75%) or more of all their kills are by panzer/mortar/arty/mg42
--- players who continuously push other players get a warning first and get put to spectators if they continue. Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
--- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue
+-- x% chance (default 8%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
+-- players who continuously push other players get a warning first and get put to spectators if they continue (default: single player 7x warn, 10x spec; multiple players 10x warn, 15x warn, 22x put spec). Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
+-- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
+-- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (default: 35 ammos given and less than 10 kills; 60 ammos given and less than 15 kills)
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
-
-chance = 5
-min_kills = 24
-min_percent = 85
 
 panzerlamers = {}
 mortarlamers = {}
 artylamers = {}
 mglamers = {}
+chance = 8
+min_kills = 25
+min_percent = 85
+
 shoves = {}
+shove_flag = false
+respawn_time = {}
+single_shove_warn = 7
+single_shove_spec = 10
+multi_shove_warn1 = 10
+multi_shove_warn2 = 15
+multi_shove_spec = 22
+
 artywalkers = {}
-flag = false
-respawn_time ={}
+artywalk_warn1 = 6
+artywalk_warn2 = 7
+artywalk_spec = 8
+
+ammolamers = {}
+ammo_given = {}
+al_msg = {}
+al_threshold_1 = 35
+al_threshold_2 = 60
+al_minkills_1 = 10
+al_minkills_2 = 15
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("lamers.lua "..et.FindSelf())
@@ -26,11 +44,14 @@ function et_ClientDisconnect(clientNum)
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 	if panzerlamers[cl_guid] ~= nil then
 		panzerlamers[cl_guid] = nil
-	elseif mortarlamers[cl_guid] ~= nil then
+	end
+	if mortarlamers[cl_guid] ~= nil then
 		mortarlamers[cl_guid] = nil
-	elseif artylamers[cl_guid] ~= nil then
+	end
+	if artylamers[cl_guid] ~= nil then
 		artylamers[cl_guid] = nil
-	elseif mglamers[cl_guid] ~= nil then
+	end
+	if mglamers[cl_guid] ~= nil then
 		mglamers[cl_guid] = nil
 	end
 	if shoves[clientNum] ~= nil then
@@ -38,6 +59,15 @@ function et_ClientDisconnect(clientNum)
 	end
 	if artywalkers[clientNum] ~= nil then
 		artywalkers[clientNum] = nil
+	end
+	if ammo_given[clientNum] ~= nil then
+		ammo_given[clientNum] = nil
+	end
+	if ammolamers[clientNum] ~= nil then
+		ammolamers[clientNum] = nil
+	end
+	if al_msg[clientNum] ~= nil then
+		al_msg[clientNum] = nil
 	end
 end
 
@@ -67,7 +97,7 @@ function et_Obituary(victim, killer, mod)
 								panzerlamers[cl_guid][2] = kills
 							end
 
-							if panzerlamers[cl_guid][1] > min_kills then
+							if panzerlamers[cl_guid][1] >= min_kills then
 								if panzerlamers[cl_guid][1] / kills >= min_percent/100 then
 									if math.mod(panzerlamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
@@ -93,7 +123,7 @@ function et_Obituary(victim, killer, mod)
 								mortarlamers[cl_guid][2] = kills
 							end
 
-							if mortarlamers[cl_guid][1] > min_kills then
+							if mortarlamers[cl_guid][1] >= min_kills then
 								if mortarlamers[cl_guid][1] / kills >= min_percent/100 then
 									if math.mod(mortarlamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
@@ -119,7 +149,7 @@ function et_Obituary(victim, killer, mod)
 								mglamers[cl_guid][2] = kills
 							end
 
-							if mglamers[cl_guid][1] > min_kills then
+							if mglamers[cl_guid][1] >= min_kills then
 								if mglamers[cl_guid][1] / kills >= min_percent/100 then
 									if math.mod(mglamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
@@ -146,7 +176,7 @@ function et_Obituary(victim, killer, mod)
 								artylamers[cl_guid][2] = kills
 							end
 
-							if artylamers[cl_guid][1] > min_kills then
+							if artylamers[cl_guid][1] >= min_kills then
 								if artylamers[cl_guid][1] / kills >= min_percent/100 then
 									if math.mod(artylamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
@@ -174,13 +204,13 @@ function et_Obituary(victim, killer, mod)
 								artywalkers[victim][killer] = artywalkers[victim][killer] + 1
 							end
 
-							if artywalkers[victim][killer] == 6 then
+							if artywalkers[victim][killer] == artywalk_warn1 then
 								et.trap_SendServerCommand(victim, "chat \"^3You have walked into " .. et.gentity_get(killer, "pers.netname") .. "^3's arty a lot of times. This script thinks you're doing it intentionally.\"\n")
 							end
-							if artywalkers[victim][killer] == 7 then
+							if artywalkers[victim][killer] == artywalk_warn2 then
 								et.trap_SendServerCommand(victim, "chat \"^3If you continue walking into " .. et.gentity_get(killer, "pers.netname") .. "^3's arty, you will be put to spectators.\"\n")
 							end
-							if artywalkers[victim][killer] == 8 then
+							if artywalkers[victim][killer] == artywalk_spec then
 								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
 								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally walking into " .. et.gentity_get(killer, "pers.netname") .. "^3's arty too many times.\"\n")
 							end
@@ -200,6 +230,17 @@ function et_Obituary(victim, killer, mod)
 					end
 					if mglamers[cl_guid] ~= nil then
 						mglamers[cl_guid][2] = kills
+					end
+					if ammolamers[killer] == true then
+						if ammo_given[killer] <= al_threshold_2 then
+							if kills >= al_minkills_1 then
+								ammolamers[killer] = false
+							end
+						else
+							if kills >= al_minkills_2 then
+								ammolamers[killer] = false
+							end
+						end
 					end
 				end
 			end
@@ -226,13 +267,13 @@ function et_Print(text)
 								shoves[tonumber(id1)][tonumber(id2)] = shoves[tonumber(id1)][tonumber(id2)] + 1
 							end
 
-							if shoves[tonumber(id1)][tonumber(id2)] == 7 then
+							if shoves[tonumber(id1)][tonumber(id2)] == single_shove_warn then
 								et.trap_SendServerCommand(tonumber(id1), "chat \"^3You have shoved " .. et.gentity_get(tonumber(id2), "pers.netname") .. " ^3a lot of times. If you continue, you will be put to spectators.\"\n")
 							end
-							if shoves[tonumber(id1)][tonumber(id2)] == 10 then
+							if shoves[tonumber(id1)][tonumber(id2)] == single_shove_spec then
 								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. tonumber(id1) .. "\n")
 								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id1), "pers.netname") .. " ^3moved to spectators for pushing " .. et.gentity_get(tonumber(id2), "pers.netname") .. "^3's buttons one too many times.\"\n")
-								flag = true
+								shove_flag = true
 							end
 
 							local i = 0
@@ -241,21 +282,61 @@ function et_Print(text)
 								i = i + 1
 								sum = sum + value
 							end
-							if sum == 10 and i > 1 then
+							if sum == multi_shove_warn1 and i > 1 then
 								et.trap_SendServerCommand(tonumber(id1), "chat \"^3You have shoved a lot of players. Is it really necessary?\"\n")
 							end
-							if sum == 15 and i > 1 then
+							if sum == multi_shove_warn2 and i > 1 then
 								et.trap_SendServerCommand(tonumber(id1), "chat \"^3You have shoved a lot of players. If you continue, you will be put to spectators.\"\n")
 							end
-							if sum == 22 then
+							if sum == multi_shove_spec then
 								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. tonumber(id1) .. "\n")
 								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id1), "pers.netname") .. " ^3moved to spectators for shoving too many players too many times.\"\n")
-								flag = true
+								shove_flag = true
 							end
 
-							if flag == true then
+							if shove_flag == true then
 								shoves[tonumber(id1)] = nil
 							end
+						end
+					end
+				end
+			end
+		end
+	elseif string.find(text, "Ammo_Pack") then
+		gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+		if gamestate == 0 then
+			local junk1,junk2,id = string.find(text, "^Ammo_Pack:%s+(%d+)%s+%d+")
+			if ammo_given[tonumber(id)] == nil then
+				ammo_given[tonumber(id)] = 1
+			else
+				ammo_given[tonumber(id)] = ammo_given[tonumber(id)] + 1
+			
+				if ammo_given[tonumber(id)] >= al_threshold_1 and ammo_given[tonumber(id)] <= al_threshold_2 then
+					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
+					if kills < al_minkills_1 then
+						ammolamers[tonumber(id)] = true
+						al_msg[tonumber(id)] = false
+						if ammolamers[tonumber(id)] == true then
+							if al_msg[tonumber(id)] == false then
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+								al_msg[tonumber(id)] = true
+							end
+							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						end
+					end
+				elseif ammo_given[tonumber(id)] > al_threshold_2 then
+					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
+					if kills < al_minkills_2 then
+						ammolamers[tonumber(id)] = true
+						al_msg[tonumber(id)] = false
+						if ammolamers[tonumber(id)] == true then
+							if al_msg[tonumber(id)] == false then
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+								al_msg[tonumber(id)] = true
+							end
+							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
 						end
 					end
 				end
@@ -267,5 +348,14 @@ end
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
 		respawn_time[id] = et.trap_Milliseconds() + 10000
+
+		if ammolamers[id] == true then
+			if al_msg[id] == false then
+				et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+				al_msg[id] = true
+			end
+			et.gentity_set(id, "ps.ammo", 12, 0)
+			et.gentity_set(id, "ps.ammoclip", 12, 0)
+		end
 	end
 end
