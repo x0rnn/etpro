@@ -180,6 +180,7 @@ medic_table = {}
 last_use = {}
 doublekill = {}
 et.CS_PLAYERS = 689
+kspree_endmsg = ""
 
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
@@ -881,7 +882,7 @@ function et_Print(text)
    	             end
   	              local msg = string.format("^7Longest killing spree: %s^7 with %d kills!%s", re_name, kmax_spree, longest)
   	              if kspree_announce then
-     	               et.trap_SendConsoleCommand(et.EXEC_APPEND, "qsay \""..msg.."^7\"\n")
+						kspree_endmsg = msg
   	              end
   	          end
   	          if srv_record then
@@ -1225,8 +1226,8 @@ function checkKSpreeEnd(id, killer, normal_kill)
                 		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), killed by suicide.",
                         m_name, kspree_color, killing_sprees[id], kspree_color))
                 	else
-                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), teamkilled by ^7%s^%s!",
-                        m_name, kspree_color, killing_sprees[id], kspree_color, k_name, kspree_color))
+                		sayClients(kspree_pos, string.format("%s^%s's killing spree ended (^7%d kills^%s), ^1teamkilled ^%sby ^7%s^%s!",
+                        m_name, kspree_color, killing_sprees[id], kspree_color, kspree_color, k_name, kspree_color))
                 	end
                     if krecord then
    	  	           sayClients(kspree_pos, "^"..kspree_color.."This is a new map record!^7")
@@ -1311,6 +1312,9 @@ function et_RunFrame(levelTime)
 	    if eomaptime < ltm then
 		    eomap_done = false
 			topshots_f(-2)
+			if kmax_id ~= nil then
+				et.trap_SendConsoleCommand(et.EXEC_APPEND, "qsay \"" .. kspree_endmsg .. "^7\"\n")
+			end
 	    end
 	end
     gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
