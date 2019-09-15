@@ -231,7 +231,7 @@ for filename in logs:
 							f = open("suspicious.txt", "a+")
 							f.write("Name: " + name + "\nGUID: " + players[id][0] + "\n")
 							f.write("Filename: " + filename + " Line: " + str(line_n) + "\n")
-							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "%\n")
+							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "% HS: " + str(weaponstats[id][3]) + "\n")
 							f.close()
 			prev_line = line
 		else:
