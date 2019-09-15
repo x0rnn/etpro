@@ -231,7 +231,7 @@ for filename in logs:
 							f = open("suspicious.txt", "a+")
 							f.write("Name: " + name + "\nGUID: " + players[id][0] + "\n")
 							f.write("Filename: " + filename + " Line: " + str(line_n) + "\n")
-							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "%\n")
+							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "% HS: " + str(weaponstats[id][3]) + "\n")
 							f.write("ET1: https://stats.hirntot.org/et/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n")
 							f.write("ET2: https://stats.hirntot.org/et2/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n")
 							f.write("Hub: https://hub.hirntot.org/player.hub?guid=" + players[id][0] + "\n\n")
