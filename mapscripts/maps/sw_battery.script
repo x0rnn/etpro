@@ -1,6 +1,9 @@
 //
 // Map: Atlantic Seawall Battery
-// BSP: battery
+// BSP: sw_battery
+// x0rnn changes:
+// main bunker door is reconstructible 
+// CP spawn is disabled, instead Axis spawn at backdoor and Allies at Ragnar's Battery forward spawns
 
 game_manager
 {
@@ -14,8 +17,6 @@ game_manager
 			classname  "trigger_objective_info"
 			target "newdoor_construct"
 			//origin "1016 -2256 826"
-			//mins "-80 -60 80"
-			//maxs "80 60 80"
 			spawnflags "1"
 			track "Sea Wall Door"
 			infoAxis "Defend the Sea Wall door !"
