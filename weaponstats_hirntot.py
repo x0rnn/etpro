@@ -35,16 +35,16 @@ for filename in logs:
 			comb_lines = prev_line + line
 			match_id = re.search(r'ClientConnect:\s*(\d{1,2})\n.*Userinfo:.*cl_guid\\([0-9a-fA-F]{32}).*name\\(.+?)\\', comb_lines)
 			if match_id:
-				id = int(match_id.group(1))
 				name = match_id.group(3)
 				name = re.sub(r'\^\^', '©', name)
 				name = re.sub(r'\^.', '', name)
 				name = re.sub(r'©', '^', name)
-				players[id] = [match_id.group(2), name]
+				players[int(match_id.group(1))] = [match_id.group(2), name]
 	
 			match_ws = re.search(r'WeaponStats:\s*(\d{1,2})\s*\d\s*(\d*)\s*(.*)', line)
 			if match_ws:
-				if players[int(match_ws.group(1))] != 0:
+				id = int(match_ws.group(1))
+				if players[id] != 0:
 					mask = int(match_ws.group(2))
 					if mask not in m:
 						bits, bits_len = a2b(int(match_ws.group(2)))
@@ -222,14 +222,13 @@ for filename in logs:
 							weaponstats[id] = [hits, shots, kills, hs]
 						else:
 							weaponstats[id] = [0, 0, 0, 0]
-	
-					
+
 					if int(weaponstats[id][1]) > 100 and int(weaponstats[id][3]) > 10:
 						acc = round((int(weaponstats[id][0]) / int(weaponstats[id][1])) * 100, 2)
 						hs_acc = round((int(weaponstats[id][3]) / int(weaponstats[id][0])) * 100, 2)
 						if hs_acc > hs_threshold:
 							f = open("suspicious.txt", "a+")
-							f.write("Name: " + name + "\nGUID: " + players[id][0] + "\n")
+							f.write("Name: " + players[id][1] + "\nGUID: " + players[id][0] + "\n")
 							f.write("Filename: " + filename + " Line: " + str(line_n) + "\n")
 							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "% HS: " + str(weaponstats[id][3]) + "\n")
 							f.write("ET1: https://stats.hirntot.org/et/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n")
