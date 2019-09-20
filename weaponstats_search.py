@@ -1,5 +1,7 @@
 # weaponstats_search by x0rnn
 # loops through ET server log files for input player GUID (32 or 8 chars) and outputs acc/hs acc stats for that player to 'weaponstats.txt'
+# in case of an encoder error, change line 37 to:
+# for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
 import re
@@ -32,7 +34,7 @@ guid = guid.upper()
 
 for filename in logs:
 	line_n = 0
-	for line in open(r'' + filename + ''):
+	for line in open(r'' + filename + "):
 		line_n += 1
 		if prev_line:
 			comb_lines = prev_line + line

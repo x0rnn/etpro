@@ -1,5 +1,7 @@
 # weaponstats by x0rnn
 # loops through ET server log files and outputs suspicious players with headshot accuracy over hs_threshold (default 20) to 'suspicious.txt'
+# in case of an encoder error, change line 34 to:
+# for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
 import re
