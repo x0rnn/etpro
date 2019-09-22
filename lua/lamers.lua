@@ -1,15 +1,15 @@
 -- lamers.lua by x0rnn
--- x% chance (default 8%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
+-- x% chance (default 10%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
 -- players who continuously push other players get a warning first and get put to spectators if they continue (default: single player 7x warn, 10x spec; multiple players 10x warn, 15x warn, 22x put spec). Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
 -- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
--- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (default: 35 ammos given and less than 10 kills; 60 ammos given and less than 15 kills)
+-- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
 
 panzerlamers = {}
 mortarlamers = {}
 artylamers = {}
 mglamers = {}
-chance = 8
+chance = 10
 min_kills = 25
 min_percent = 85
 
@@ -30,10 +30,14 @@ artywalk_spec = 8
 ammolamers = {}
 ammo_given = {}
 al_msg = {}
-al_threshold_1 = 35
-al_threshold_2 = 60
-al_minkills_1 = 10
-al_minkills_2 = 15
+al_minkills_1 = 1
+al_minkills_2 = 5
+al_minkills_3 = 10
+al_minkills_4 = 15
+al_threshold_1 = 10
+al_threshold_2 = 20
+al_threshold_3 = 35
+al_threshold_4 = 55
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("lamers.lua "..et.FindSelf())
@@ -232,12 +236,24 @@ function et_Obituary(victim, killer, mod)
 						mglamers[cl_guid][2] = kills
 					end
 					if ammolamers[killer] == true then
-						if ammo_given[killer] <= al_threshold_2 then
-							if kills >= al_minkills_1 then
-								ammolamers[killer] = false
+						if ammo_given[killer] <= al_threshold_4 then
+							if ammo_given[killer] <= al_threshold_3 then
+								if ammo_given[killer] <= al_threshold_2 then
+									if kills >= al_minkills_1 then
+										ammolamers[killer] = false
+									end
+								else
+									if kills >= al_minkills_2 then
+										ammolamers[killer] = false
+									end
+								end
+							else
+								if kills >= al_minkills_3 then
+									ammolamers[killer] = false
+								end
 							end
 						else
-							if kills >= al_minkills_2 then
+							if kills >= al_minkills_4 then
 								ammolamers[killer] = false
 							end
 						end
@@ -310,7 +326,7 @@ function et_Print(text)
 				ammo_given[tonumber(id)] = 1
 			else
 				ammo_given[tonumber(id)] = ammo_given[tonumber(id)] + 1
-			
+
 				if ammo_given[tonumber(id)] >= al_threshold_1 and ammo_given[tonumber(id)] <= al_threshold_2 then
 					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
 					if kills < al_minkills_1 then
@@ -325,9 +341,37 @@ function et_Print(text)
 							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
 						end
 					end
-				elseif ammo_given[tonumber(id)] > al_threshold_2 then
+				elseif ammo_given[tonumber(id)] >= al_threshold_2 and ammo_given[tonumber(id)] <= al_threshold_3 then
 					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
 					if kills < al_minkills_2 then
+						ammolamers[tonumber(id)] = true
+						al_msg[tonumber(id)] = false
+						if ammolamers[tonumber(id)] == true then
+							if al_msg[tonumber(id)] == false then
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+								al_msg[tonumber(id)] = true
+							end
+							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						end
+					end
+				elseif ammo_given[tonumber(id)] > al_threshold_3 and ammo_given[tonumber(id)] <= al_threshold_4 then
+					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
+					if kills < al_minkills_3 then
+						ammolamers[tonumber(id)] = true
+						al_msg[tonumber(id)] = false
+						if ammolamers[tonumber(id)] == true then
+							if al_msg[tonumber(id)] == false then
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+								al_msg[tonumber(id)] = true
+							end
+							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						end
+					end
+				elseif ammo_given[tonumber(id)] > al_threshold_4 then
+					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
+					if kills < al_minkills_4 then
 						ammolamers[tonumber(id)] = true
 						al_msg[tonumber(id)] = false
 						if ammolamers[tonumber(id)] == true then
