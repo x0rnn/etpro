@@ -1,17 +1,18 @@
 # weaponstats by x0rnn
-# loops through ET server log files and outputs suspicious players with headshot accuracy over hs_threshold (default 20) to 'suspicious.txt'
-# in case of an encoder error, change line 34 to:
+# loops through ET server log files and outputs suspicious players with headshot accuracy over hs_threshold (default 20) and kills over kill_threshold (default 10) to 'suspicious.txt'
+# in case of an encoder error, change line 35 to:
 # for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
 import re
 from collections import defaultdict
-logs = glob.glob('etserver*.log')
+logs = glob.glob('etserver*.log') # change to your log name/s
 
 players = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 m = [0, 1, 2, 4, 8, 16, 32 , 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152]
 weaponstats = defaultdict(dict)
 hs_threshold = 20
+kill_threshold = 10
 prev_line = None
 
 def a2b(number): #thanks to adawolfa
@@ -225,7 +226,7 @@ for filename in logs:
 						else:
 							weaponstats[id] = [0, 0, 0, 0]
 
-					if int(weaponstats[id][1]) > 100 and int(weaponstats[id][3]) > 10:
+					if int(weaponstats[id][3]) > 10 and int(weaponstats[id][2]) > kill_threshold:
 						acc = round((int(weaponstats[id][0]) / int(weaponstats[id][1])) * 100, 2)
 						hs_acc = round((int(weaponstats[id][3]) / int(weaponstats[id][0])) * 100, 2)
 						if hs_acc > hs_threshold:
@@ -234,8 +235,7 @@ for filename in logs:
 							f.write("Filename: " + filename + " Line: " + str(line_n) + "\n")
 							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "% HS: " + str(weaponstats[id][3]) + "\n")
 							f.write("ET1: https://stats.hirntot.org/et/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n")
-							f.write("ET2: https://stats.hirntot.org/et2/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n")
-							f.write("Hub: https://hub.hirntot.org/player.hub?guid=" + players[id][0] + "\n\n")
+							f.write("ET2: https://stats.hirntot.org/et2/themes/bismarck/playerstat.php?playerID=" + players[id][0][-8:] + "&config=cfg-default.php\n\n")
 							f.close()
 			prev_line = line
 		else:
