@@ -474,7 +474,7 @@ function getConfig(map)
                 
 -- missile_b3
     elseif map == "missile_b3" then
-		        c.spawns[1] = {name = "Gate Control Spawn", state = PROTECT_AXIS, radius2 = 700}
+		        c.spawns[1] = {name = "Gate Control Spawn", state = PROTECT_AXIS, pos = {3750, -4823, 80}, radius2 = 400}
 		        c.spawns[3] = {name = "Bunker Spawn", state = PROTECT_ALLIES, radius2 = 700}
 		        c.spawns[5] = {name = "Rocket Hall Spawn", state = PROTECT_AXIS, radius2 = 600}
 				
