@@ -477,6 +477,10 @@ function getConfig(map)
 		        c.spawns[1] = {name = "Gate Control Spawn", state = PROTECT_AXIS, pos = {3750, -4823, 80}, radius2 = 400}
 		        c.spawns[3] = {name = "Bunker Spawn", state = PROTECT_ALLIES, radius2 = 700}
 		        c.spawns[5] = {name = "Rocket Hall Spawn", state = PROTECT_AXIS, radius2 = 600}
+		        c.spawns[6] = {name = "Rocket Gate Spawn", state = NO_PROTECT, radius2 = 450}
+				c.actions[1] = {spawn = 1, newstate = NO_PROTECT, trigger = "Magnetic seal deactivated"}
+				c.actions[2] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "Allies have activated the Gate Controls"}
+
 				
     elseif map == "transmitter" then
 		        c.spawns[3] = {name = "Allied Base", state = PROTECT_ALLIES, radius2 = 1000}
