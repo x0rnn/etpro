@@ -21,7 +21,7 @@ ps_origin = {}
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("idiots.lua "..et.FindSelf())
 
-	soundindex = et.G_SoundIndex("sound/misc/cry.wav")
+	soundindex = et.G_SoundIndex("sound/misc/regen.wav")
 	mapname = et.trap_Cvar_Get("mapname")
 
 	local fd, len = et.trap_FS_FOpenFile(filename, et.FS_READ)
@@ -84,9 +84,10 @@ function et_ClientSpawn(clientNum, revived)
 				ammo2 = et.gentity_get(clientNum, "ps.ammo", weapon2)
 				ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
 
-				if cl_guid == "DDF05CC4276B289731AD2110D9AFF5BD" then -- rammstein/brigadierdog/ratatouille
+				if cl_guid == "blabla" then
 					et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 					et.gentity_set(clientNum,"ps.ammoclip",12,0)
+					et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
 					beacon[clientNum] = false
 					random_gib[clientNum] = false
 				elseif cl_guid == "bla" then
@@ -94,13 +95,13 @@ function et_ClientSpawn(clientNum, revived)
 					et.gentity_set(clientNum, "health", 69)
 					et.gentity_set(clientNum, "sess.kills", 0)
 					et.gentity_set(clientNum, "sess.deaths", 69)
-					et.gentity_set(clientNum, "sess.skill", 0, 0)
-					et.gentity_set(clientNum, "sess.skill", 1, 0)
-					et.gentity_set(clientNum, "sess.skill", 2, 0)
-					et.gentity_set(clientNum, "sess.skill", 3, 0)
-					et.gentity_set(clientNum, "sess.skill", 4, 0)
-					et.gentity_set(clientNum, "sess.skill", 5, 0)
-					et.gentity_set(clientNum, "sess.skill", 6, 0)
+					et.gentity_set(clientNum, "sess.skill", 0, 0) -- battle sense
+					et.gentity_set(clientNum, "sess.skill", 1, 0) -- engineer
+					et.gentity_set(clientNum, "sess.skill", 2, 0) -- medic
+					et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
+					et.gentity_set(clientNum, "sess.skill", 4, 0) -- light weapons
+					et.gentity_set(clientNum, "sess.skill", 5, 0) -- heavy weapons
+					et.gentity_set(clientNum, "sess.skill", 6, 0) -- covert ops
 					et.gentity_set(clientNum, "ps.ammo", weapon, 0)
 					et.gentity_set(clientNum, "ps.ammoclip", weapon, ammoclip/2)
 					et.gentity_set(clientNum, "ps.ammo", weapon2, 0)
@@ -125,7 +126,7 @@ function et_ClientSpawn(clientNum, revived)
 								et.gentity_set(clientNum, "ps.origin", ps_origin)
 								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
 								et.trap_SendServerCommand(-1, msg)
-							elseif mapname == "battery" then
+							elseif mapname == "sw_battery" or mapname == "battery" then
 								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
 								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
 								ps_origin = { [1]=10164, [2]=-3063, [3]=3687 }
@@ -164,6 +165,34 @@ function et_ClientSpawn(clientNum, revived)
 								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
 								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
 								ps_origin = { [1]=-975, [2]=1411, [3]=2050 }
+								et.gentity_set(clientNum, "ps.origin", ps_origin)
+								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
+								et.trap_SendServerCommand(-1, msg)
+							elseif mapname == "pirates" then
+								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
+								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
+								ps_origin = { [1]=1593, [2]=6696, [3]=4118 }
+								et.gentity_set(clientNum, "ps.origin", ps_origin)
+								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
+								et.trap_SendServerCommand(-1, msg)
+							elseif mapname == "venice" then
+								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
+								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
+								ps_origin = { [1]=-2246, [2]=796, [3]=2049 }
+								et.gentity_set(clientNum, "ps.origin", ps_origin)
+								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
+								et.trap_SendServerCommand(-1, msg)
+							elseif mapname == "missile_b3" then
+								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
+								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
+								ps_origin = { [1]=4755, [2]=-2441, [3]=2292 }
+								et.gentity_set(clientNum, "ps.origin", ps_origin)
+								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
+								et.trap_SendServerCommand(-1, msg)
+							elseif mapname == "eagles_2ways_b3" then
+								et.gentity_set(clientNum, "ps.ammoclip", weapon, 0)
+								et.gentity_set(clientNum, "ps.ammo", weapon, 0)
+								ps_origin = { [1]=3535, [2]=2265, [3]=2688 }
 								et.gentity_set(clientNum, "ps.origin", ps_origin)
 								msg = string.format("chat  \"" .. name .. " ^3randomly teleported into another dimension for being an idiot.\n")
 								et.trap_SendServerCommand(-1, msg)
