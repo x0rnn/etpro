@@ -4,6 +4,7 @@
 //-------------------------------------------------------------
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
 // x0rnn 2019-03-27: added timebonus
+// x0rnn 2019-09-28: tank stops sooner and becomes unusable; boat moves longer without escort
 
 game_manager
 {
