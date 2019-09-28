@@ -386,6 +386,13 @@ function et_Print(text)
 				end
 			end
 		end
+	elseif string.find(text, "weapon_magicammo") then
+		local i, j = string.find(text, "%d+")   
+		local id = tonumber(string.sub(text, i, j))
+		if ammolamers[id] == true then
+			et.gentity_set(id, "ps.ammo", 12, 0)
+			et.gentity_set(id, "ps.ammoclip", 12, 0)
+		end
 	end
 end
 
