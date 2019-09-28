@@ -1525,251 +1525,7 @@ tank
 	trigger run_71
 	{
 		accum 1 bitset 2
-		followspline 0 spln71 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_72
-	{
-		accum 1 bitset 2
-		followspline 0 spln72 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_73
-	{
-		accum 1 bitset 2
-		followspline 0 spln73 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_74
-	{
-		accum 1 bitset 2
-		followspline 0 spln74 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_75
-	{
-		accum 1 bitset 2
-		followspline 0 spln75 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_76
-	{
-		accum 1 bitset 2
-		followspline 0 spln76 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_77
-	{
-		accum 1 bitset 2
-		followspline 0 spln77 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_78
-	{
-		accum 1 bitset 2
-		followspline 0 spln78 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_79
-	{
-		accum 1 bitset 2
-		followspline 0 spln79 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_80
-	{
-		accum 1 bitset 2
-		followspline 0 spln80 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_81
-	{
-		accum 1 bitset 2
-		followspline 0 spln81 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_82
-	{
-		accum 1 bitset 2
-		followspline 0 spln82 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_83
-	{
-		accum 1 bitset 2
-		followspline 0 spln83 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_84
-	{
-		accum 1 bitset 2
-		followspline 0 spln84 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_85
-	{
-		accum 1 bitset 2
-		followspline 0 spln85 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_86
-	{
-		accum 1 bitset 2
-		followspline 0 spln86 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_87
-	{
-		accum 1 bitset 2
-		followspline 0 spln87 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_88
-	{
-		accum 1 bitset 2
-		followspline 0 spln88 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_89
-	{
-		accum 1 bitset 2
-		followspline 0 spln89 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_90
-	{
-		accum 1 bitset 2
-		followspline 0 spln90 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_91
-	{
-		accum 1 bitset 2
-		followspline 0 spln91 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_92
-	{
-		accum 1 bitset 2
-		followspline 0 spln92 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_93
-	{
-		accum 1 bitset 2
-		followspline 0 spln93 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_94
-	{
-		accum 1 bitset 2
-		followspline 0 spln94 80 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_95
-	{
-		accum 1 bitset 2
-		followspline 0 spln95 70 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_96
-	{
-		trigger self tracks_turn_right
-		accum 1 bitset 2
-		followspline 0 spln96 60 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_97
-	{
-		accum 1 bitset 2
-		followspline 0 spln97 60 wait length -64
-		accum 1 bitreset 2
-
-		trigger self run_continue
-	}
-
-	trigger run_98
-	{
-		accum 1 bitset 2
-		followspline 0 spln98 60 wait length -64
+		followspline 0 spln71 60 wait length -64
 		accum 1 bitreset 2
 
 		trigger self script_lockout
@@ -1786,6 +1542,12 @@ tank
 		trigger tank_turret turn2
 
 		trigger self run_incpos
+		allowtankenter no
+		allowtankexit yes
+		setdamagable tank 0
+		settankammo tank 0
+		wm_announce "^ATHE TANK IS NO LONGER USABLE!"
+		wm_announce "^ATHE TANK IS NO LONGER USABLE!"
 	}
 // ===========================================================================================
 // ===========================================================================================
@@ -3432,6 +3194,7 @@ boat
 	{
 		accum 1 bitset 2
 		followspline 0 b_spln2 90 wait length 304
+		followspline 0 b_spln3 90 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3440,7 +3203,8 @@ boat
 	trigger run_3
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln3 110 wait length 304
+		followspline 0 b_spln4 110 wait length 304
+		followspline 0 b_spln5 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3449,7 +3213,8 @@ boat
 	trigger run_4
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln4 110 wait length 304
+		followspline 0 b_spln6 110 wait length 304
+		followspline 0 b_spln7 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3460,7 +3225,8 @@ boat
 
 
 		accum 1 bitset 2
-		followspline 0 b_spln5 110 wait length 304
+		followspline 0 b_spln8 110 wait length 304
+		followspline 0 b_spln9 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3469,7 +3235,8 @@ boat
 	trigger run_6
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln6 110 wait length 304
+		followspline 0 b_spln10 110 wait length 304
+		followspline 0 b_spln11 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3478,7 +3245,8 @@ boat
 	trigger run_7
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln7 110 wait length 304
+		followspline 0 b_spln12 110 wait length 304
+		followspline 0 b_spln13 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3487,7 +3255,8 @@ boat
 	trigger run_8
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln8 110 wait length 304
+		followspline 0 b_spln14 110 wait length 304
+		followspline 0 b_spln15 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3496,7 +3265,8 @@ boat
 	trigger run_9
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln9 110 wait length 304
+		followspline 0 b_spln16 110 wait length 304
+		followspline 0 b_spln17 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3505,7 +3275,8 @@ boat
 	trigger run_10
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln10 110 wait length 304
+		followspline 0 b_spln18 110 wait length 304
+		followspline 0 b_spln19 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3514,7 +3285,8 @@ boat
 	trigger run_11
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln11 110 wait length 304
+		followspline 0 b_spln20 110 wait length 304
+		followspline 0 b_spln21 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3523,7 +3295,8 @@ boat
 	trigger run_12
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln12 110 wait length 304
+		followspline 0 b_spln22 110 wait length 304
+		followspline 0 b_spln23 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3532,7 +3305,8 @@ boat
 	trigger run_13
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln13 110 wait length 304
+		followspline 0 b_spln24 110 wait length 304
+		followspline 0 b_spln25 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3541,7 +3315,8 @@ boat
 	trigger run_14
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln14 110 wait length 304
+		followspline 0 b_spln26 110 wait length 304
+		followspline 0 b_spln27 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3550,7 +3325,8 @@ boat
 	trigger run_15
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln15 110 wait length 304
+		followspline 0 b_spln28 110 wait length 304
+		followspline 0 b_spln29 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3559,7 +3335,8 @@ boat
 	trigger run_16
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln16 110 wait length 304
+		followspline 0 b_spln30 110 wait length 304
+		followspline 0 b_spln31 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3568,7 +3345,8 @@ boat
 	trigger run_17
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln17 110 wait length 304
+		followspline 0 b_spln32 110 wait length 304
+		followspline 0 b_spln33 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3577,7 +3355,8 @@ boat
 	trigger run_18
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln18 110 wait length 304
+		followspline 0 b_spln34 110 wait length 304
+		followspline 0 b_spln35 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3586,7 +3365,8 @@ boat
 	trigger run_19
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln19 110 wait length 304
+		followspline 0 b_spln36 110 wait length 304
+		followspline 0 b_spln37 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3595,7 +3375,8 @@ boat
 	trigger run_20
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln20 110 wait length 304
+		followspline 0 b_spln38 110 wait length 304
+		followspline 0 b_spln39 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3604,7 +3385,8 @@ boat
 	trigger run_21
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln21 110 wait length 304
+		followspline 0 b_spln40 110 wait length 304
+		followspline 0 b_spln41 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3613,7 +3395,8 @@ boat
 	trigger run_22
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln22 110 wait length 304
+		followspline 0 b_spln42 110 wait length 304
+		followspline 0 b_spln43 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3622,8 +3405,15 @@ boat
 	trigger run_23
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln23 110 wait length 304
+		followspline 0 b_spln44 110 wait length 304
+		followspline 0 b_spln45 110 wait length 304
 		accum 1 bitreset 2
+		
+		// **********************************
+		trigger boatbarrier1 remove
+		// **********************************
+		
+		wm_announce "The Boat is past Boat Barrier #1!"
 
 		trigger boat run_continue
 	}
@@ -3631,7 +3421,8 @@ boat
 	trigger run_24
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln24 110 wait length 304
+		followspline 0 b_spln46 110 wait length 304
+		followspline 0 b_spln47 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3640,7 +3431,8 @@ boat
 	trigger run_25
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln25 110 wait length 304
+		followspline 0 b_spln48 110 wait length 304
+		followspline 0 b_spln49 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3649,7 +3441,8 @@ boat
 	trigger run_26
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln26 110 wait length 304
+		followspline 0 b_spln50 110 wait length 304
+		followspline 0 b_spln51 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3658,7 +3451,8 @@ boat
 	trigger run_27
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln27 110 wait length 304
+		followspline 0 b_spln52 110 wait length 304
+		followspline 0 b_spln53 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3667,7 +3461,8 @@ boat
 	trigger run_28
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln28 110 wait length 304
+		followspline 0 b_spln54 110 wait length 304
+		followspline 0 b_spln55 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3676,7 +3471,8 @@ boat
 	trigger run_29
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln29 110 wait length 304
+		followspline 0 b_spln56 110 wait length 304
+		followspline 0 b_spln57 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3685,7 +3481,8 @@ boat
 	trigger run_30
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln30 110 wait length 304
+		followspline 0 b_spln58 110 wait length 304
+		followspline 0 b_spln59 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3694,7 +3491,8 @@ boat
 	trigger run_31
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln31 110 wait length 304
+		followspline 0 b_spln60 110 wait length 304
+		followspline 0 b_spln61 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3703,7 +3501,8 @@ boat
 	trigger run_32
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln32 110 wait length 304
+		followspline 0 b_spln62 110 wait length 304
+		followspline 0 b_spln63 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3712,7 +3511,8 @@ boat
 	trigger run_33
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln33 110 wait length 304
+		followspline 0 b_spln64 110 wait length 304
+		followspline 0 b_spln65 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3721,7 +3521,8 @@ boat
 	trigger run_34
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln34 110 wait length 304
+		followspline 0 b_spln66 110 wait length 304
+		followspline 0 b_spln67 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3730,7 +3531,8 @@ boat
 	trigger run_35
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln35 110 wait length 304
+		followspline 0 b_spln68 110 wait length 304
+		followspline 0 b_spln69 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3739,8 +3541,15 @@ boat
 	trigger run_36
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln36 110 wait length 304
+		followspline 0 b_spln70 110 wait length 304
+		followspline 0 b_spln71 110 wait length 304
 		accum 1 bitreset 2
+		
+		// **********************************
+		trigger boatbarrier2 remove
+		// **********************************
+		
+		wm_announce "The Boat is past Boat Barrier #2!"
 
 		trigger boat run_continue
 	}
@@ -3748,7 +3557,8 @@ boat
 	trigger run_37
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln37 110 wait length 304
+		followspline 0 b_spln72 110 wait length 304
+		followspline 0 b_spln73 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3757,7 +3567,8 @@ boat
 	trigger run_38
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln38 110 wait length 304
+		followspline 0 b_spln74 110 wait length 304
+		followspline 0 b_spln75 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3766,7 +3577,8 @@ boat
 	trigger run_39
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln39 110 wait length 304
+		followspline 0 b_spln76 110 wait length 304
+		followspline 0 b_spln77 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3775,7 +3587,8 @@ boat
 	trigger run_40
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln40 110 wait length 304
+		followspline 0 b_spln78 110 wait length 304
+		followspline 0 b_spln79 110 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3784,7 +3597,8 @@ boat
 	trigger run_41
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln41 110 wait length 304
+		followspline 0 b_spln80 90 wait length 304
+		followspline 0 b_spln81 70 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3793,7 +3607,8 @@ boat
 	trigger run_42
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln42 110 wait length 304
+		followspline 0 b_spln82 60 wait length 304
+		followspline 0 b_spln83 60 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
@@ -3802,403 +3617,14 @@ boat
 	trigger run_43
 	{
 		accum 1 bitset 2
-		followspline 0 b_spln43 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_44
-	{
-		// **********************************
-		trigger boatbarrier1 remove
-		// **********************************
-
-		accum 1 bitset 2
-		followspline 0 b_spln44 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_45
-	{
-		wm_announce "The Boat is past Boat Barrier #1!"
-
-		accum 1 bitset 2
-		followspline 0 b_spln45 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_46
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln46 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_47
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln47 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_48
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln48 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_49
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln49 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_50
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln50 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_51
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln51 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_52
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln52 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_53
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln53 100 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_54
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln54 70 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_55
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln55 70 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_56
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln56 80 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_57
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln57 100 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_58
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln58 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_59
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln59 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_60
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln60 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_61
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln61 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_62
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln62 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_63
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln63 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_64
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln64 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_65
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln65 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_66
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln66 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_67
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln67 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_68
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln68 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_69
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln69 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_70
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln70 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_71
-	{
-		// **********************************
-		trigger boatbarrier2 remove
-		// **********************************
-
-		accum 1 bitset 2
-		followspline 0 b_spln71 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_72
-	{
-		wm_announce "The Boat is past Boat Barrier #2!"
-
-		accum 1 bitset 2
-		followspline 0 b_spln72 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_73
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln73 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_74
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln74 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_75
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln75 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_76
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln76 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_77
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln77 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_78
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln78 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_79
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln79 110 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_80
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln80 90 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_81
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln81 70 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_82
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln82 60 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_83
-	{
-		accum 1 bitset 2
-		followspline 0 b_spln83 60 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_84
-	{
-		accum 1 bitset 2
 		followspline 0 b_spln84 60 wait length 304
-		accum 1 bitreset 2
-
-		trigger boat run_continue
-	}
-
-	trigger run_85
-	{
-		accum 1 bitset 2
 		followspline 0 b_spln85 60 wait length 304
 		accum 1 bitreset 2
 
 		trigger boat run_continue
 	}
 
-	trigger run_86
+	trigger run_44
 	{
 		accum 1 bitset 2
 		followspline 0 b_spln86 60 wait length 304
