@@ -2,7 +2,7 @@
 -- level -2 players get automuted on connect (they cannot callvote mute/unmute/kick or get callvote unmuted by others, they cannot use /m, /pm either)
 -- level -3 players get handicaps such as:
 ---- weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved
----- they emit a beacon sound to the enemy team (DOESN'T WORK), they can't selfkill, they get randomly gibbed or teleported into their death on respawn
+---- they emit a beacon sound to the enemy team (DOESN'T WORK), they can't selfkill, they get randomly (10% chance) gibbed or teleported into their death on respawn
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
