@@ -2,7 +2,7 @@
 -- level -2 players get automuted on connect (they cannot callvote mute/unmute/kick or get callvote unmuted by others, they cannot use /m, /pm either)
 -- level -3 players get handicaps such as:
 ---- weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved
----- they emit a beacon sound to the enemy team (DOESN'T WORK), they can't selfkill, they get randomly (10% chance) gibbed or teleported into their death on respawn
+---- they emit a beacon sound to the enemy team, they can't selfkill, they get randomly (10% chance) gibbed or teleported into their death on respawn
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
@@ -15,7 +15,7 @@ idiots = {}
 idiots2 = {}
 idiots_id = {}
 random_gib = {} -- true by default; random_gib[clientNum] = false in et_ClientBegin function to disable
-beacon = {} -- leave disabled, doesn't seem to work correctly in etpro
+beacon = {} -- disabled by default
 flag = false
 soundindex = ""
 mapname = ""
@@ -89,7 +89,7 @@ function et_ClientSpawn(clientNum, revived)
 				ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
 				et.gentity_set(clientNum, "sess.deaths", 69)
 
-				if cl_guid == "blablabla" then
+				if cl_guid == "bla" then
 					et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 					et.gentity_set(clientNum,"ps.ammoclip",12,0)
 					et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
@@ -240,13 +240,13 @@ function et_RunFrame(levelTime)
 			for index in pairs(idiots_id) do
 				if beacon[idiots_id[i]] == true then
 					idiot_team = tonumber(et.gentity_get(idiots_id[i], "sess.sessionTeam"))
-					tempentity = et.G_TempEntity(et.gentity_get(idiots_id[1], "r.currentOrigin"), EV_GLOBAL_CLIENT_SOUND)
 					if idiot_team == 1 or idiot_team == 2 then
 						for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 							opponent_team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
 							if opponent_team ~= 0 and opponent_team ~= 3 and opponent_team ~= idiot_team then
 								local health = tonumber(et.gentity_get(idiots_id[i], "health"))
 								if health > 0 then
+									tempentity = et.G_TempEntity(et.gentity_get(idiots_id[1], "r.currentOrigin"), EV_GLOBAL_CLIENT_SOUND)
 									et.gentity_set(tempentity, "s.teamNum", j)
 									et.gentity_set(tempentity, "s.eventParm", soundindex)
 								end
