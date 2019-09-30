@@ -1,6 +1,9 @@
 -- idiots.lua by x0rnn, custom troll measures against etadmin level -2 and -3 (idiot) players
 -- level -2 players get automuted on connect (they cannot callvote mute/unmute/kick or get callvote unmuted by others, they cannot use /m, /pm either)
--- level -3 players get handicaps such as weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved, they emit a beacon sound to the enemy team, they can't selfkill, they get randomly gibbed or teleported into their death on respawn, they don't have spawn protection, etc. (can be set unique for each player by guid)
+-- level -3 players get handicaps such as:
+---- weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved
+---- they emit a beacon sound to the enemy team (DOESN'T WORK), they can't selfkill, they get randomly gibbed or teleported into their death on respawn
+---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
 -- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
@@ -11,12 +14,13 @@ goons = {}
 idiots = {}
 idiots2 = {}
 idiots_id = {}
-beacon = {} -- true by default; beacon[clientNum] = false to disable
-random_gib = {} -- same
+random_gib = {} -- true by default; random_gib[clientNum] = false in et_ClientBegin function to disable
+beacon = {} -- leave disabled, doesn't seem to work correctly in etpro
 flag = false
 soundindex = ""
 mapname = ""
 ps_origin = {}
+EV_GLOBAL_CLIENT_SOUND = 54
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("idiots.lua "..et.FindSelf())
@@ -49,7 +53,7 @@ function et_ClientBegin(clientNum)
 	if idiots[cl_guid] == true then
 		idiots2[cl_guid] = true
 		table.insert(idiots_id, clientNum)
-		beacon[clientNum] = true
+		beacon[clientNum] = false
 		random_gib[clientNum] = true
 		flag = true
 	end
@@ -83,12 +87,12 @@ function et_ClientSpawn(clientNum, revived)
 				ammoclip = et.gentity_get(clientNum, "ps.ammoclip", weapon)
 				ammo2 = et.gentity_get(clientNum, "ps.ammo", weapon2)
 				ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
+				et.gentity_set(clientNum, "sess.deaths", 69)
 
-				if cl_guid == "blabla" then
+				if cl_guid == "blablabla" then
 					et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 					et.gentity_set(clientNum,"ps.ammoclip",12,0)
 					et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
-					beacon[clientNum] = false
 					random_gib[clientNum] = false
 				elseif cl_guid == "bla" then
 					et.gentity_set(clientNum, "ps.stats", 4, 69) -- max_health
@@ -111,7 +115,7 @@ function et_ClientSpawn(clientNum, revived)
 				if random_gib[clientNum] == true then
 					et.gentity_set(clientNum, "ps.powerups", 1, 0)
 					local choice = math.random(1, 100)
-					if choice <= 5 then
+					if choice <= 10 then
 						local choice2 = math.random(1, 2)
 						if choice2 == 1 then
 							msg = string.format("chat  \"" .. name .. " ^3randomly gibbed for being an idiot.\n")
@@ -208,19 +212,20 @@ end
 function et_Obituary(victim, killer, mod)
 	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 	if gamestate == 0 then
-		if killer ~= 1022 and killer ~= 1023 then
-			cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(killer), "cl_guid")
-			if idiots2[cl_guid] == true then
+		if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
+			cl_guid_k = et.Info_ValueForKey(et.trap_GetUserinfo(killer), "cl_guid")
+			cl_guid_v = et.Info_ValueForKey(et.trap_GetUserinfo(victim), "cl_guid")
+			if idiots2[cl_guid_k] == true then
 				local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
 				local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
 				local v_deaths = tonumber(et.gentity_get(victim, "sess.deaths"))
-	
+
 				if v_teamid ~= k_teamid then
-					if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
-						et.gentity_set(killer, "sess.kills", 0)
-						et.gentity_set(victim, "sess.deaths", v_deaths - 1)
-					end
+					et.gentity_set(killer, "sess.kills", 0)
+					et.gentity_set(victim, "sess.deaths", v_deaths - 1)
 				end
+			elseif idiots2[cl_guid_v] == true then
+				et.gentity_set(victim, "sess.deaths", 69)
 			end
 		end
 	end
@@ -235,13 +240,15 @@ function et_RunFrame(levelTime)
 			for index in pairs(idiots_id) do
 				if beacon[idiots_id[i]] == true then
 					idiot_team = tonumber(et.gentity_get(idiots_id[i], "sess.sessionTeam"))
+					tempentity = et.G_TempEntity(et.gentity_get(idiots_id[1], "r.currentOrigin"), EV_GLOBAL_CLIENT_SOUND)
 					if idiot_team == 1 or idiot_team == 2 then
 						for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 							opponent_team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
 							if opponent_team ~= 0 and opponent_team ~= 3 and opponent_team ~= idiot_team then
 								local health = tonumber(et.gentity_get(idiots_id[i], "health"))
 								if health > 0 then
-									et.G_Sound(idiots_id[i], soundindex)
+									et.gentity_set(tempentity, "s.teamNum", j)
+									et.gentity_set(tempentity, "s.eventParm", soundindex)
 								end
 							end
 						end
