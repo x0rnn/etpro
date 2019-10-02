@@ -1,6 +1,6 @@
 # chat_search by x0rnn
 # loops through ET server log files for input player GUID (32 or 8 chars) and outputs all chat by that player to guid.txt
-# in case of an encoder error, change line 19 to:
+# in case of an encoder error, change line 23 to:
 # for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
@@ -10,7 +10,7 @@ import sys
 if sys.version_info[0] < 3:
 	raise Exception("Python 3.x is required!")
 
-logs = glob.glob('etserver*.log') #name of your log file
+logs = glob.glob('etserver*.log') # change to your log name/s
 found_flag = False
 
 guid = input("GUID: ")

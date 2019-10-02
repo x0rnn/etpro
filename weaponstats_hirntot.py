@@ -1,13 +1,17 @@
 # weaponstats by x0rnn
 # loops through ET server log files and outputs suspicious players with headshot accuracy over hs_threshold (default 20) and kills over kill_threshold (default 10) to 'suspicious.txt'
-# in case of an encoder error, change line 35 to:
+# in case of an encoder error, change line 39 to:
 # for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
 import re
 from collections import defaultdict
-logs = glob.glob('etserver*.log') # change to your log name/s
+import sys
 
+if sys.version_info[0] < 3:
+	raise Exception("Python 3.x is required!")
+
+logs = glob.glob('etserver*.log') # change to your log name/s
 players = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 m = [0, 1, 2, 4, 8, 16, 32 , 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152]
 weaponstats = defaultdict(dict)
