@@ -43,5 +43,5 @@ for filename in logs:
 					rec = match_pm.group(2)
 					sentence = match_pm.group(3)
 					if found_name == name:
-						f.write("PM to " + match_pm.group(2) + ": " + sentence + "\n")
+						f.write("PM to " + rec + ": " + sentence + "\n")
 						f.close()
