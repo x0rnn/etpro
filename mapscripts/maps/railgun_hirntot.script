@@ -12,6 +12,7 @@
 // - Flag at Depot Yard moved to where the MG was
 // x0rnn, 2018-25-09:
 // - set Axis Tower Spawn default spawn: if Allies capture Depot Yard, Axis can attack quicker
+// x0rnn 2019-10-04: removed wait before wm_endround
 
 game_manager
 {
@@ -322,7 +323,7 @@ game_manager
 
 		wm_setwinner 0
 
-		wait 2400
+		//wait 2400
 
 		wm_endround
 
