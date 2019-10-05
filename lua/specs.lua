@@ -34,7 +34,7 @@ function et_ClientCommand(id, command)
 							local team2 = tonumber(et.gentity_get(j, "sess.sessionTeam"))
 							if team2 == 1 or team2 == 2 then
 								local pos_player = et.gentity_get(j, "ps.origin")
-								if math.abs(pos_spec[1] - pos_player[1]) < 20 and math.abs(pos_spec[2] - pos_player[2]) < 20 and math.abs(pos_spec[3] - pos_player[3]) < 20 then
+								if math.abs(pos_spec[1] - pos_player[1]) < 10 and math.abs(pos_spec[2] - pos_player[2]) < 10 and math.abs(pos_spec[3] - pos_player[3]) < 10 then
 									msg = string.format("chat  \"" ..  et.gentity_get(i, "pers.netname") .. "^7 is spectating: " .. et.gentity_get(j, "pers.netname") .. "\n")
 									et.trap_SendServerCommand(id, msg)
 								end
