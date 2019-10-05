@@ -157,6 +157,7 @@ function et_ClientCommand(id, command)
 			for j = 1, tbl_cnt do
 				et.trap_SendServerCommand(id, "chat \"" .. player_name_tbl[j] .. "\"")
 			end
+			return 1
 		end
 	end
 	return(0)
