@@ -1,6 +1,6 @@
 # chat_search by x0rnn
 # loops through ET server log files for input player GUID (32 or 8 chars) and outputs all chat by that player to guid.txt
-# in case of an encoder error, change line 23 to:
+# in case of an encoder error, change line 19 to:
 # for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 
 import glob
@@ -20,11 +20,13 @@ for filename in logs:
 	f = open(guid + ".txt", "a+")
 	f.write("### " + filename + " ###\n")
 	f.close()
-	for line in open(r'' + filename + ''):
+	for line in open(r'' + filename + '', encoding="ISO-8859-1"):
 		match_id = re.search(r'Userinfo:.*cl_guid\\([0-9a-fA-F]{32}).*name\\(.+?)\\', line)
 		if match_id:
 			if match_id.group(1) == guid or match_id.group(1)[-8:] == guid:
 				name = match_id.group(2)
+				if len(name) >= 36:
+					name = name[:35]
 				found_flag = True
 
 		if found_flag == True:
