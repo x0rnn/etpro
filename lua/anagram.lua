@@ -376,9 +376,9 @@ function et_ClientBegin(id)
 	local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 	if team == 3 then
 		if game_running then
-			sayClients("^5The spectator minigame is running! The current word to solve is: ^3" .. shuffled .. " ^5(only team chat is accepted!)")
+			et.trap_SendServerCommand(id, "chat \"^5The spectator minigame is running! The current word to solve is: ^3" .. shuffled .. " ^5(only team chat is accepted!)\"")
 		else
-			sayClients("^5Type ^3!minigame ^5(in team chat) to start the spectator minigame!")
+			et.trap_SendServerCommand(id, "chat \"^5Type ^3!minigame ^5(in team chat) to start the spectator minigame!\"")
 		end
 	end
 end
