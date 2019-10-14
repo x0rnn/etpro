@@ -387,11 +387,14 @@ function et_Print(text)
 			end
 		end
 	elseif string.find(text, "weapon_magicammo") then
-		local i, j = string.find(text, "%d+")   
-		local id = tonumber(string.sub(text, i, j))
-		if ammolamers[id] == true then
-			et.gentity_set(id, "ps.ammo", 12, 0)
-			et.gentity_set(id, "ps.ammoclip", 12, 0)
+		gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+		if gamestate == 0 then
+			local i, j = string.find(text, "%d+")
+			local id = tonumber(string.sub(text, i, j))
+			if ammolamers[id] == true then
+				et.gentity_set(id, "ps.ammo", 12, 0)
+				et.gentity_set(id, "ps.ammoclip", 12, 0)
+			end
 		end
 	end
 end
