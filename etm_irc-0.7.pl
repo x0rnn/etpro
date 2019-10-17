@@ -185,8 +185,8 @@ my $conn = $irc->newconn(
                           Server   => ( $config{'irc_server'} ),
                           Port     => $config{'irc_port'},
                           Nick     => $config{'irc_nick'},
-                          Ircname  => 'This bot brought to you by etadmin_mod.',
-                          Username => 'BotInterface'
+                          Ircname  => 'https://hirntot.org https://hirntot.org/discord',
+                          Username => 'hirntot'
                         )
   or die "$0: Can't connect to IRC server ($config{'irc_server'}:$config{'irc_port'}, Nick: $config{'irc_nick'}).\n";
 
@@ -206,7 +206,14 @@ sub on_connect
     &send_qauth();
 
     &log("Joining $config{'irc_chan'}...");
-    $self->join( $config{'irc_chan'} );
+    if ( $config{'chan_pass'} )
+    {
+        $self->join( $config{'irc_chan'} . ' ' . $config{'chan_pass'});
+    }
+    else
+    {
+        $self->join( $config{'irc_chan'} );
+    }
 
     for (@irc_admin_chans)
     {
@@ -432,7 +439,7 @@ sub on_msg
         }
         elsif ( $command =~ /quit/i )
         {
-            $self->quit("Yow!! *sigh* (Visit \002http://et.d1p.de/etadmin_mod\002)");
+            $self->quit("Watch my ass!");
             &log( "Got signal to quit (" . $event->nick . "," . $event->userhost . ")" );
             exit(0);
         }
@@ -561,7 +568,7 @@ sub on_public
         {
             delete $notify{ $event->userhost };
 
-            $requests{$req_counter}{'target'} = $nick;
+            $requests{$req_counter}{'target'} = $chan;
             #$requests{$req_counter}{'target'} = $chan;
             if ( check_permission( $event->userhost ) >= 2 )
             {
@@ -991,7 +998,9 @@ sub irc_in
 
 	    if (!$authorized && index($dat, "You have authorized yourself as") == 0) {
 	    	   &log("Authorized to the etadmin_mod as user $config{'username'}, setting default filter to 191.");
-                   print $handle "/etm 191\r\n";
+                   print $handle "/etm 223\r\n";
+                   print $handle "/etm_kills 2\r\n";
+                   print $handle "/etm_chat 3\r\n";
         	   #print $handle "/filter 2\r\n";
 	    	   next ;	
 	    }
@@ -1190,7 +1199,7 @@ s/^(say[:\s]+?|qsay|chat)\s*\"?(.*?)\"?$/"Chat event [ ".&color("^h").&decoloriz
                             }
                         }
                         elsif ( $dat =~
-s/^(sayteam:|saybuddy:)\s*\"?(.*?)\"?$/"Chat event [ ".&color("^b").&decolorize($2)."${k}${k} ]"/gie
+s/^(sayteam:)\s*\"?(.*?)\"?$/"Chat event [ ".&color("^b").&decolorize($2)."${k}${k} ]"/gie
                           )
                         {
                             my %cvar = (
@@ -1198,8 +1207,19 @@ s/^(sayteam:|saybuddy:)\s*\"?(.*?)\"?$/"Chat event [ ".&color("^b").&decolorize(
                                          "<TEXT>"  => &decolorize($2)
                                        );
                             $dat =
-                              &template_replace( $1 eq "sayteam" ? $template{'chat:team'} : $template{'chat:buddy'},
-                                                 \%cvar );
+                              &template_replace( $template{'chat:team'}, \%cvar );
+                            $send = 1;
+                        }
+                        elsif ( $dat =~
+s/^(saybuddy:)\s*\"?(.*?)\"?$/"Chat event [ ".&color("^b").&decolorize($2)."${k}${k} ]"/gie
+                          )
+                        {
+                            my %cvar = (
+                                         "<CTEXT>" => $2,
+                                         "<TEXT>"  => &decolorize($2)
+                                       );
+                            $dat =
+                              &template_replace( $template{'chat:buddy'}, \%cvar );
                             $send = 1;
                         }
                         else
@@ -1867,3 +1887,4 @@ sub flood_check
     # event is ok
     return 0;
 }
+
