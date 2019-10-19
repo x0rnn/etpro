@@ -401,15 +401,18 @@ end
 
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
-		respawn_time[id] = et.trap_Milliseconds() + 10000
-
-		if ammolamers[id] == true then
-			if al_msg[id] == false then
-				et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-				al_msg[id] = true
+		local team = et.gentity_get(id, "sess.sessionTeam")
+		if team == 1 or team == 2 then
+			respawn_time[id] = et.trap_Milliseconds() + 10000
+	
+			if ammolamers[id] == true then
+				if al_msg[id] == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+					al_msg[id] = true
+				end
+				et.gentity_set(id, "ps.ammo", 12, 0)
+				et.gentity_set(id, "ps.ammoclip", 12, 0)
 			end
-			et.gentity_set(id, "ps.ammo", 12, 0)
-			et.gentity_set(id, "ps.ammoclip", 12, 0)
 		end
 	end
 end
