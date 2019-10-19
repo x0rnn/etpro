@@ -185,6 +185,21 @@ kspree_endmsg = ""
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
 
+weapontable = {
+[3]=	"MP40",
+[5]=	"Panzerfaust",
+[6]=	"Flamethrower",
+[8]=	"Thompson",
+[10]=	"Sten", 
+[23]=	"K43 Rifle",
+[24]=	"M1 Rifle",
+[25]=	"M1 Garand", 
+[31]=	"MG42", 
+[32]=	"K43",
+[33]=	"FG42", 
+[35]=	"Mortar", 
+}
+
 function et_InitGame(levelTime, randomSeed, restart)
 
     local func_start = et.trap_Milliseconds()
@@ -1171,7 +1186,7 @@ function et_Obituary(victim, killer, mod)
                   if killerhp < 0 then
                     et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zwas dead.\n"))
                   else
-                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zhad ^1" .. killerhp .. " ^zHP left. Distance was ^1" .. roundNum(killdist, 2) .. " ^zm.\n"))
+                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zhad ^1" .. killerhp .. " ^zHP left. Distance was ^1" .. math.floor(roundNum(killdist)) .. " ^zm.\n"))
                   end
                 end
             else
@@ -1637,7 +1652,7 @@ function et_ClientCommand(id, command)
                 local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
                 for t=0, sv_maxclients-1, 1 do
                     if et.gentity_get(t, "sess.sessionTeam") == TKer_team then
-                    et.trap_SendServerCommand(t, cmd)
+        	            et.trap_SendServerCommand(t, cmd)
                     end
                 end
                 if not sorry_repeat then
@@ -1661,7 +1676,7 @@ function et_ClientCommand(id, command)
                 local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
                 for t=0, sv_maxclients-1, 1 do
                     if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
-                    et.trap_SendServerCommand(t, cmd)
+             	       et.trap_SendServerCommand(t, cmd)
                     end
                 end
                 if not thanks_repeat then
@@ -1672,6 +1687,29 @@ function et_ClientCommand(id, command)
             else
                 return(0)
             end
+        elseif string.lower(vsaystring[1]) == "needammo" and table.getn(vsaystring) < 2 then
+            local vsaymessage = ""
+            local ppos = et.gentity_get(id,"r.currentOrigin")
+            local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			if team ~= 3 then
+				local weaponcode = et.gentity_get(id, "sess.PlayerWeapon")
+				local weaponname = weapontable[weaponcode]
+				if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
+					ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+				else
+					ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
+				end
+				vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left for my ^2" .. weaponname .. "^5)"
+				local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
+  	          for t=0, sv_maxclients-1, 1 do
+     	           if et.gentity_get(t, "sess.sessionTeam") == team then
+       		         et.trap_SendServerCommand(t, cmd)
+       	         end
+    	        end
+				return(1)
+			else
+				return(0)
+			end
         end -- end lower
     end -- vsay_team
 
