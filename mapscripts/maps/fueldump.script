@@ -638,7 +638,7 @@ game_manager
                    scriptName "fueljump3"
                    classname "func_fakebrush"
                    origin "-9536 -5215 340"
-                   contents 1                                  // main gate "hut"
+                   contents 65536                                  // main gate "hut"
                    mins "-35 -35 -20"
                    maxs "35 35 5"
             }
