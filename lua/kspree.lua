@@ -1694,19 +1694,23 @@ function et_ClientCommand(id, command)
 			if team ~= 3 then
 				local weaponcode = et.gentity_get(id, "sess.PlayerWeapon")
 				local weaponname = weapontable[weaponcode]
-				if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
-					ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+				if weaponname ~= nil then
+					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
+						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+					else
+						ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
+					end
+					vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left for my ^2" .. weaponname .. "^5)"
+					local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
+  	 	         for t=0, sv_maxclients-1, 1 do
+     		           if et.gentity_get(t, "sess.sessionTeam") == team then
+       			         et.trap_SendServerCommand(t, cmd)
+       	 	        end
+    		        end
+					return(1)
 				else
-					ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
+					return(0)
 				end
-				vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left for my ^2" .. weaponname .. "^5)"
-				local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
-  	          for t=0, sv_maxclients-1, 1 do
-     	           if et.gentity_get(t, "sess.sessionTeam") == team then
-       		         et.trap_SendServerCommand(t, cmd)
-       	         end
-    	        end
-				return(1)
 			else
 				return(0)
 			end
