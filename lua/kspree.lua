@@ -199,6 +199,11 @@ weapontable = {
 [32]=	"K43",
 [33]=	"FG42", 
 [35]=	"Mortar", 
+[42]=	"M1 Garand",
+[43]=	"K43",
+[44]=	"FG42",
+[45]=	"Mortar",
+[49]=	"MG42",
 }
 
 function et_InitGame(levelTime, randomSeed, restart)
@@ -1696,10 +1701,24 @@ function et_ClientCommand(id, command)
 				local weaponcode = et.gentity_get(id, "s.weapon")
 				local weaponname = weapontable[weaponcode]
 				if weaponname ~= nil then
-					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
-						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 or weaponcode == 45 then --in case it's: Panzerfaust, Flamethrower or Mortar
+						if weaponcode == 45 then -- set mortar
+							ammo = et.gentity_get(id, "ps.ammoclip", 35)
+						else
+							ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+						end
 					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 then
 						ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
+					elseif weaponcode == 42 or weaponcode == 43 or weaponcode == 44 then
+						if weaponcode == 42 then -- scoped garand
+							ammo = et.gentity_get(id, "ps.ammo", 25) + et.gentity_get(id, "ps.ammoclip", 25)
+						elseif weaponcode == 43 then -- scoped k43
+							ammo = et.gentity_get(id, "ps.ammo", 32) + et.gentity_get(id, "ps.ammoclip", 32)
+						else -- scoped fg42
+							ammo = et.gentity_get(id, "ps.ammo", 33) + et.gentity_get(id, "ps.ammoclip", 33)
+						end
+					elseif weaponcode == 49 then -- proned mg42
+						ammo = et.gentity_get(id, "ps.ammo", 31) + et.gentity_get(id, "ps.ammoclip", 31)
 					else
 						return(0)
 					end
