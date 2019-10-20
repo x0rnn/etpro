@@ -23,9 +23,10 @@
 // x0rnn - fixed arni's "fueljump1" anti-trickjump playerclip
 // x0rnn - added 1 extra Allied spawn in the Allied Hut before bridge (now there are 4)
 // x0rnn - Allies spawn in the tunnel instead of the "Tunnel Store Room" after Depot Gate is destroyed
-// Harlekin - added 3 allied spawns in tunnel cave storage after side wall is breached
+// Harlekin - added 2 allied spawns in tunnel cave storage after side wall is breached
 // Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
+// x0rnn - added fg42 snipebug weaponclip
 
 game_manager
 {
@@ -73,19 +74,19 @@ game_manager
 			spawnflags 2
 			angle "270"
 		}
-	
-		// allied Cave Storage Spawn #3
-		create
-		{
-			classname "team_CTF_bluespawn"
-			targetname "alliedcavespawns"
-			scriptName "alliedcavespawns3"
-			origin "-8120 -4160 495"
-			spawnflags 2
-			angle "270"
-		}
-		
-		// allied Cave Storage Spawn #4
+
+//		// allied Cave Storage Spawn #3
+//		create
+//		{
+//			classname "team_CTF_bluespawn"
+//			targetname "alliedcavespawns"
+//			scriptName "alliedcavespawns3"
+//			origin "-8120 -4160 495"
+//			spawnflags 2
+//			angle "270"
+//		}
+//		
+//		// allied Cave Storage Spawn #4
 //		create
 //		{
 //			classname "team_CTF_bluespawn"
@@ -619,8 +620,8 @@ game_manager
                    classname "func_fakebrush"
                    origin "-8920 -5120 646"
                    contents 65536  // CONTENTS_PLAYERCLIP      // high fueljump
-                   mins "-520 -2 -100"
-                   maxs "370 2 100"
+                   mins "-520 -50 -50"
+                   maxs "370 50 200"
            }
 
            create
@@ -641,6 +642,16 @@ game_manager
                    contents 65536                                  // main gate "hut"
                    mins "-35 -35 -20"
                    maxs "35 35 5"
+            }
+
+           create
+           {
+                   scriptName "fg42_snipebug"
+                   classname "func_fakebrush"
+                   origin "-9296 -5128 470"
+                   contents 1                           // weaponclip
+                   mins "-60 -1 -30"
+                   maxs "200 1 5"
             }
 
 		// fueldump anti-trickjump player clips - courtesy arni end
@@ -900,7 +911,7 @@ game_manager
 		// *---------------------------------------------------------------------------------*
 		// ----- Harlekin Timebonus Announce -----
 		wm_announce "^3Initial Map time 12 min"
-		wm_announce "^3Timebonus: +8 min Tunnel Door, +5 min Depot Gate & +3 min Depot Side Wall"
+		wm_announce "^3Timebonus: +8 min Tunnel Door, +2 min Depot Gate"
 		wm_announce "^3Allied respawn time is set to 15 until the Tunnel Door is destroyed!"
 		// ----- Harlekin Timebonus Announce -----
 	}
@@ -971,13 +982,14 @@ game_manager
 		trigger alliedtunnelspawn gate_breached
 		setstate depotgate_toi invisible
 		// ----- Harlekin Timebonus Depot Gate -----
-		wm_announce "^3+5 min Timebonus!"
+		wm_announce "^3+2 min Timebonus!"
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
+ 		//cvar timelimit inc "1"
+ 		//cvar timelimit inc "1"
+ 		//cvar timelimit inc "1"
 		wm_announce "^3The Allies has to destroy the Depot Side Wall for 3 min extra time!"
+		wm_announce "^1Allied Tunnel Spawn enabled!"
 		// ----- Harlekin Timebonus Depot Gate -----
 
 		// *----------------------------------- vo ------------------------------------------*
@@ -1037,10 +1049,10 @@ game_manager
 		wm_announce	"Allied team has breached the Depot Side Wall!"
 		setstate depotsidewall_toi invisible
 		// ----- Harlekin Timebonus Depot Side Wall -----
-		wm_announce "^3+3 min Timebonus!"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
+		//wm_announce "^3+3 min Timebonus!"
+ 		//cvar timelimit inc "1"
+ 		//cvar timelimit inc "1"
+ 		//cvar timelimit inc "1"
 		// ----- Harlekin Timebonus Depot Side Wall -----
 		// ----- Harlekin Cave Storage Spawn -----
 		trigger alliedcavespawn enable
@@ -1126,7 +1138,7 @@ alliedtunnelspawn
 		accum 1 trigger_if_equal 5 alliedtunnelspawn enable_set_default
 		accum 1 trigger_if_equal 6 alliedtunnelspawn disable
 		accum 1 trigger_if_equal 7 alliedtunnelspawn enable_not_default
-		accum 1 trigger_if_equal 13 alliedtunnelspawn enable_set_default
+		accum 1 trigger_if_equal 13 alliedtunnelspawn enable_set_default2
 		accum 1 trigger_if_equal 15 alliedtunnelspawn disable_tunnelspawn
 	}
 
@@ -1152,12 +1164,22 @@ alliedtunnelspawn
 		setstate tunnel_wobj invisible
 	}
 
+	trigger enable_set_default2
+	{
+		setstate alliedtunnelspawn default
+		setstate alliedtunnelspawns default
+		setautospawn "Tunnel Spawn" 1
+		setstate tunnel_wobj invisible
+		wm_announce "^1Allied Tunnel Spawn enabled!"
+	}
+
 	trigger disable_tunnelspawn
 	{
-		setstate alliedtunnelspawn invisible
-		setstate alliedtunnelspawns invisible
+		//setstate alliedtunnelspawn invisible
+		//setstate alliedtunnelspawns invisible
 		setautospawn "Garage HQ" 1
 		setstate tunnel_wobj invisible
+		//wm_announce "^3Allied Tunnel Spawn disabled!"
 	}
 }
 
@@ -1180,7 +1202,7 @@ alliedcavespawn
 	{
 		setstate alliedcavespawn default
 		setstate alliedcavespawns default
-		wm_announce "^1Allied Cave Storage Spawn enabled (3 positions available)!"
+		wm_announce "^1Allied Cave Storage Spawn enabled (2 positions available)!"
 	}
 }
 		// ----- Harlekin Cave Storage Spawn -----
