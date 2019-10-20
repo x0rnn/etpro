@@ -21,6 +21,7 @@ version = "1.0.5"
 -- x0rnn: added doublekill announce for 2 pistol kills
 -- x0rnn: added topshots (most kills with x, most hs...)
 -- x0rnn: added ammmo left message to vsay_team NeedAmmo
+-- x0rnn: added class message to vsay_team EnemyDisguised
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -204,6 +205,14 @@ weapontable = {
 [44]=	"FG42",
 [45]=	"Mortar",
 [49]=	"MG42",
+}
+
+classtable = {
+[0] = "Soldier",
+[1] = "Medic",
+[2] = "Engineer",
+[3] = "FieldOps",
+[4] = "CovertOps",
 }
 
 function et_InitGame(levelTime, randomSeed, restart)
@@ -1722,17 +1731,34 @@ function et_ClientCommand(id, command)
 					else
 						return(0)
 					end
-					vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left for my ^2" .. weaponname .. "^5)"
+					vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left / ^2" .. weaponname .. "^5)"
 					local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
-  	 	         for t=0, sv_maxclients-1, 1 do
-     		           if et.gentity_get(t, "sess.sessionTeam") == team then
-       			         et.trap_SendServerCommand(t, cmd)
-       	 	        end
-    		        end
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
 					return(1)
 				else
 					return(0)
 				end
+			else
+				return(0)
+			end
+		elseif string.lower(vsaystring[1]) == "enemydisguised" and table.getn(vsaystring) < 2 then
+			local vsaymessage = ""
+			local ppos = et.gentity_get(id,"r.currentOrigin")
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			if team ~= 3 then
+				local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
+				vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
+				local cmd = string.format("vtchat 0 %d 50 EnemyDisguised %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
+				for t=0, sv_maxclients-1, 1 do
+					if et.gentity_get(t, "sess.sessionTeam") == team then
+						et.trap_SendServerCommand(t, cmd)
+					end
+				end
+				return(1)
 			else
 				return(0)
 			end
