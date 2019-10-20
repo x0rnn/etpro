@@ -20,6 +20,7 @@ version = "1.0.5"
 -- x0rnn: added "thanks, [name]" vsay for revives
 -- x0rnn: added doublekill announce for 2 pistol kills
 -- x0rnn: added topshots (most kills with x, most hs...)
+-- x0rnn: added ammmo left message to vsay_team NeedAmmo
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -1697,8 +1698,10 @@ function et_ClientCommand(id, command)
 				if weaponname ~= nil then
 					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
 						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
-					else
+					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 then
 						ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
+					else
+						return(0)
 					end
 					vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left for my ^2" .. weaponname .. "^5)"
 					local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
