@@ -1692,7 +1692,7 @@ function et_ClientCommand(id, command)
             local ppos = et.gentity_get(id,"r.currentOrigin")
             local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 			if team ~= 3 then
-				local weaponcode = et.gentity_get(id, "sess.PlayerWeapon")
+				local weaponcode = et.gentity_get(id, "s.weapon")
 				local weaponname = weapontable[weaponcode]
 				if weaponname ~= nil then
 					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 then --in case it's: Panzerfaust, Flamethrower or Mortar
