@@ -21,6 +21,7 @@ beacon = {} -- disabled by default
 block_team = {} -- disabled by default
 block_class = {} -- disabled by default
 block_class_flag = false
+invisible_mute = {} -- disabled by default
 flag = false
 soundindex = ""
 mapname = ""
@@ -62,6 +63,7 @@ function et_ClientBegin(clientNum)
 		block_team[clientNum] = { [1]=false, [2]="s" }
 		block_class[clientNum] = { [1]=false, [2]=3 }
 		random_gib[clientNum] = true
+		invisible_mute[clientNum] = false
 		flag = true
 
 		--------------- block a team or class from an idiot ---------------
@@ -74,6 +76,12 @@ function et_ClientBegin(clientNum)
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
 		end
 	end
+
+	----- block a team or invisibly mute someone who is not -3 -----
+	if cl_guid == "bla" then
+		block_team[clientNum] = { [1]=true, [2]="r" }
+		invisible_mute[clientNum] = true
+	end
 end
 
 function et_ClientDisconnect(clientNum)
@@ -84,10 +92,17 @@ function et_ClientDisconnect(clientNum)
 		random_gib[clientNum] = nil
 		block_team[clientNum] = nil
 		block_class[clientNum] = nil
+		invisible_mute[clientNum] = nil
 		table.remove(idiots_id, clientNum)
 		if next(idiots2) == nil then
 			flag = false
 		end
+	end
+	if block_team[clientNum] ~= nil then
+		block_team[clientNum] = nil
+	end
+	if invisible_mute[clientNum] ~= nil then
+		invisible_mute[clientNum] = nil
 	end
 end
 
@@ -109,7 +124,7 @@ function et_ClientSpawn(clientNum, revived)
 					ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
 					et.gentity_set(clientNum, "sess.deaths", 69)
 	
-					if cl_guid == "blabla" then
+					if cl_guid == "bla" then
 						et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 						et.gentity_set(clientNum,"ps.ammoclip",12,0)
 						et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
@@ -131,7 +146,6 @@ function et_ClientSpawn(clientNum, revived)
 						et.gentity_set(clientNum, "ps.ammo", weapon2, 0)
 						et.gentity_set(clientNum, "ps.ammoclip", weapon2, ammoclip2/2)
 						et.gentity_set(clientNum, "ps.powerups", 1, 0) -- no spawn protection
-
 					end
 	
 					if random_gib[clientNum] == true then
@@ -365,8 +379,25 @@ function et_ClientCommand(id, cmd)
 		elseif string.lower(cmd) == "team" then
 			if block_team[id][1] == true then
 				local team = string.lower(et.trap_Argv(1))
-				if team == block_team[1][2] then
+				if team == block_team[id][2] then
 					et.trap_SendServerCommand(id, "cpm \"^1You are not allowed to join that team.\n\"")
+					return 1
+				end
+			end
+		end
+		if invisible_mute[id] == true then
+			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" then
+				if et.trap_Argv(0) == "say" then
+					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("Invisible mute: say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
+					return 1
+				elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
+					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("Invisible mute: say_team: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
+					return 1
+				elseif et.trap_Argv(0) == "say_buddy" then
+					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("Invisible mute: say_buddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
 					return 1
 				end
 			end
@@ -378,6 +409,34 @@ function et_ClientCommand(id, cmd)
 				if client ~= nil and goons[client.guid] == true then
 					et.trap_SendServerCommand(id, "chat \"You can't unmute " .. et.Q_CleanStr(client.name) .. ".\"\n")
 					return 1
+				end
+			end
+		end
+		if block_team[id][1] == true or invisible_mute[id] == true then
+			if block_team[id][1] == true then
+				if string.lower(cmd) == "team" then
+					local team = string.lower(et.trap_Argv(1))
+					if team == block_team[id][2] then
+						et.trap_SendServerCommand(id, "cpm \"^1You are not allowed to join that team.\n\"")
+						return 1
+					end
+				end
+			end
+			if invisible_mute[id] == true then
+				if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" then
+					if et.trap_Argv(0) == "say" then
+						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("Invisible mute: say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
+						return 1
+					elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
+						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("Invisible mute: say_team: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
+						return 1
+					elseif et.trap_Argv(0) == "say_buddy" then
+						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("Invisible mute: say_buddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. "\n")
+						return 1
+					end
 				end
 			end
 		end
