@@ -130,6 +130,8 @@ function et_ClientSpawn(clientNum, revived)
 						et.gentity_set(clientNum, "ps.ammoclip", weapon, ammoclip/2)
 						et.gentity_set(clientNum, "ps.ammo", weapon2, 0)
 						et.gentity_set(clientNum, "ps.ammoclip", weapon2, ammoclip2/2)
+						et.gentity_set(clientNum, "ps.powerups", 1, 0) -- no spawn protection
+
 					end
 	
 					if random_gib[clientNum] == true then
