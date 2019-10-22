@@ -3,6 +3,8 @@
 -- level -3 players get handicaps such as:
 ---- weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved
 ---- they emit a beacon sound to the enemy team, they can't selfkill, they get randomly (10% chance) gibbed or teleported into their death on respawn
+---- block them from joining a specific team (axis or allies) (!putaxis by admins still works for example)
+---- block them from playing a specific class
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
@@ -16,6 +18,9 @@ idiots2 = {}
 idiots_id = {}
 random_gib = {} -- true by default; random_gib[clientNum] = false in et_ClientBegin function to disable
 beacon = {} -- disabled by default
+block_team = {} -- disabled by default
+block_class = {} -- disabled by default
+block_class_flag = false
 flag = false
 soundindex = ""
 mapname = ""
@@ -54,8 +59,20 @@ function et_ClientBegin(clientNum)
 		idiots2[cl_guid] = true
 		table.insert(idiots_id, clientNum)
 		beacon[clientNum] = false
+		block_team[clientNum] = { [1]=false, [2]="s" }
+		block_class[clientNum] = { [1]=false, [2]=3 }
 		random_gib[clientNum] = true
 		flag = true
+
+		--------------- block a team or class from an idiot ---------------
+		if cl_guid == "bla" then
+			block_team[clientNum][1] = true
+			block_team[clientNum][2] = "r" -- r = axis, b = allies
+
+			block_class[clientNum][1] = true
+			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
+			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
+		end
 	end
 end
 
@@ -64,9 +81,9 @@ function et_ClientDisconnect(clientNum)
 	if idiots2[cl_guid] == true then
 		idiots2[cl_guid] = nil
 		beacon[clientNum] = nil
-		if random_gib[clientNum] ~= nil then
-			random_gib[clientNum] = nil
-		end
+		random_gib[clientNum] = nil
+		block_team[clientNum] = nil
+		block_class[clientNum] = nil
 		table.remove(idiots_id, clientNum)
 		if next(idiots2) == nil then
 			flag = false
@@ -92,12 +109,12 @@ function et_ClientSpawn(clientNum, revived)
 					ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
 					et.gentity_set(clientNum, "sess.deaths", 69)
 	
-					if cl_guid == "bla" then
+					if cl_guid == "blabla" then
 						et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 						et.gentity_set(clientNum,"ps.ammoclip",12,0)
 						et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
 						random_gib[clientNum] = false
-					elseif cl_guid == "blabla" then
+					elseif cl_guid == "bla" then
 						et.gentity_set(clientNum, "ps.stats", 4, 69) -- max_health
 						et.gentity_set(clientNum, "health", 69)
 						et.gentity_set(clientNum, "sess.kills", 0)
@@ -235,11 +252,46 @@ function et_Obituary(victim, killer, mod)
 	end
 end
 
+function et_Print(text)
+	if flag == true then
+		if string.find(text, "weapon_magicammo") then
+			gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+			if gamestate == 0 then
+				local i, j = string.find(text, "%d+")
+				local id = tonumber(string.sub(text, i, j))
+				local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
+				if idiots2[cl_guid] == true then
+					if cl_guid == "DDF05CC4276B289731AD2110D9AFF5BD" then -- rammstein/brigadierdog/ratatouille/$a$a
+						et.gentity_set(clientNum,"ps.ammo",12,0)
+						et.gentity_set(clientNum,"ps.ammoclip",12,0)
+					end
+				end
+			end
+		end
+	end
+end
+
 function et_RunFrame(levelTime)
 	if math.mod(levelTime, 1500) ~= 0 then return end
 	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 	if gamestate == 0 then
 		if flag == true then
+			if block_class_flag == true then
+				x = 1
+				for index in pairs(idiots_id) do
+					if block_class[idiots_id[x]][1] == true then
+						if et.gentity_get(x,"sess.latchPlayerType") == block_class[x][2] then
+							et.gentity_set(x,"sess.latchPlayerType", 1)
+							et.trap_SendServerCommand(x, "cpm \"^1You are not allowed to play that class.\n\"")
+						end
+						if et.gentity_get(x,"sess.PlayerType") == block_class[x][2] then
+							et.G_Damage(x, 80, 1022, 1000, 8, 34)
+							et.G_Sound(x, et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+						end
+					end
+					x = x + 1
+				end
+			end
 			i = 1
 			for index in pairs(idiots_id) do
 				if beacon[idiots_id[i]] == true then
@@ -308,6 +360,14 @@ function et_ClientCommand(id, cmd)
 				et.trap_SendServerCommand(id, "cpm \"^1This command is not available to you.\n\"")
 				return 1
 			end
+		elseif string.lower(cmd) == "team" then
+			if block_team[id][1] == true then
+				local team = string.lower(et.trap_Argv(1))
+				if team == block_team[1][2] then
+					et.trap_SendServerCommand(id, "cpm \"^1You are not allowed to join that team.\n\"")
+					return 1
+				end
+			end
 		end
 	else
 		if string.lower(cmd) == "callvote" then
@@ -337,7 +397,7 @@ function et_ClientCommand(id, cmd)
 					filestr = et.trap_FS_Read(fd, len)
 					et.trap_FS_FCloseFile(fd)
 					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
-						if tonumber(v) >= 6 then -- level 6+
+						if tonumber(v) >= 7 then -- level 7+
 							admin_flag = true
 							break
 						end
