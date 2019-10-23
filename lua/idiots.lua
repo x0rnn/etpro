@@ -76,11 +76,14 @@ function et_ClientBegin(clientNum)
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
 		end
+	else
+		block_team[clientNum] = { [1]=false, [2]="s" }
+		invisible_mute[clientNum] = false
 	end
 
 	----- block a team or invisibly mute someone who is not -3 -----
 	if cl_guid == "bla" then
-		block_team[clientNum] = { [1]=true, [2]="r" }
+		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
 	end
 end
