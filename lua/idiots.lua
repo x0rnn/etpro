@@ -401,9 +401,8 @@ function et_ClientCommand(id, cmd)
 					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
 					return 1
 				elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
-					local clean_name = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(id), "name"))
-					et.trap_SendServerCommand(id, "chat \"" .. clean_name .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
-					et.G_LogPrint("etpro privmsg: " .. clean_name .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
+					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
+					et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 					return 1
 				end
 			end
@@ -443,9 +442,8 @@ function et_ClientCommand(id, cmd)
 						et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
 						return 1
 					elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
-						local clean_name = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(id), "name"))
-						et.trap_SendServerCommand(id, "chat \"" .. clean_name .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
-						et.G_LogPrint("etpro privmsg: " .. clean_name .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
+						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
+						et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 						return 1
 					end
 				end
