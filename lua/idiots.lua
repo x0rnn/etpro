@@ -135,6 +135,7 @@ function et_ClientSpawn(clientNum, revived)
 					ammo2 = et.gentity_get(clientNum, "ps.ammo", weapon2)
 					ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
 					et.gentity_set(clientNum, "sess.deaths", 69)
+					-- if taking away weapons, do not forget to also remove them in et_Print function
 	
 					if cl_guid == "bla" then
 						et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
@@ -289,7 +290,7 @@ function et_Print(text)
 				local id = tonumber(string.sub(text, i, j))
 				local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
 				if idiots2[cl_guid] == true then
-					if cl_guid == "DDF05CC4276B289731AD2110D9AFF5BD" then -- rammstein/brigadierdog/ratatouille/$a$a
+					if cl_guid == "bla" then
 						et.gentity_set(clientNum,"ps.ammo",12,0)
 						et.gentity_set(clientNum,"ps.ammoclip",12,0)
 					end
