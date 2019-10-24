@@ -67,6 +67,14 @@ function et_ClientBegin(clientNum)
 		invisible_mute[clientNum] = false
 		flag = true
 
+		---- automute an idiot too? ----
+		-- goons[cl_guid] = true
+
+		---- specific idiots only? ----
+		if cl_guid == "bla" then
+			goons[cl_guid] = true
+		end
+
 		--------------- block a team or class from an idiot ---------------
 		if cl_guid == "bla" then
 			block_team[clientNum][1] = true
