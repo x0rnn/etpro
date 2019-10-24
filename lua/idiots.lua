@@ -291,8 +291,8 @@ function et_Print(text)
 				local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
 				if idiots2[cl_guid] == true then
 					if cl_guid == "bla" then
-						et.gentity_set(clientNum,"ps.ammo",12,0)
-						et.gentity_set(clientNum,"ps.ammoclip",12,0)
+						et.gentity_set(id,"ps.ammo",12,0)
+						et.gentity_set(id,"ps.ammoclip",12,0)
 					end
 				end
 			end
