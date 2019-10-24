@@ -53,6 +53,9 @@ end
 function et_ClientBegin(clientNum)
 	name = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "name")
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
+	block_team[clientNum] = { [1]=false, [2]="s" }
+	invisible_mute[clientNum] = false
+
 	if goons[cl_guid] == true then
 		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
 		et.gentity_set(clientNum, "sess.muted", 1)
@@ -84,9 +87,6 @@ function et_ClientBegin(clientNum)
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
 		end
-	else
-		block_team[clientNum] = { [1]=false, [2]="s" }
-		invisible_mute[clientNum] = false
 	end
 
 	----- block a team or invisibly mute someone who is not -3 -----
