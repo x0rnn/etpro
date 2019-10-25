@@ -429,7 +429,7 @@ function et_ClientCommand(id, cmd)
 				end
 			end
 		end
-		if (block_team[id][1] ~= nil and block_team[id][1] == true) or (invisible_mute[id] ~= nil and invisible_mute[id] == true) then
+		if (block_team[id] ~= nil and block_team[id][1] == true) or (invisible_mute[id] ~= nil and invisible_mute[id] == true) then
 			if string.lower(cmd) == "team" then
 				if block_team[id][1] == true then
 					local team = string.lower(et.trap_Argv(1))
