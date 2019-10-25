@@ -26,7 +26,7 @@
 // Harlekin - added 2 allied spawns in tunnel cave storage after side wall is breached
 // Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
-// x0rnn - added fg42 snipebug weaponclip
+// x0rnn - added fg42 snipebug playerclip
 
 game_manager
 {
@@ -649,7 +649,7 @@ game_manager
                    scriptName "fg42_snipebug"
                    classname "func_fakebrush"
                    origin "-9296 -5128 470"
-                   contents 1                           // weaponclip
+                   contents 65536
                    mins "-60 -1 -30"
                    maxs "200 1 5"
             }
