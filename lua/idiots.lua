@@ -309,13 +309,13 @@ function et_RunFrame(levelTime)
 				x = 1
 				for index in pairs(idiots_id) do
 					if block_class[idiots_id[x]][1] == true then
-						if et.gentity_get(x,"sess.latchPlayerType") == block_class[x][2] then
-							et.gentity_set(x,"sess.latchPlayerType", 1)
-							et.trap_SendServerCommand(x, "cpm \"^1You are not allowed to play that class.\n\"")
+						if et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][2] then
+							et.gentity_set(idiots_id[x],"sess.latchPlayerType", 1)
+							et.trap_SendServerCommand(idiots_id[x], "cpm \"^1You are not allowed to play that class.\n\"")
 						end
-						if et.gentity_get(x,"sess.PlayerType") == block_class[x][2] then
-							et.G_Damage(x, 80, 1022, 1000, 8, 34)
-							et.G_Sound(x, et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+						if et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][2] then
+							et.G_Damage(idiots_id[x], 80, 1022, 1000, 8, 34)
+							et.G_Sound(idiots_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
 						end
 					end
 					x = x + 1
