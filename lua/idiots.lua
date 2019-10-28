@@ -17,7 +17,7 @@ goons = {}
 idiots = {}
 idiots2 = {}
 idiots_id = {}
-random_gib = {} -- disabled by default; random_gib[clientNum] = true in et_ClientBegin function to disable
+random_gib = {} -- disabled by default; random_gib[clientNum] = true in et_ClientBegin function to enable
 beacon = {} -- disabled by default
 block_team = {} -- disabled by default
 block_class = {} -- disabled by default
@@ -59,7 +59,6 @@ function et_ClientBegin(clientNum)
 
 	if goons[cl_guid] == true then
 		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
-		et.G_LogPrint("etpro event: " .. name .. " automuted for being a Goon.\n")
 		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 	if idiots[cl_guid] == true then
@@ -421,19 +420,15 @@ function et_ClientCommand(id, cmd)
 			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 				if et.trap_Argv(0) == "say" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_buddy" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
-					et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 					return 1
 				end
 			end
@@ -462,19 +457,15 @@ function et_ClientCommand(id, cmd)
 				if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 					if et.trap_Argv(0) == "say" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_buddy" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
-						et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 						return 1
 					end
 				end
