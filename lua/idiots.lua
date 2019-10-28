@@ -17,11 +17,12 @@ goons = {}
 idiots = {}
 idiots2 = {}
 idiots_id = {}
-random_gib = {} -- true by default; random_gib[clientNum] = false in et_ClientBegin function to disable
+random_gib = {} -- disabled by default; random_gib[clientNum] = true in et_ClientBegin function to disable
 beacon = {} -- disabled by default
 block_team = {} -- disabled by default
 block_class = {} -- disabled by default
 block_class_flag = false
+zero_kills = {} -- disabled by default
 invisible_mute = {} -- disabled by default
 flag = false
 soundindex = ""
@@ -58,6 +59,7 @@ function et_ClientBegin(clientNum)
 
 	if goons[cl_guid] == true then
 		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
+		et.G_LogPrint("etpro event: " .. name .. " automuted for being a Goon.\n")
 		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 	if idiots[cl_guid] == true then
@@ -66,30 +68,34 @@ function et_ClientBegin(clientNum)
 		beacon[clientNum] = false
 		block_team[clientNum] = { [1]=false, [2]="s" }
 		block_class[clientNum] = { [1]=false, [2]=3 }
-		random_gib[clientNum] = true
+		zero_kills[clientNum] = false
+		random_gib[clientNum] = false
 		invisible_mute[clientNum] = false
 		flag = true
 
-		---- automute an idiot too? ----
+		---- automute all idiots too? ----
 		-- goons[cl_guid] = true
 
-		---- specific idiots only? ----
+		--------------- set handicaps to an idiot ---------------
 		if cl_guid == "bla" then
-			goons[cl_guid] = true
-		end
-
-		--------------- block a team or class from an idiot ---------------
-		if cl_guid == "bla" then
-			block_team[clientNum][1] = true
-			block_team[clientNum][2] = "r" -- r = axis, b = allies
+			-- block_team[clientNum][1] = true
+			-- block_team[clientNum][2] = "r" -- r = axis, b = allies
+			-- zero_kills[clientNum] = true
+			-- random_gib[clientNum] = true
+			-- invisible_mute[clientNum] = true
+			-- beacon[clientNum] = true
 
 			block_class[clientNum][1] = true
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
+			
+			---- mute this specific idiot too? ----
+			-- goons[cl_guid] = true
 		end
 	end
 
 	----- block a team or invisibly mute someone who is not -3 -----
+
 	if cl_guid == "bla" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
@@ -105,6 +111,8 @@ function et_ClientDisconnect(clientNum)
 		block_team[clientNum] = nil
 		block_class[clientNum] = nil
 		invisible_mute[clientNum] = nil
+		zero_kills[clientNum] = nil
+		block_class_flag = false
 		table.remove(idiots_id, clientNum)
 		if next(idiots2) == nil then
 			flag = false
@@ -125,7 +133,6 @@ function et_ClientSpawn(clientNum, revived)
 			if revived ~= 1 then
 				local team = et.gentity_get(clientNum, "sess.sessionTeam")
 				if team == 1 or team == 2 then
-
 					math.randomseed(et.trap_Milliseconds())
 					name = et.gentity_get(clientNum, "pers.netname")
 					weapon = et.gentity_get(clientNum, "sess.playerWeapon")
@@ -134,19 +141,23 @@ function et_ClientSpawn(clientNum, revived)
 					ammoclip = et.gentity_get(clientNum, "ps.ammoclip", weapon)
 					ammo2 = et.gentity_get(clientNum, "ps.ammo", weapon2)
 					ammoclip2 = et.gentity_get(clientNum, "ps.ammoclip", weapon2)
-					et.gentity_set(clientNum, "sess.deaths", 69)
+					if block_class_flag == false and block_class[clientNum][1] == true then
+						block_class_flag = true
+					end
 					-- if taking away weapons, do not forget to also remove them in et_Print function
-	
+
+					----- handicaps that need to be reset each respawn: -----
 					if cl_guid == "bla" then
 						et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 						et.gentity_set(clientNum,"ps.ammoclip",12,0)
 						et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
-						random_gib[clientNum] = false
-					elseif cl_guid == "bla" then
+					elseif cl_guid == "blabla" then
+						if zero_kills[clientNum] == true then
+							et.gentity_set(clientNum, "sess.kills", 0)
+							et.gentity_set(clientNum, "sess.deaths", 69)
+						end
 						et.gentity_set(clientNum, "ps.stats", 4, 69) -- max_health
 						et.gentity_set(clientNum, "health", 69)
-						et.gentity_set(clientNum, "sess.kills", 0)
-						et.gentity_set(clientNum, "sess.deaths", 69)
 						et.gentity_set(clientNum, "sess.skill", 0, 0) -- battle sense
 						et.gentity_set(clientNum, "sess.skill", 1, 0) -- engineer
 						et.gentity_set(clientNum, "sess.skill", 2, 0) -- medic
@@ -266,16 +277,20 @@ function et_Obituary(victim, killer, mod)
 			cl_guid_k = et.Info_ValueForKey(et.trap_GetUserinfo(killer), "cl_guid")
 			cl_guid_v = et.Info_ValueForKey(et.trap_GetUserinfo(victim), "cl_guid")
 			if idiots2[cl_guid_k] == true then
-				local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
-				local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
-				local v_deaths = tonumber(et.gentity_get(victim, "sess.deaths"))
+				if zero_kills[killer] == true then
+					local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
+					local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+					local v_deaths = tonumber(et.gentity_get(victim, "sess.deaths"))
 
-				if v_teamid ~= k_teamid then
-					et.gentity_set(killer, "sess.kills", 0)
-					et.gentity_set(victim, "sess.deaths", v_deaths - 1)
+					if v_teamid ~= k_teamid then
+						et.gentity_set(killer, "sess.kills", 0)
+						et.gentity_set(victim, "sess.deaths", v_deaths - 1)
+					end
 				end
 			elseif idiots2[cl_guid_v] == true then
-				et.gentity_set(victim, "sess.deaths", 69)
+				if zero_kills[victim] == true then
+					et.gentity_set(victim, "sess.deaths", 69)
+				end
 			end
 		end
 	end
@@ -314,13 +329,17 @@ function et_RunFrame(levelTime)
 							et.trap_SendServerCommand(idiots_id[x], "cpm \"^1You are not allowed to play that class.\n\"")
 						end
 						if et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][2] then
-							et.G_Damage(idiots_id[x], 80, 1022, 1000, 8, 34)
-							et.G_Sound(idiots_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+							local health = tonumber(et.gentity_get(idiots_id[x], "health"))
+							if health > 0 then
+								et.G_Damage(idiots_id[x], 80, 1022, 1000, 8, 34)
+								et.G_Sound(idiots_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+							end
 						end
 					end
 					x = x + 1
 				end
 			end
+
 			i = 1
 			for index in pairs(idiots_id) do
 				if beacon[idiots_id[i]] == true then
@@ -402,15 +421,15 @@ function et_ClientCommand(id, cmd)
 			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 				if et.trap_Argv(0) == "say" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+					et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+					et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_buddy" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
-					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
@@ -443,15 +462,15 @@ function et_ClientCommand(id, cmd)
 				if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 					if et.trap_Argv(0) == "say" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+						et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+						et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_buddy" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
-						et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": InvisiMute: " .. et.ConcatArgs(1) .. "\n")
+						et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
