@@ -7,11 +7,12 @@
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
 // x0rnn, 2018-09-09:
-// - fixed missing sound: "railgun_axis_capture_depot" -> "railgun_axis_depot_capture"
+// - fixed missing sounds: "railgun_axis_capture_depot" -> "railgun_axis_depot_capture", "axis_hq_construct_compost" - > "axis_hq_compost_construct"
 // - MG at Depot Yard removed
 // - Flag at Depot Yard moved to where the MG was
 // x0rnn, 2018-25-09:
 // - set Axis Tower Spawn default spawn: if Allies capture Depot Yard, Axis can attack quicker
+// x0rnn, 2018-27-10: allied spawntime is 25 instead of 20
 // x0rnn 2019-10-04: removed wait before wm_endround
 
 game_manager
@@ -205,7 +206,7 @@ game_manager
 
 		// Game rules
 		wm_axis_respawntime	20
-		wm_allied_respawntime	20
+		wm_allied_respawntime	25 // x0rnn - changed to 25 from 20
 		wm_number_of_objectives 8
 		wm_set_round_timelimit	12
 
@@ -283,6 +284,7 @@ game_manager
 		// ----- Harlekin Timebonus Announce -----
 		wm_announce "^3Initial Map time 12 min"
 		wm_announce "^3Timebonus: +8 min reaching the Depot Yard"
+		wm_announce "^3Allied respawn time is set to 25"
 		setautospawn	"Axis Construction Site"	0
 	}
 
@@ -6628,7 +6630,7 @@ axis_compost_built_model
 		wm_announce	"Allied team has destroyed the Axis Command Post!"
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "axis_hq_construct_compost"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
 
 		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
 		// *----------------------------------- vo ------------------------------------------*
