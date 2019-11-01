@@ -15,9 +15,50 @@ game_manager
           mins "-325 -450 -44"
           maxs "325 450 44"
         }
-		
+
+		// x0rnn - water spawn for allies
+		create
+		{
+			classname "team_WOLF_objective"
+			scriptname "alliedwaterspawn"
+			targetname "alliedwaterspawn"
+			origin "12 -1468 353"
+			spawnflags 2
+			description "Water Spawn"
+		}
+
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedwaterspawns"
+			scriptName "alliedwaterspawns1"
+			origin "106 -1645 352"
+			spawnflags 2
+			angle "90"
+		}
+
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedwaterspawns"
+			scriptName "alliedwaterspawns2"
+			origin "164 -1643 352"
+			spawnflags 2
+			angle "90"
+		}
+
+		create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "alliedwaterspawns"
+			scriptName "alliedwaterspawns3"
+			origin "207 -1645 352"
+			spawnflags 2
+			angle "90"
+		}
+
 		// Game rules
-		wm_axis_respawntime	25
+		wm_axis_respawntime	30 //x0rnn - changed from 25
 		wm_allied_respawntime	20
 		wm_number_of_objectives 6
 		wm_set_round_timelimit	15

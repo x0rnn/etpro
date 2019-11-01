@@ -26,6 +26,7 @@
 // Harlekin - added 2 allied spawns in tunnel cave storage after side wall is breached
 // Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
+// x0rnn - disabled axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
 
 game_manager
 {
@@ -878,6 +879,10 @@ game_manager
 		setautospawn "Allied Entrance Spawn" 1
 		setautospawn "Tunnel Store Room" 0
 
+		// x0rnn - disable axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
+		setstate axisbase_wobj invisible
+		setstate axisrearspawn invisible
+
 		// Garage Doors
 		globalaccum 4 set 0		// Flexible Door 1 status. (0=stationary, 1=moving)
 		globalaccum 5 set 0		// Flexible Door 2 status. (0=stationary, 1=moving)
@@ -931,7 +936,7 @@ game_manager
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
-		wm_announce "^3The Allies has to destroy the Depot Gate for 5 min extra time!"
+		wm_announce "^3The Allies have to destroy the Depot Gate for 5 min extra time!"
 		wm_allied_respawntime	20
 		wm_announce "^3Allied respawn time changed to 20!"
 		// ----- Harlekin Timebonus Tunnel Doors -----
@@ -1261,8 +1266,8 @@ fueldumpxt_obj
                         message "Truck"
                 }
                 wait 50
-                setstate fueldumpxt_obj default
-                setstate fueldumpxt_spawn default
+                setstate fueldumpxt_obj invisible
+                setstate fueldumpxt_spawn invisible
 
         }
 }
@@ -6269,6 +6274,14 @@ tunnelgrate_solid
 	{
 		// Some kind of UI pop-up to alert players
 		wm_announce	"Allied team has breached the Tunnel Grate!"
+
+		// x0rnn - enable axis fueldump spawns
+		setstate axisbase_wobj default
+		setstate axisrearspawn default
+		setstate fueldumpxt_obj default
+		setstate fueldumpxt_spawn default
+		wm_announce "^3The Axis fueldump spawns are now enabled."
+
 		alertentity tunnelgrate_explo
 		trigger hurt_tunnelgrateblast boom
 		setstate tunnelgrate_solid invisible
