@@ -1710,14 +1710,14 @@ function et_ClientCommand(id, command)
 				local weaponcode = et.gentity_get(id, "s.weapon")
 				local weaponname = weapontable[weaponcode]
 				if weaponname ~= nil then
-					if weaponcode == 5 or weaponcode == 6 or weaponcode == 35 or weaponcode == 45 then --in case it's: Panzerfaust, Flamethrower or Mortar
+					if weaponcode == 5 or weaponcode == 6 then --in case it's: Panzerfaust or Flamethrower
+						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 or weaponcode == 35 or weaponcode == 45 then
 						if weaponcode == 45 then -- set mortar
-							ammo = et.gentity_get(id, "ps.ammoclip", 35)
+							ammo = et.gentity_get(id, "ps.ammo", 35) + et.gentity_get(id, "ps.ammoclip", 35)
 						else
-							ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+							ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
 						end
-					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 then
-						ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
 					elseif weaponcode == 42 or weaponcode == 43 or weaponcode == 44 then
 						if weaponcode == 42 then -- scoped garand
 							ammo = et.gentity_get(id, "ps.ammo", 25) + et.gentity_get(id, "ps.ammoclip", 25)
