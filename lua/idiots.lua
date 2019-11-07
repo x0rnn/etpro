@@ -57,10 +57,6 @@ function et_ClientBegin(clientNum)
 	block_team[clientNum] = { [1]=false, [2]="s" }
 	invisible_mute[clientNum] = false
 
-	if goons[cl_guid] == true then
-		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
-		et.gentity_set(clientNum, "sess.muted", 1)
-	end
 	if idiots[cl_guid] == true then
 		idiots2[cl_guid] = true
 		table.insert(idiots_id, clientNum)
@@ -91,6 +87,12 @@ function et_ClientBegin(clientNum)
 			---- mute this specific idiot too? ----
 			-- goons[cl_guid] = true
 		end
+	end
+
+
+	if goons[cl_guid] == true then
+		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
+		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 
 	----- block a team or invisibly mute someone who is not -3 -----
