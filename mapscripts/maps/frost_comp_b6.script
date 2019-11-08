@@ -1,8 +1,41 @@
+// x0rnn - roofs over spawns
+// x0rnn - made the main gate permanently open after the switch has been pulled
 
 game_manager
 {
 	spawn
 	{
+
+		create
+		{
+			scriptName "alliesspawnroof1"
+			classname "func_fakebrush"
+			origin "3408 -1100 1445"
+			contents 1 // SOLID
+			mins "-600 -400 -10"
+			maxs "600 400 10"
+		}
+
+		create
+		{
+			scriptName "alliesspawnroof2"
+			classname "func_fakebrush"
+			origin "3331 891 1445"
+			contents 1 // SOLID
+			mins "-600 -400 -10"
+			maxs "600 400 10"
+		}
+
+		create
+		{
+			scriptName "axistowerspawnroof"
+			classname "func_fakebrush"
+			origin "-5405 -873 1396"
+			contents 1 // SOLID
+			mins "-150 -150 -10"
+			maxs "150 150 10"
+		}
+
 		remapshaderflush
 		wm_axis_respawntime 30
 		wm_allied_respawntime 20
@@ -21,7 +54,7 @@ game_manager
 		
 		// Objectives
 		// 1: Destroy/Protect the North Tower
-		// 2: Destroy/Protect the North Tower
+		// 2: Destroy/Protect the South Tower
 		// 3: Open the Door / Prevent this
 		// 5: Destroy/Protect small Door / Prevent this
 		// 6: Secure the Gold on the Truck / Prevent this
@@ -151,10 +184,10 @@ gate_body
 		alertentity door2_sound
 		trigger truck enable_stage1 ////taken from barrier barrier 3 - the door is open truck gets movin
 	
-		wm_announce "^3Castle Gate is now open!"
+		wm_announce "^3The switch is frozen stuck!"
+		wm_announce "^3The Castle Gate is now permanently open!"
 		
-		trigger buttonbox2 aktiv
-			
+		trigger buttonbox2 inaktiv
 	}
 
  trigger close

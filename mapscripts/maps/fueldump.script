@@ -27,11 +27,34 @@
 // Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
 // x0rnn - disabled axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
+// x0rnn - added playerclips in cave to prevent lame engis going there by foot
 
 game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "caveblock1"
+			targetname "caveblock1"
+			classname "func_fakebrush"
+			origin "-6580 -1725 359"
+			contents 65536 // PLAYERCLIP
+			mins "-20 -200 -300"
+			maxs "20 200 300"
+		}
+
+		create
+		{
+			scriptName "caveblock2"
+			targetname "caveblock2"
+			classname "func_fakebrush"
+			origin "-6401 -3306 307"
+			contents 65536 // PLAYERCLIP
+			mins "-20 -200 -300"
+			maxs "20 200 300"
+		}
+
 		// ----- Harlekin Cave Storage Spawn -----
 		
 		create
@@ -6280,6 +6303,8 @@ tunnelgrate_solid
 		setstate axisrearspawn default
 		setstate fueldumpxt_obj default
 		setstate fueldumpxt_spawn default
+		setstate caveblock1 invisible
+		setstate caveblock2 invisible
 		wm_announce "^3The Axis fueldump spawns are now enabled."
 
 		alertentity tunnelgrate_explo
