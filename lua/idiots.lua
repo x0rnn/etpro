@@ -62,7 +62,7 @@ function et_ClientBegin(clientNum)
 		table.insert(idiots_id, clientNum)
 		beacon[clientNum] = false
 		block_team[clientNum] = { [1]=false, [2]="s" }
-		block_class[clientNum] = { [1]=false, [2]=3 }
+		block_class[clientNum] = { [1]=false, [2]=3, [3]=3 }
 		zero_kills[clientNum] = false
 		random_gib[clientNum] = false
 		invisible_mute[clientNum] = false
@@ -82,6 +82,7 @@ function et_ClientBegin(clientNum)
 
 			block_class[clientNum][1] = true
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
+			block_class[clientNum][3] = 2 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
 			
 			---- mute this specific idiot too? ----
@@ -89,15 +90,15 @@ function et_ClientBegin(clientNum)
 		end
 	end
 
-
 	if goons[cl_guid] == true then
 		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
+		et.G_LogPrint("etpro event: " .. name .. " automuted for being a Goon.\n")
 		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 
 	----- block a team or invisibly mute someone who is not -3 -----
 
-	if cl_guid == "bla" then
+	if cl_guid == "bla" or cl_guid == "bla" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
 	end
@@ -152,7 +153,7 @@ function et_ClientSpawn(clientNum, revived)
 						et.gentity_set(clientNum,"ps.ammo",12,0) -- ammo boxes; see noweapon.lua (google) for weapon indexes
 						et.gentity_set(clientNum,"ps.ammoclip",12,0)
 						et.gentity_set(clientNum, "sess.skill", 3, 0) -- field ops
-					elseif cl_guid == "blabla" then
+					elseif cl_guid == "bla" then
 						if zero_kills[clientNum] == true then
 							et.gentity_set(clientNum, "sess.kills", 0)
 							et.gentity_set(clientNum, "sess.deaths", 69)
@@ -325,11 +326,11 @@ function et_RunFrame(levelTime)
 				x = 1
 				for index in pairs(idiots_id) do
 					if block_class[idiots_id[x]][1] == true then
-						if et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][2] then
+						if et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][2] or et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][3] then
 							et.gentity_set(idiots_id[x],"sess.latchPlayerType", 1)
 							et.trap_SendServerCommand(idiots_id[x], "cpm \"^1You are not allowed to play that class.\n\"")
 						end
-						if et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][2] then
+						if et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][2] or et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][3] then
 							local health = tonumber(et.gentity_get(idiots_id[x], "health"))
 							if health > 0 then
 								et.G_Damage(idiots_id[x], 80, 1022, 1000, 8, 34)
@@ -422,15 +423,19 @@ function et_ClientCommand(id, cmd)
 			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 				if et.trap_Argv(0) == "say" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "say_buddy" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
+					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
 				elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
+					et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 					return 1
 				end
 			end
@@ -459,15 +464,19 @@ function et_ClientCommand(id, cmd)
 				if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 					if et.trap_Argv(0) == "say" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "say_buddy" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
+						et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 						return 1
 					elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
+						et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 						return 1
 					end
 				end
