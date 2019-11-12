@@ -29,6 +29,8 @@ soundindex = ""
 mapname = ""
 ps_origin = {}
 EV_GLOBAL_CLIENT_SOUND = 54
+crestrict_id = {}
+cflag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("idiots.lua "..et.FindSelf())
@@ -55,14 +57,13 @@ function et_ClientBegin(clientNum)
 	name = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "name")
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 	block_team[clientNum] = { [1]=false, [2]="s" }
+	block_class[clientNum] = { [1]=false, [2]=3, [3]=3 }
 	invisible_mute[clientNum] = false
 
 	if idiots[cl_guid] == true then
 		idiots2[cl_guid] = true
 		table.insert(idiots_id, clientNum)
 		beacon[clientNum] = false
-		block_team[clientNum] = { [1]=false, [2]="s" }
-		block_class[clientNum] = { [1]=false, [2]=3, [3]=3 }
 		zero_kills[clientNum] = false
 		random_gib[clientNum] = false
 		invisible_mute[clientNum] = false
@@ -82,7 +83,7 @@ function et_ClientBegin(clientNum)
 
 			block_class[clientNum][1] = true
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
-			block_class[clientNum][3] = 2 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
+			block_class[clientNum][3] = 3 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
 			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
 			
 			---- mute this specific idiot too? ----
@@ -96,9 +97,19 @@ function et_ClientBegin(clientNum)
 		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 
-	----- block a team or invisibly mute someone who is not -3 -----
+	----- block a team/class or invisibly mute someone who is not -3 -----
 
-	if cl_guid == "bla" or cl_guid == "bla" then
+	-- class blocking players who aren't -3:
+	if cl_guid == "bla" then
+		table.insert(crestrict_id, clientNum)
+		cflag = true
+		block_class[clientNum][1] = true
+		block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
+		block_class[clientNum][3] = 3 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
+	end
+
+	-- team blocking & invisimuting players who aren't -3:
+	if cl_guid == "bla" or cl_guid == "blabla" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
 	end
@@ -126,6 +137,7 @@ function et_ClientDisconnect(clientNum)
 	if invisible_mute[clientNum] ~= nil then
 		invisible_mute[clientNum] = nil
 	end
+	table.remove(crestrict_id, clientNum)
 end
 
 function et_ClientSpawn(clientNum, revived)
@@ -323,7 +335,7 @@ function et_RunFrame(levelTime)
 	if gamestate == 0 then
 		if flag == true then
 			if block_class_flag == true then
-				x = 1
+				local x = 1
 				for index in pairs(idiots_id) do
 					if block_class[idiots_id[x]][1] == true then
 						if et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][2] or et.gentity_get(idiots_id[x],"sess.latchPlayerType") == block_class[idiots_id[x]][3] then
@@ -342,7 +354,7 @@ function et_RunFrame(levelTime)
 				end
 			end
 
-			i = 1
+			local i = 1
 			for index in pairs(idiots_id) do
 				if beacon[idiots_id[i]] == true then
 					idiot_team = tonumber(et.gentity_get(idiots_id[i], "sess.sessionTeam"))
@@ -361,6 +373,26 @@ function et_RunFrame(levelTime)
 					end
 				end
 				i = i + 1
+			end
+		end
+
+		if cflag == true then
+			local x = 1
+			for index in pairs(crestrict_id) do
+				if block_class[crestrict_id[x]][1] == true then
+					if et.gentity_get(crestrict_id[x],"sess.latchPlayerType") == block_class[crestrict_id[x]][2] or et.gentity_get(crestrict_id[x],"sess.latchPlayerType") == block_class[crestrict_id[x]][3] then
+						et.gentity_set(crestrict_id[x],"sess.latchPlayerType", 1)
+						et.trap_SendServerCommand(crestrict_id[x], "cpm \"^1You are not allowed to play that class.\n\"")
+					end
+					if et.gentity_get(crestrict_id[x],"sess.PlayerType") == block_class[crestrict_id[x]][2] or et.gentity_get(crestrict_id[x],"sess.PlayerType") == block_class[crestrict_id[x]][3] then
+						local health = tonumber(et.gentity_get(crestrict_id[x], "health"))
+						if health > 0 then
+							et.G_Damage(crestrict_id[x], 80, 1022, 1000, 8, 34)
+							et.G_Sound(crestrict_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+						end
+					end
+				end
+				x = x + 1
 			end
 		end
 	end
