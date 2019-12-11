@@ -356,7 +356,7 @@ function getConfig(map)
         c.actions[5] = {spawn = 5, newstate = NO_PROTECT, trigger = "Axis have damaged the Oasis Water"}
 -- Goldrush 25.11.2008
 -- Goldrush 05.10.2018 - disabled Allied spawnroof protection when truck with gold is near truck barrier #2
-        elseif map == "goldrush" or map == "sw_goldrush_te" then
+        elseif map == "goldrush" or map == "sw_goldrush_te" or map == "uje_goldrush" then
         c.spawns[1] = {name = "Tank Depot Main Exit", state = PROTECT_AXIS, pos = {-79, 3005, 320}, radius2 = 250}
         c.spawns[4] = {name = "Tank Depot Alternate Exit", state = PROTECT_AXIS, pos = {-664, 3541, 386}, radius2 = 420}
         c.spawns[5] = {name = "Tank Depot Room", state = PROTECT_AXIS, pos = {-48, 3649, 344}, radius2 = 550}
