@@ -8,6 +8,8 @@
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 ---- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
+-- !fakechat id text: send chat in the name of another player
+
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
 -- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
 
@@ -569,6 +571,42 @@ function et_ClientCommand(id, cmd)
 							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					end
+				else
+					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
+				end
+			elseif args_table[1] == "!fakechat" then
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 7 then -- level 7+
+							admin_flag = true
+							break
+						end
+					end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					if cnt < 3 then
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3id text\"\n")
+					else
+						cno = tonumber(args_table[2])
+						if cno then
+							if et.gentity_get(cno, "pers.connected") == 2 then
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(3) .. "\"")
+								et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. et.ConcatArgs(3) .. "\n")
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+						end
+					end
+					return 1
 				else
 					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
 				end
