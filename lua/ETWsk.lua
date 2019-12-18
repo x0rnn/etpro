@@ -365,6 +365,8 @@ function getConfig(map)
         c.spawns[8] = {name = "Tank Depot", state = NO_PROTECT, pos = {-354, 1552, 344}, radius2 = 525}
         c.spawns[2] = {name = "Axis", state = PROTECT_AXIS, pos = {3000, -822, -435}, radius2 = 600}
         c.spawns[9] = {name = "Axis", state = PROTECT_AXIS, pos = {3010, -1555, -435}, radius2 = 250}
+        c.spawns[10] = {name = "Axis Lower Spawn", state = PROTECT_AXIS, pos = {3000, -822, -435}, radius2 = 600}
+        c.spawns[11] = {name = "Axis Lower Spawn", state = PROTECT_AXIS, pos = {3010, -1555, -435}, radius2 = 250}
         c.spawns[3] = {name = "Allied Spawn", state = PROTECT_ALLIES, pos = {-3360, -218, -67}, radius2 = 720}
         c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Activated"}
         c.actions[2] = {spawn = 4, newstate = PROTECT_ALLIES, trigger = "Activated"}
