@@ -1002,6 +1002,7 @@ function checkMultiKill (id, mod)
         end
     else
         kmulti[id][2] = 1
+	doublekill[id][1] = 0
         if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
         	doublekill[id][1] = 1
         end
