@@ -404,7 +404,7 @@ game_manager
 		// Winner on expiration of round timer (0=Axis, 1=Allies)
 		wm_setwinner	0
 
-		wait 500
+		wait 50
 		setautospawn	"Tank Depot"	0
 		setautospawn	"Allied Spawn"	1
 
