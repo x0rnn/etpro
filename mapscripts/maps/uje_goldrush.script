@@ -10,6 +10,7 @@
 // Harlekin - Timebonus
 // x0rnn - allied spawnroof disabled after truck with gold is near truck barrier #2
 // x0rnn - added lower axis spawns in 2nd spawn
+// x0rnn - blocked new doors
 
 game_manager
 {
