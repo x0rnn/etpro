@@ -55,13 +55,13 @@ end
 
 function et_ClientBegin(clientNum)
 	local team = et.gentity_get(clientNum, "sess.sessionTeam")
-	if team == 1 or team == 2 then
+	if team == 1 or team == 2 or team == 3 then
 		if ((((os.time(os.date("!*t")) - player_timestamp[clientNum]) / 60) / 60) / 24) < minguidage then
 			et.trap_SendServerCommand(-1, "chat \"^3Unknown player with a new GUID connected (" .. et.gentity_get(clientNum, "pers.netname") .. "^3). Keep an eye on him and report if needed.\"")
 			--local diff = math.floor(roundNum(((((os.time(os.date("!*t")) - player_timestamp[clientNum]) / 60) / 60) / 24)))
 			-- et.trap_DropClient(clientNum, "Your GUID is too new on this server. Try again in " .. minguidage - diff .. " days.", 900) --15 minutes
 			--et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. clientNum .. "\n")
-			--if diff ~= 3 then
+			--if diff ~= minguidage then
 			--	et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(clientNum, "pers.netname") .. "^3's GUID is too new to play on this server. Please wait " .. minguidage - diff .. " days. (Put to spectators to watch only.)\"")
 			--else
 			--	et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(clientNum, "pers.netname") .. "^3's GUID is too new to play on this server. Please wait a few more hours. (Put to spectators to watch only.)\"")
