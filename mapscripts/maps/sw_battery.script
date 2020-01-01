@@ -259,7 +259,7 @@ newdoor_construct
     {
         wait 200
         trigger newdoor_construct setup
-		constructible_chargebarreq 1.25
+		constructible_chargebarreq 1.50
 
         constructible_class 3
     }
