@@ -27,7 +27,6 @@
 // Harlekin - added missing limbo cams for Axis Truck Spawn, Allied Tunnel Spawn, Allied Cave Storage Spawn & Allies Command Post Spawn
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
 // x0rnn - disabled axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
-// x0rnn - added playerclips in cave to prevent lame engis going there by foot
 
 game_manager
 {
@@ -959,7 +958,7 @@ game_manager
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
-		wm_announce "^3The Allies have to destroy the Depot Gate for 5 min extra time!"
+		wm_announce "^3The Allies have to destroy the Depot Gate for 2 min extra time!"
 		wm_allied_respawntime	20
 		wm_announce "^3Allied respawn time changed to 20!"
 		// ----- Harlekin Timebonus Tunnel Doors -----
@@ -1005,7 +1004,7 @@ game_manager
  		//cvar timelimit inc "1"
  		//cvar timelimit inc "1"
  		//cvar timelimit inc "1"
-		wm_announce "^3The Allies has to destroy the Depot Side Wall for 3 min extra time!"
+		//wm_announce "^3The Allies have to destroy the Depot Side Wall for 3 min extra time!"
 		wm_announce "^1Allied Tunnel Spawn enabled!"
 		// ----- Harlekin Timebonus Depot Gate -----
 
