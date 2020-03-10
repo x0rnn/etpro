@@ -9,6 +9,7 @@
 ---- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- !fakechat id text: send chat in the name of another player
+-- prevent 2 players from playing on the same team (go to line 62)
 
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
 -- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
@@ -33,6 +34,10 @@ ps_origin = {}
 EV_GLOBAL_CLIENT_SOUND = 54
 crestrict_id = {}
 cflag = false
+player1 = {}
+player2 = {}
+player1_id = {}
+player2_id = {}
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("idiots.lua "..et.FindSelf())
@@ -53,6 +58,11 @@ function et_InitGame(levelTime, randomSeed, restart)
 		content = nil
 	end
 	et.trap_FS_FCloseFile(fd)
+	
+	player1[1] = { "guid1", nil, nil }
+	--player1[2] = { "bla", nil, nil }
+	player2[1] = { "guid2", nil, nil }
+	--player2[2] = { "blabla", nil, nil }
 end
 
 function et_ClientBegin(clientNum)
@@ -95,7 +105,7 @@ function et_ClientBegin(clientNum)
 
 	if goons[cl_guid] == true then
 		et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1automuted for being a Goon.\"\n")
-		et.G_LogPrint("etpro event: " .. name .. " automuted for being a Goon.\n")
+		et.G_LogPrint("LUA event: " .. name .. " automuted for being a Goon.\n")
 		et.gentity_set(clientNum, "sess.muted", 1)
 	end
 
@@ -111,9 +121,67 @@ function et_ClientBegin(clientNum)
 	end
 
 	-- team blocking & invisimuting players who aren't -3:
-	if cl_guid == "bla" or cl_guid == "blabla" then
+	if cl_guid == "bla" or cl_guid == "bla2" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
+	end
+end
+
+function et_ClientConnect(clientNum, firstTime, isBot)
+	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
+
+	for i=1, table.getn(player1) do
+		if player1[i][1] == cl_guid then
+			player1[i][2] = clientNum
+			player1_id[clientNum] = i
+		elseif player2[i][1] == cl_guid then
+			player2[i][2] = clientNum
+			player2_id[clientNum] = i
+		end
+	end
+end
+
+function et_ClientUserinfoChanged(clientNum)
+	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
+
+	if player1_id[clientNum] ~= nil or player2_id[clientNum] ~= nil then
+		if player1_id[clientNum] ~= nil then
+			if team == 3 then
+				player1[player1_id[clientNum]][3] = nil
+			elseif team == 1 or team == 2 then
+				if player1[player1_id[clientNum]][3] == nil or player1[player1_id[clientNum]][3] ~= team then
+					if player2[player1_id[clientNum]][2] ~= nil then
+						if player2[player1_id[clientNum]][3] == team then
+							et.trap_SendServerCommand(-1, "cpm \"" .. et.gentity_get(clientNum, "pers.netname") .. " ^3can't play on the same team as " .. et.gentity_get(player2[player1_id[clientNum]][2], "pers.netname") .. "\n\"")
+							et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. clientNum .. "\n")
+							et.G_LogPrint("LUA event: " .. et.gentity_get(clientNum, "pers.netname") .. " can't play on the same team as " .. et.gentity_get(player2[player1_id[clientNum]][2], "pers.netname") .. "\n")
+						else
+							player1[player1_id[clientNum]][3] = team
+						end
+					else
+						player1[player1_id[clientNum]][3] = team
+					end
+				end
+			end
+		elseif player2_id[clientNum] ~= nil then
+			if team == 3 then
+				player2[player2_id[clientNum]][3] = nil
+			elseif team == 1 or team == 2 then
+				if player2[player2_id[clientNum]][3] == nil or player2[player2_id[clientNum]][3] ~= team then
+					if player1[player2_id[clientNum]][2] ~= nil then
+						if player1[player2_id[clientNum]][3] == team then
+							et.trap_SendServerCommand(-1, "cpm \"" .. et.gentity_get(clientNum, "pers.netname") .. " ^3can't play on the same team as " .. et.gentity_get(player1[player2_id[clientNum]][2], "pers.netname") .. "\n\"")
+							et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. clientNum .. "\n")
+							et.G_LogPrint("LUA event: " .. et.gentity_get(clientNum, "pers.netname") .. " can't play on the same team as " .. et.gentity_get(player1[player2_id[clientNum]][2], "pers.netname") .. "\n")
+						else
+							player2[player2_id[clientNum]][3] = team
+						end
+					else
+						player2[player2_id[clientNum]][3] = team
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -140,6 +208,17 @@ function et_ClientDisconnect(clientNum)
 		invisible_mute[clientNum] = nil
 	end
 	table.remove(crestrict_id, clientNum)
+
+	if player1_id[clientNum] ~= nil then
+		player1[player1_id[clientNum]][2] = nil
+		player1[player1_id[clientNum]][3] = nil
+		player1_id[clientNum] = nil
+	end
+	if player2_id[clientNum] ~= nil then
+		player2[player2_id[clientNum]][2] = nil
+		player2[player2_id[clientNum]][3] = nil
+		player2_id[clientNum] = nil
+	end
 end
 
 function et_ClientSpawn(clientNum, revived)
@@ -512,6 +591,36 @@ function et_ClientCommand(id, cmd)
 						et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
 						et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 						return 1
+					end
+				end
+			end
+		end
+		if player1_id[id] ~= nil or player2_id[id] ~= nil then
+			if string.lower(cmd) == "team" then
+				local team = string.lower(et.trap_Argv(1))
+				if team == "r" then
+					team = 1
+				end
+				if team == "b" then
+					team = 2
+				end
+				if team == 1 or team == 2 then
+					if player1_id[id] ~= nil then
+						if player2[player1_id[id]][2] ~= nil then
+							if player2[player1_id[id]][3] == team then
+								et.trap_SendServerCommand(-1, "cpm \"" .. et.gentity_get(id, "pers.netname") .. " ^3can't play on the same team as " .. et.gentity_get(player2[player1_id[id]][2], "pers.netname") .. "\n\"")
+								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " can't play on the same team as " .. et.gentity_get(player2[player1_id[id]][2], "pers.netname") .. "\n")
+								return 1
+							end
+						end
+					elseif player2_id[id] ~= nil then
+						if player1[player2_id[id]][2] ~= nil then
+							if player1[player2_id[id]][3] == team then
+								et.trap_SendServerCommand(-1, "cpm \"" .. et.gentity_get(id, "pers.netname") .. " ^3can't play on the same team as " .. et.gentity_get(player1[player2_id[id]][2], "pers.netname") .. "\n\"")
+								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " can't play on the same team as " .. et.gentity_get(player1[player2_id[id]][2], "pers.netname") .. "\n")
+								return 1
+							end
+						end
 					end
 				end
 			end
