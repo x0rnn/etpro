@@ -9,7 +9,8 @@
 ---- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- !fakechat id text: send chat in the name of another player
--- prevent 2 players from playing on the same team (go to line 62)
+-- !set_lua id entity value1 (value2): set client entity (health, ammo, etc.) to a value
+-- prevent 2 players from playing on the same team (go to line 63)
 
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
 -- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
@@ -716,6 +717,59 @@ function et_ClientCommand(id, cmd)
 						end
 					end
 					return 1
+				else
+					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
+				end
+			elseif args_table[1] == "!set_lua" then
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 8 then
+							admin_flag = true
+							break
+						end
+					end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					if cnt < 4 or cnt > 5 then
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!set_lua ^3id entity value (value2)\"\n")
+					else
+						cno = tonumber(args_table[2])
+						if cno then
+							if et.gentity_get(cno, "pers.connected") == 2 then
+								if cnt == 4 then
+									val = tonumber(args_table[4])
+									if val then
+										et.gentity_set(cno, args_table[3], val)
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Not a number.\"\n")
+									end
+								elseif cnt == 5 then
+									val1 = tonumber(args_table[4])
+									if val1 then
+										val2 = tonumber(args_table[5])
+										if val2 then
+											et.gentity_set(cno, args_table[3], val1, val2)
+										else
+											et.trap_SendServerCommand(id, "chat \"^7Not a number.\"\n")
+										end
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Not a number.\"\n")
+									end
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+						end
+					end
 				else
 					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
 				end
