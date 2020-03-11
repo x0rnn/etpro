@@ -1,6 +1,5 @@
 -- autoafk999spec.lua - auto-puts 999 and afk players to spectator
 -- !specs command to list who specs are spectating
--- !speclock/!unspeclock command to prevent a player from spectating anyone
 -- inactivity code from "Player Inactivity Modification" (inacmod.lua) by hadro
 -- g_inactivity needs to be enabled
 -- it is strongly recommended to set g_inactivity at least 11 seconds higher than max_player_inactivity
@@ -48,8 +47,8 @@ end
 function et_RunFrame(levelTime)
 	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 
-	if gamestate == 0 then
-		if speclock_flag == true then
+	if speclock_flag == true then
+		if gamestate == 0 then
 			local x = 1
 			for index in pairs(speclock_id) do
 				if tonumber(et.gentity_get(speclock_id[x], "sess.sessionTeam")) == 3 then
