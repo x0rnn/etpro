@@ -48,10 +48,12 @@ function et_RunFrame( levelTime )
 				end
 			end
 			if axisdmg >= alliesdmg + unbalancedDiff then
-				local diff = (axisdmg - math.mod(axisdmg, 1000)) - (alliesdmg - math.mod(alliesdmg, 1000))
+				local subt = axisdmg - alliesdmg
+				local diff = subt - math.mod(subt, 1000)
 				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have over ^1" .. diff .. " ^7more damage given. Please balance the teams!\"\n")
 			elseif alliesdmg >= axisdmg + unbalancedDiff then
-				local diff = (alliesdmg - math.mod(alliesdmg, 1000)) - (axisdmg - math.mod(axisdmg, 1000))
+				local subt = alliesdmg - axisdmg
+				local diff = subt - math.mod(subt, 1000)
 				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have over ^4" .. diff .. " ^7more damage given. Please balance the teams!\"\n")
 			end
 		end
