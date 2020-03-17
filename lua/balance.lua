@@ -29,9 +29,9 @@ function et_RunFrame( levelTime )
 		local alliesdmg = 0
 	
 		if numAlliedPlayers >= numAxisPlayers + unevenDiff then
-			et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. Please even the teams!\"\n")
+			et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 		elseif numAxisPlayers >= numAlliedPlayers + unevenDiff then
-			et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. Please even the teams!\"\n")
+			et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 		end
 
 		if math.mod(levelTime,checkInterval2) == 0 then
@@ -50,11 +50,69 @@ function et_RunFrame( levelTime )
 			if axisdmg >= alliesdmg + unbalancedDiff then
 				local subt = axisdmg - alliesdmg
 				local diff = subt - math.mod(subt, 1000)
-				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have over ^1" .. diff .. " ^7more damage given. Please balance the teams!\"\n")
+				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have over ^1" .. diff .. " ^7more damage given. ^3Please balance the teams!\"\n")
+				local dmg = {0, 0, 0}
+				local dmg_id = {0, 0, 0}
+				local i = 0
+				local cnt = 0
+				for i=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+					local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
+					if team == 1 then
+						cnt = cnt + 1
+						local dg = tonumber(et.gentity_get(i, "sess.damage_given"))
+						if dg > dmg[1] then
+							dmg[3] = dmg[2]
+							dmg[2] = dmg[1]
+							dmg[1] = dg
+							dmg_id[3] = dmg_id[2]
+							dmg_id[2] = dmg_id[1]
+							dmg_id[1] = i
+						elseif dg > dmg[2] then
+							dmg[3] = dmg[2]
+							dmg[2] = dg
+							dmg_id[3] = dmg_id[2]
+							dmg_id[2] = i
+						elseif dg > dmg[3] then
+							dmg[3] = dg
+							dmg_id[3] = i
+						end
+						if cnt == numAxisPlayers then break end
+					end
+				end
+				et.trap_SendServerCommand(-1, "chat \"^7Top 3 ^1Axis ^7damage dealers: " .. et.gentity_get(dmg_id[1], "pers.netname") .. " ^1(" .. dmg[1] .. ")^7, " .. et.gentity_get(dmg_id[2], "pers.netname") .. " ^1(" .. dmg[2] .. ")^7, " .. et.gentity_get(dmg_id[3], "pers.netname") .. " ^1(" .. dmg[3] .. ")\"\n")
 			elseif alliesdmg >= axisdmg + unbalancedDiff then
 				local subt = alliesdmg - axisdmg
 				local diff = subt - math.mod(subt, 1000)
-				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have over ^4" .. diff .. " ^7more damage given. Please balance the teams!\"\n")
+				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have over ^4" .. diff .. " ^7more damage given. ^3Please balance the teams!\"\n")
+				local dmg = {0, 0, 0}
+				local dmg_id = {0, 0, 0}
+				local i = 0
+				local cnt = 0
+				for i=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+					local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
+					if team == 2 then
+						cnt = cnt + 1
+						local dg = tonumber(et.gentity_get(i, "sess.damage_given"))
+						if dg > dmg[1] then
+							dmg[3] = dmg[2]
+							dmg[2] = dmg[1]
+							dmg[1] = dg
+							dmg_id[3] = dmg_id[2]
+							dmg_id[2] = dmg_id[1]
+							dmg_id[1] = i
+						elseif dg > dmg[2] then
+							dmg[3] = dmg[2]
+							dmg[2] = dg
+							dmg_id[3] = dmg_id[2]
+							dmg_id[2] = i
+						elseif dg > dmg[3] then
+							dmg[3] = dg
+							dmg_id[3] = i
+						end
+						if cnt == numAlliedPlayers then break end
+					end
+				end
+				et.trap_SendServerCommand(-1, "chat \"^7Top 3 ^4Allied ^7damage dealers: " .. et.gentity_get(dmg_id[1], "pers.netname") .. " ^4(" .. dmg[1] .. ")^7, " .. et.gentity_get(dmg_id[2], "pers.netname") .. " ^4(" .. dmg[2] .. ")^7, " .. et.gentity_get(dmg_id[3], "pers.netname") .. " ^4(" .. dmg[3] .. ")\"\n")
 			end
 		end
 	end
