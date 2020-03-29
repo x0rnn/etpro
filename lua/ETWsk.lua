@@ -181,9 +181,8 @@ function getConfig(map)
 -- Siwa Oasis 16.11.2008 Update 21.04.2013
     elseif map == "oasis" then
 --        c.spawns[1] = {name = "Axis Garrison", state = PROTECT_AXIS, pos = {7400, 4810, -391}, radius2 = 460}
-        c.spawns[1] = {name = "Axis Garrison", state = PROTECT_AXIS, pos = {7309, 4749, -391}, radius2 = 343}
-        c.spawns[1] = {name = "Axis Garrison", state = PROTECT_AXIS, pos = {7485, 4749, -391}, radius2 = 343}
-        c.spawns[2] = {name = "Allied Camp Base", state = PROTECT_ALLIES, pos = {1250, 2760, -400}, radius2 = 1140}
+        c.spawns[1] = {name = "Axis Garrison", state = PROTECT_AXIS, pos = {7420, 4710, -391}, radius2 = 500}
+        c.spawns[2] = {name = "Allied Camp Base", state = PROTECT_ALLIES, pos = {1250, 2760, -415}, radius2 = 1140}
         c.spawns[3] = {name = "Old City", state = NO_PROTECT, pos = {4300, 7000, -450}, radius2 = 870}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Old City wall"}
 -- __BRIDGES__ 28.03.2010
@@ -349,6 +348,7 @@ function getConfig(map)
         c.spawns[3] = {name = "Axis Upper Garrison", state = NO_PROTECT}
         c.spawns[4] = {name = "Allied Camp Base", state = PROTECT_ALLIES, pos = {1250, 2760, -400}, radius2 = 1140}
         c.spawns[5] = {name = "Allied Camp Water Pump", state = NO_PROTECT, pos = {2584, 2144, -592}, radius2 = 1000}
+        c.spawns[6] = {name = "Axis Garrison Above", state = PROTECT_AXIS, pos = {7378, 4090, -199}, radius2 = 190}
         c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "breached the Old City wall"}
         c.actions[2] = {spawn = 4, newstate = NO_PROTECT, trigger = "Allies have built the Oasis Water"}
         c.actions[3] = {spawn = 5, newstate = PROTECT_ALLIES, trigger = "Allies have built the Oasis Water"}
