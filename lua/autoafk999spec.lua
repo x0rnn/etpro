@@ -1,5 +1,6 @@
 -- autoafk999spec.lua - auto-puts 999 and afk players to spectator
 -- !specs command to list who specs are spectating
+-- !(un)speclock command to prevent someone spectating the game
 -- inactivity code from "Player Inactivity Modification" (inacmod.lua) by hadro
 -- g_inactivity needs to be enabled
 -- it is strongly recommended to set g_inactivity at least 11 seconds higher than max_player_inactivity
@@ -128,22 +129,18 @@ function et_ClientCommand(id, command)
 					et.trap_FS_FCloseFile(fd)
 				end
 				if admin_flag == true then
+					local cnt = 0
 					for i=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 						local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
 						if team == 3 then
-							local pos_spec = et.gentity_get(i, "ps.origin")
-							for j=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
-								local team2 = tonumber(et.gentity_get(j, "sess.sessionTeam"))
-								if team2 == 1 or team2 == 2 then
-									local health = tonumber(et.gentity_get(j, "health"))
-									if health > 0 then
-										local pos_player = et.gentity_get(j, "ps.origin")
-										if math.abs(pos_spec[1] - pos_player[1]) < 20 and math.abs(pos_spec[2] - pos_player[2]) < 20 and math.abs(pos_spec[3] - pos_player[3]) < 20 then
-											msg = string.format("chat  \"" ..  et.gentity_get(i, "pers.netname") .. "^3 is spectating: ^7" .. et.gentity_get(j, "pers.netname") .. "\n")
-											et.trap_SendServerCommand(id, msg)
-										end
-									end
+							if et.gentity_get(i, "sess.spectatorState") == 2 then
+								cnt = cnt + 1
+								if cnt == 1 then
+									et.trap_SendServerCommand(id, "chat \"^1Spectators watching:\"")
 								end
+								local specced = et.gentity_get(i, "sess.spectatorClient")
+								local msg = string.format("chat  \"" ..  et.gentity_get(i, "pers.netname") .. "^3 is spectating: ^7" .. et.gentity_get(specced, "pers.netname"))
+								et.trap_SendServerCommand(id, msg)
 							end
 						end
 					end
@@ -174,23 +171,14 @@ function et_ClientCommand(id, command)
 						for i=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 							local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
 							if team == 3 then
-								local pos_spec = et.gentity_get(i, "ps.origin")
-								for j=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
-									local team2 = tonumber(et.gentity_get(j, "sess.sessionTeam"))
-									if team2 == 1 or team2 == 2 then
-										local health = tonumber(et.gentity_get(j, "health"))
-										if health > 0 then
-											local pos_player = et.gentity_get(j, "ps.origin")
-											if math.abs(pos_spec[1] - pos_player[1]) < 20 and math.abs(pos_spec[2] - pos_player[2]) < 20 and math.abs(pos_spec[3] - pos_player[3]) < 20 then
-												cnt = cnt + 1
-												if cnt == 1 then
-													et.trap_SendServerCommand(id, "chat \"^1Spectators watching:\"")
-												end
-												msg = string.format("chat  \"" ..  et.gentity_get(i, "pers.netname") .. "^3 is spectating: ^7" .. et.gentity_get(j, "pers.netname"))
-												et.trap_SendServerCommand(id, msg)
-											end
-										end
+								if et.gentity_get(i, "sess.spectatorState") == 2 then
+									cnt = cnt + 1
+									if cnt == 1 then
+										et.trap_SendServerCommand(id, "chat \"^1Spectators watching:\"")
 									end
+									local specced = et.gentity_get(i, "sess.spectatorClient")
+									local msg = string.format("chat  \"" ..  et.gentity_get(i, "pers.netname") .. "^3 is spectating: ^7" .. et.gentity_get(specced, "pers.netname"))
+									et.trap_SendServerCommand(id, msg)
 								end
 							end
 						end
