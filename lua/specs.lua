@@ -1,4 +1,4 @@
--- autospecs.lua - auto-puts 999 and afk players to spectator
+-- specs.lua - auto-puts 999 and afk players to spectator
 -- !specs command to list who specs are spectating
 -- !(un)speclock command to prevent someone spectating the game
 -- inactivity code from "Player Inactivity Modification" (inacmod.lua) by hadro
