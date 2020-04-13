@@ -1,5 +1,5 @@
 -- mark.lua by x0rnn
--- mark players internally as suspicious or whatever (only visible to shrubbot level 6+ players)
+-- mark players internally as suspicious or whatever (only visible to shrubbot level 5+ players)
 -- !mark id <reason>
 -- !unmark id
 -- !marked (lists all marked players on server)
@@ -17,7 +17,7 @@ function et_InitGame(levelTime, randomSeed, restart)
 	if len > -1 then
 		local content = et.trap_FS_Read(fd, len)
 		for guid, level in string.gfind(content, "[Gg]uid%s*=%s*(%x+)%s*\n[Ll]evel\t%= (%d)") do
-			if tonumber(level) >= 6 then
+			if tonumber(level) >= 5 then
 				admins[guid] = true
 			end
 		end
@@ -46,7 +46,7 @@ function readFile(filename)
 	et.trap_FS_FCloseFile(fd)
 
 	local guid, reason, by
-	for guid, reason, by in string.gfind(filestr,"([%x]+)\t%/([^%/]+)%/\t([^\n]+)") do
+	for guid, reason, by in string.gfind(filestr,"([%x]+)\t%/([^%/\t]+)%/\t([^\n]+)") do
 		marked[guid] =
 		{
 			reason,
@@ -170,7 +170,7 @@ function et_ClientCommand(id, command)
 				filestr = et.trap_FS_Read(fd, len)
 				et.trap_FS_FCloseFile(fd)
 				for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
-					if tonumber(v) >= 6 then
+					if tonumber(v) >= 5 then
 						admin_flag = true
 						break
 					end
@@ -190,6 +190,7 @@ function et_ClientCommand(id, command)
 							reason = et.ConcatArgs(3)
 							if et.gentity_get(cno, "pers.connected") == 2 then
 								mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
@@ -204,6 +205,7 @@ function et_ClientCommand(id, command)
 						if cno then
 							if et.gentity_get(cno, "pers.connected") == 2 then
 								unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
+								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
