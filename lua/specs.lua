@@ -1,4 +1,4 @@
--- autoafk999spec.lua - auto-puts 999 and afk players to spectator
+-- autospecs.lua - auto-puts 999 and afk players to spectator
 -- !specs command to list who specs are spectating
 -- !(un)speclock command to prevent someone spectating the game
 -- inactivity code from "Player Inactivity Modification" (inacmod.lua) by hadro
@@ -14,7 +14,7 @@ speclock_id = {}
 speclock_flag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("spec999.lua "..et.FindSelf())
+	et.RegisterModname("specs.lua "..et.FindSelf())
 
 	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
 	for i=0,maxClients-1 do
