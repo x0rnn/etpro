@@ -46,7 +46,7 @@ function readFile(filename)
 	et.trap_FS_FCloseFile(fd)
 
 	local guid, reason, by
-	for guid, reason, by in string.gfind(filestr,"([%x]+)\t%/([^%/\t]+)%/\t([^\n]+)") do
+	for guid, reason, by in string.gfind(filestr,"([%x]+)\t©([^©]+)©\t([^\n]+)") do
 		marked[guid] =
 		{
 			reason,
@@ -63,7 +63,7 @@ function writeFile(marked)
 	end
 	table.foreach(marked,
 		function (first, arr)
-			local line = first .. "	/" .. table.concat(arr, "/	") .. "\n"
+			local line = first .. "	©" .. table.concat(arr, "©	") .. "\n"
 			count = et.trap_FS_Write(line, string.len(line), fd)
 		end
 	)
@@ -95,14 +95,14 @@ function mark(id, guid, reason, by)
 			et.trap_SendServerCommand(id, "chat \"Player already marked.\"\n")
 		else
 			fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
-			count = et.trap_FS_Write(guid .. "	/" .. reason .. "/	" .. by .. "\n", string.len(guid .. "	/" .. reason .. "/	" .. by .. "\n"), fd)
+			count = et.trap_FS_Write(guid .. "	©" .. reason .. "©	" .. by .. "\n", string.len(guid .. "	©" .. reason .. "©	" .. by .. "\n"), fd)
 			et.trap_FS_FCloseFile(fd)
 			et.trap_SendServerCommand(id, "chat \"Player marked.\"\n")
 			markedp[guid] = true
 		end
 	else
 		fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
-		count = et.trap_FS_Write(guid .. "	/" .. reason .. "/	" .. by .. "\n", string.len(guid .. "	/" .. reason .. "/	" .. by .. "\n"), fd)
+		count = et.trap_FS_Write(guid .. "	©" .. reason .. "©	" .. by .. "\n", string.len(guid .. "	©" .. reason .. "©	" .. by .. "\n"), fd)
 		et.trap_FS_FCloseFile(fd)
 		et.trap_SendServerCommand(id, "chat \"Player marked.\"\n")
 	end
