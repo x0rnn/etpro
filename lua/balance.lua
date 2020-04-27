@@ -119,15 +119,24 @@ function et_RunFrame( levelTime )
 end
 
 function et_ClientBegin(clientNum)
+	local function has_value (tab, val)
+		for index, value in ipairs(tab) do
+			if value == val then
+				return true
+			end
+		end
+		return false
+	end
+
 	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
 
 	if players[clientNum] == nil then
 		players[clientNum] = team
 	end
 
-	if team == 1 then
+	if team == 1 and not has_value(axisPlayers, clientNum) then
 		table.insert( axisPlayers, clientNum )
-	elseif team == 2 then
+	elseif team == 2 and not has_value(alliedPlayers, clientNum) then
 		table.insert( alliedPlayers, clientNum )
 	end
 end
