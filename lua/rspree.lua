@@ -591,6 +591,12 @@ function checkSpreeEnd(id, killer, normal_kill)
     end
 end
 
+function et_ClientSpawn(id, revived)
+	if revived ~= 1 then
+		revive_sprees[id] = 0
+	end
+end
+
 function et_ClientDisconnect(id)
     revive_sprees[id] = 0
     client_msg[id] = false
