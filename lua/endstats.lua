@@ -676,6 +676,7 @@ end
 
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
+		killing_sprees[id] = 0
 		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 		if team == 1 and axis_time[id] == 0 then
 			axis_time[id] = et.trap_Milliseconds()
