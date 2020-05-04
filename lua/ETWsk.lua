@@ -433,14 +433,14 @@ function getConfig(map)
         c.actions[2] = {spawn = 3, newstate = NO_PROTECT, trigger = "Truck has been repaired"}
 -- Venice
     elseif map == "venice" then
-        c.spawns[1] = {name = "Allies", state = PROTECT_ALLIES}
-        c.spawns[2] = {name = "Outpost", state = NO_PROTECT} --Axis/Allies
-        c.spawns[3] = {name = "Axis", state = PROTECT_AXIS}
+        c.spawns[1] = {name = "Allies", state = PROTECT_ALLIES, pos = {-4067, -1001, -103}, radius2 = 850}
+        c.spawns[2] = {name = "Outpost", state = PROTECT_AXIS, pos = {517, 1286, -135}, radius2 = 381} --Axis/Allies
+        c.spawns[3] = {name = "Axis", state = PROTECT_AXIS, pos = {4859, 1708, -199}, radius2 = 500}
         c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "captured the Outpost"}
 -- Venice TC RC2
     elseif map == "venice_tcrc2_v1" then
         c.spawns[1] = {name = "Allied", state = PROTECT_ALLIES, pos = {-2464, -1202, -213}, radius2 = 483}
-        c.spawns[2] = {name = "Outpost", state = NO_PROTECT, pos = {517, 1286, -135}, radius2 = 381} --Axis/Allies
+        c.spawns[2] = {name = "Outpost", state = PROTECT_AXIS, pos = {517, 1286, -135}, radius2 = 381} --Axis/Allies
         c.spawns[3] = {name = "Axis Spawn North", state = PROTECT_AXIS, pos = {4859, 1708, -199}, radius2 = 500}
         c.spawns[4] = {name = "Axis Spawn South", state = PROTECT_AXIS, pos = {2544, -2784, -215}, radius2 = 800}
         c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "captured the Outpost"}
