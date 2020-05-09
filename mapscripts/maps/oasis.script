@@ -2094,7 +2094,6 @@ allied_camp_wobj
         }
 		wait 50
 		setstate alliedforwardspawn invisible
-		setstate alliedforwardspawn invisible
     }
 
     trigger allied_cp_destroyed
