@@ -122,9 +122,11 @@ function et_ClientCommand(id, command)
 								flag2 = true
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								return 1
 							end
 						else
 							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							return 1
 						end
 					end
 				else
