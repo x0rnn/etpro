@@ -5,7 +5,7 @@
 -- $Date: 2007-02-28 20:17:56 +0100 (Mi, 28 Feb 2007) $
 -- $Revision: 174 $
 --
-version = "1.0.5"
+version = "1.0.6"
 
 -- kspree.lua logic "stolen" from Vetinari's rspree.lua, who "stole" from etadmin_mod.pl and so on
 -- CONSOLE COMMANDS : ksprees, kspeesall, kspreerecords
@@ -22,6 +22,7 @@ version = "1.0.5"
 -- x0rnn: added topshots (most kills with x, most hs...)
 -- x0rnn: added ammmo left message to vsay_team NeedAmmo
 -- x0rnn: added class message to vsay_team EnemyDisguised
+-- x0rnn: added !multikillstats
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -107,12 +108,14 @@ kspree_cmd_enabled  = true      -- set to false to ignore the "kspree_cmd"
 kspree_cmd      = "!spree_record"
 
 record_cmd      = "!top"  -- command to print players with most multi,mega,ultra... kills
+multikill_cmd   = "!multikillstats" -- command to print multikillstats rank
 stats_cmd       = "!statspub"   -- same as etadmin_mod's "!stats", prints personal killing records (i.e. multi,mega,ultra... kills)
 statsme_cmd     = "!stats"  -- shows ur personal killing stats (private)
 
 srv_record      = true      -- set to true, if u want to save killing stats
 record_last_nick  = true      -- set to true to keep the last known nick a guid has
-records_expire    = 60*60*24*90   -- in seconds! 60*60*24*5 == 5 days
+--records_expire    = 60*60*24*90   -- in seconds! 60*60*24*5 == 5 days
+records_expire    = 0   -- in seconds! 60*60*24*5 == 5 days
 
 allow_spree_sk    = true      -- allow new killing spree record, even if he killed himself
 
@@ -1002,7 +1005,7 @@ function checkMultiKill (id, mod)
         end
     else
         kmulti[id][2] = 1
-	doublekill[id][1] = 0
+		doublekill[id][1] = 0
         if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
         	doublekill[id][1] = 1
         end
@@ -1376,6 +1379,7 @@ function et_RunFrame(levelTime)
             if whichkill == 2 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmulti_pos, string.format(kmega_msg, m_name))
+                    et.G_LogPrint("LUA event: MEGAKILL: " .. m_name .. "\n")
                     if kmulti_sound then
                         --et.G_globalSound(megasound)
                         soundClients(megasound)
@@ -1390,6 +1394,7 @@ function et_RunFrame(levelTime)
             if whichkill == 3 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmonster_pos, string.format(kultra_msg, m_name))
+                    et.G_LogPrint("LUA event: ULTRAKILL: " .. m_name .. "\n")
                     if kmulti_sound then
                         --et.G_globalSound(ultrasound)
                         soundClients(ultrasound)
@@ -1404,6 +1409,7 @@ function et_RunFrame(levelTime)
             if whichkill == 4 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmonster_pos, string.format(kmonster_msg, m_name))
+                    et.G_LogPrint("LUA event: MONSTERKILL: " .. m_name .. "\n")
                     if kmulti_sound then
                         --et.G_globalSound(monstersound)
                         soundClients(monstersound)
@@ -1418,6 +1424,7 @@ function et_RunFrame(levelTime)
             if whichkill == 5 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmonster_pos, string.format(kludicrous_msg, m_name))
+                    et.G_LogPrint("LUA event: LUDICROUSKILL: " .. m_name .. "\n")
                     if kmulti_sound then
                     --et.G_globalSound(ludicroussound)
                     soundClients(ludicroussound)
@@ -1432,6 +1439,7 @@ function et_RunFrame(levelTime)
             if whichkill == 6 and (startpause + 3100) < ltm then
                 if kmulti_announce then
                     sayClients(kmonster_pos, string.format(kholyshit_msg, m_name))
+                    et.G_LogPrint("LUA event: HOLYSHITKILL: " .. m_name .. "\n")
                     if kmulti_sound then
                         --et.G_globalSound(holyshitsound)
                         soundClients(holyshitsound)
@@ -1477,8 +1485,8 @@ function et_ClientBegin(id)
 end
 
 function et_ClientSpawn(id, revived)
-	killing_sprees[id] = 0
 	if revived ~= 1 then
+		killing_sprees[id] = 0
 		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 		if team == 1 and axis_time[id] == 0 then
 			axis_time[id] = et.trap_Milliseconds()
@@ -1545,6 +1553,50 @@ function is_medic(id)
     end
 end
 
+function multikillstats (id)
+	local guid = getGuid(id)
+	local name = et.gentity_get(id, "pers.netname")
+
+	local cmultis = 0
+	local ckills = 0
+	local cratio = 0
+	local pmultis = 0
+	local pkills = 0
+	local pratio = 0
+	local count = 1
+	if srv_records[guid] ~= nil then
+		ckills = srv_records[guid][6]
+		if ckills > 1000 then
+			cmultis = srv_records[guid][1] + srv_records[guid][2] + srv_records[guid][3] + srv_records[guid][4]*2 + srv_records[guid][5]*2
+			cratio = (cmultis/ckills)*100
+		else
+			et.trap_SendServerCommand(-1, "chat \"No stats for " .. name .. " available ...\n\"")
+			return 0
+		end
+	else
+		et.trap_SendServerCommand(-1, "chat \"No stats for " .. name .. " available ...\n\"")
+		return 0
+	end
+
+	table.foreach(srv_records,
+		function (pguid, arr)
+			if pguid ~= guid then
+				pkills = arr[6]
+				if pkills > 1000 then
+					pmultis = arr[1]+arr[2]+arr[3]+arr[4]*2+arr[5]*2
+					pratio = (pmultis/pkills)*100
+					if pratio > cratio then
+						count = count + 1
+					end
+				end
+			end
+		end)
+
+	et.trap_SendServerCommand(-1, "chat \"Multikill stats for: " .. name .. "^7: ^3Rank: ^7" .. count .. " ^3Kills: ^7" .. ckills .. " ^3Multikills: ^7" .. cmultis .. " ^3Ratio: ^7" .. roundNum(cratio, 3) .. "\"")
+	et.trap_SendServerCommand(-1, "chat \"Multikills: ^3" .. srv_records[guid][1] .. " ^7Megakills: ^3" .. srv_records[guid][2] .. " ^7Ultrakills: ^3" .. srv_records[guid][3] .. " ^7Monsterkills: ^3" .. srv_records[guid][4] .. " ^7Ludicrouskills: ^3" .. srv_records[guid][5] .. "\"")
+
+end
+
 function et_ClientCommand(id, command)
 
     if et.trap_Argv(0) == "say" then
@@ -1552,6 +1604,9 @@ function et_ClientCommand(id, command)
 		if et.trap_Argv(1) == topshot_cmd then
 			topshots_f(id)
 		end
+        if et.trap_Argv(1) == multikill_cmd and srv_record then
+            multikillstats(id)
+        end
         if kspree_cmd_enabled and et.trap_Argv(1) == kspree_cmd then
             local map_msg = ""
             local map_max = findMaxKSpree()
