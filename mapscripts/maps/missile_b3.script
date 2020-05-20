@@ -1,5 +1,6 @@
 // fix door when allies activate Gate Controls -hazz 10.5.2019
 // add checks to make sure autospawns don't work backwards when obj isn't completed in usual order -hazz 10.5.2019
+// x0rnn 20.05.2020 - power supply can only be secured after gate controls are destroyed
 
 game_manager
 {
@@ -90,6 +91,7 @@ game_manager
 
 		//*---------------*
 
+		setstate powersupply_exit invisible
 	}
 
 	trigger doors_destroyed
@@ -140,6 +142,7 @@ game_manager
         globalaccum 1 abort_if_bitset 1
         globalaccum 1 abort_if_bitset 2
 		setautospawn "Forward Allies Bunker Spawn" 1
+		setstate powersupply_exit default
 	}
 
 
@@ -609,13 +612,13 @@ powersupply
 	trigger stolen
 	{
 		setstate t24 invisible
-		setstate powersupply_exit default
+		//setstate powersupply_exit default
 	}
 
 	trigger returned
 	{
 		setstate t24 default
-		setstate powersupply_exit invisible
+		//setstate powersupply_exit invisible
 		
 	}
 
