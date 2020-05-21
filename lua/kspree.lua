@@ -337,6 +337,39 @@ local function roundNum(num, n)
 	return math.floor(num * mult + 0.5) / mult
 end
 
+function inSlot( PartName )
+  local x=0
+  local j=1
+  local size=tonumber(et.trap_Cvar_Get("sv_maxclients"))     --get the serversize
+  local matches = {}
+  while (x<size) do
+    found = string.find(string.lower(et.Q_CleanStr( et.Info_ValueForKey( et.trap_GetUserinfo( x ), "name" ) )),string.lower(PartName))
+    if(found~=nil) then
+        matches[j]=x
+        j=j+1
+    end
+    x=x+1
+  end
+  if (table.getn(matches)~=nil) then
+    x=1
+    while (x<=table.getn(matches)) do
+        matchingSlot = matches[x] 
+      x=x+1
+    end
+    if table.getn(matches) == 0 then
+      et.G_Print("You had no matches to that name.\n")
+      matchingSlot = nil
+    else
+      if table.getn(matches) >= 2 then
+        et.G_Print("Partial playername got more than 1 match\n")
+        matchingSlot = nil
+      else
+      end
+    end
+  end
+  return matchingSlot
+end
+
 function getGuid (id)
     return(string.lower(et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")))
 end
@@ -1594,7 +1627,6 @@ function multikillstats (id)
 
 	et.trap_SendServerCommand(-1, "chat \"Multikill stats for: " .. name .. "^7: ^3Rank: ^7" .. count .. " ^3Kills: ^7" .. ckills .. " ^3Multikills: ^7" .. cmultis .. " ^3Ratio: ^7" .. roundNum(cratio, 3) .. "\"")
 	et.trap_SendServerCommand(-1, "chat \"Multikills: ^3" .. srv_records[guid][1] .. " ^7Megakills: ^3" .. srv_records[guid][2] .. " ^7Ultrakills: ^3" .. srv_records[guid][3] .. " ^7Monsterkills: ^3" .. srv_records[guid][4] .. " ^7Ludicrouskills: ^3" .. srv_records[guid][5] .. "\"")
-
 end
 
 function et_ClientCommand(id, command)
@@ -1606,7 +1638,17 @@ function et_ClientCommand(id, command)
 		end
         if et.trap_Argv(1) == multikill_cmd and srv_record then
             multikillstats(id)
-        end
+		end
+        if et.trap_Argv(1) == "!getmultikillstats" and srv_record then
+			if et.trap_Argc() ~= 3 then
+				et.trap_SendServerCommand(id, "chat \"Usage: ^3!getmultikillstats PartOfName\"")
+			else
+				local id2 = inSlot(et.trap_Argv(2))
+				if id2 ~= nil then
+					multikillstats(id2)
+				end
+			end
+		end
         if kspree_cmd_enabled and et.trap_Argv(1) == kspree_cmd then
             local map_msg = ""
             local map_max = findMaxKSpree()
