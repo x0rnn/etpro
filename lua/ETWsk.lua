@@ -421,7 +421,7 @@ function getConfig(map)
         c.spawns[6] = {name = "Town Spawn 2nd floor", state = PROTECT_ALLIES, pos = {2296, -653, 1016}, radius2 = 225}
         
 -- Bremen B2 16.11.2008
-    elseif map == "bremen_b2" or map == "bremen_b3" then
+    elseif map == "bremen_b2" or map == "bremen_b3" or map == "fa_bremen_final" then
         c.spawns[1] = {name = "Allied first spawn", state = PROTECT_ALLIES, pos = {-1957, -2222, 88}, radius2 = 440}
         c.spawns[6] = {name = "Allied first spawn*", state = PROTECT_ALLIES, pos = {-2264, -1512, 88}, radius2 = 406}
         c.spawns[2] = {state = NO_PROTECT} -- Axis Flag Spawn
