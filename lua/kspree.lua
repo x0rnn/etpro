@@ -22,7 +22,7 @@ version = "1.0.6"
 -- x0rnn: added topshots (most kills with x, most hs...)
 -- x0rnn: added ammmo left message to vsay_team NeedAmmo
 -- x0rnn: added class message to vsay_team EnemyDisguised
--- x0rnn: added !multikillstats
+-- x0rnn: added !multikillstats, !vsstats for current map
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
