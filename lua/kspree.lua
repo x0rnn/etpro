@@ -186,7 +186,7 @@ last_use = {}
 doublekill = {}
 et.CS_PLAYERS = 689
 kspree_endmsg = ""
-
+vsstats = {}
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
 
@@ -247,6 +247,11 @@ function et_InitGame(levelTime, randomSeed, restart)
         i = readRecords(record_cfg)
         et.G_Printf("kspree.lua: loaded %d alltime records from %s\n", i, record_cfg)
     end
+
+	local j = 0
+	for j=0,sv_maxclients-1 do
+		vsstats[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+	end
 
 --    et.trap_SendConsoleCommand(et.EXEC_NOW,"sets KSpree_version "..version)
     et.G_Printf("bennz's kspree.lua version "..version.." activated...\n")
@@ -810,6 +815,21 @@ function topshots_f(id)
 	end
 end
 
+
+function vsstats_f(id, id2)
+	local ratio = 0
+	if vsstats[id2][id] == 0 then
+		ratio = vsstats[id][id2]
+	else
+		if vsstats[id][id2] == 0 then
+			ratio = -vsstats[id2][id]
+		else
+			ratio = roundNum(vsstats[id][id2]/vsstats[id2][id], 2)
+		end
+	end
+	et.trap_SendServerCommand(-1, "chat \"^7Current map's versus stats for: " .. et.gentity_get(id, "pers.netname") .. " ^7vs. " .. et.gentity_get(id2, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats[id][id2] .. " ^3Deaths: ^7" .. vsstats[id2][id] .. " ^3Ratio: ^7" .. ratio .. "\"")
+end
+
 function et_Print(text)
 	if gamestate == 0 then
 		if string.find(text, "Medic_Revive") then
@@ -1121,6 +1141,7 @@ function et_Obituary(victim, killer, mod)
             if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
+                vsstats[killer][victim] = vsstats[killer][victim] + 1
                 local guid = getGuid(killer)
                 local posk = et.gentity_get(victim, "ps.origin")
 			    local posv = et.gentity_get(killer, "ps.origin")
@@ -1548,6 +1569,7 @@ end
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
+    vsstats[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     client_msg[id] = false
     topshot_msg[id] = false
     axis_time[id] = 0
@@ -1646,6 +1668,16 @@ function et_ClientCommand(id, command)
 				local id2 = inSlot(et.trap_Argv(2))
 				if id2 ~= nil then
 					multikillstats(id2)
+				end
+			end
+		end
+        if et.trap_Argv(1) == "!vsstats" then
+			if et.trap_Argc() ~= 3 then
+				et.trap_SendServerCommand(id, "chat \"Usage: ^3!vsstats PartOfName\"")
+			else
+				local id2 = inSlot(et.trap_Argv(2))
+				if id2 ~= nil then
+					vsstats_f(id, id2)
 				end
 			end
 		end
@@ -2097,5 +2129,16 @@ function et_ConsoleCommand()
         et.G_Printf("^7All sprees has been deleted.\n")
         return(1)
     end
+
+	if et.trap_Argv(0) == "pb_sv_kick" then
+		if et.trap_Argc() == 2 then
+			local cno = tonumber(et.trap_Argv(1))
+			if cno then
+				cno = cno - 1
+				et_ClientDisconnect(cno)
+			end
+		end
+		return 1
+	end
     return(0)
 end
