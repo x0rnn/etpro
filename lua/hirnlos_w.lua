@@ -56,7 +56,6 @@ function et_ConsoleCommand()
 			if cno then
 				cno = cno - 1
 				et_ClientDisconnect(cno)
-				end
 			end
 		end
 		return 1
