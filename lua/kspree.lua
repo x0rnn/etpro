@@ -1591,6 +1591,10 @@ function et_ClientDisconnect(id)
         	last_use[id] = nil
             table.remove(medic_table, is_medic(id))
 	end
+	local j = 0
+	for j=0,sv_maxclients-1 do
+		vsstats[j][id] = 0
+	end
 end
 
 function is_medic(id)
