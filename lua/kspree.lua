@@ -1669,9 +1669,19 @@ function et_ClientCommand(id, command)
 			if et.trap_Argc() ~= 3 then
 				et.trap_SendServerCommand(id, "chat \"Usage: ^3!getmultikillstats PartOfName\"")
 			else
-				local id2 = inSlot(et.trap_Argv(2))
-				if id2 ~= nil then
-					multikillstats(id2)
+				local id2
+				if string.len(et.trap_Argv(2)) < 3 then
+					id2 = tonumber(et.trap_Argv(2))
+					if id2 then
+						if et.gentity_get(id2, "pers.connected") == 2 then
+							multikillstats(id2)
+						end
+					end
+				else
+					id2 = inSlot(et.trap_Argv(2))
+					if id2 ~= nil then
+						multikillstats(id2)
+					end
 				end
 			end
 		end
@@ -1679,9 +1689,19 @@ function et_ClientCommand(id, command)
 			if et.trap_Argc() ~= 3 then
 				et.trap_SendServerCommand(id, "chat \"Usage: ^3!vsstats PartOfName\"")
 			else
-				local id2 = inSlot(et.trap_Argv(2))
-				if id2 ~= nil then
-					vsstats_f(id, id2)
+				local id2
+				if string.len(et.trap_Argv(2)) < 3 then
+					id2 = tonumber(et.trap_Argv(2))
+					if id2 then
+						if et.gentity_get(id2, "pers.connected") == 2 then
+							vsstats_f(id, id2)
+						end
+					end
+				else
+					id2 = inSlot(et.trap_Argv(2))
+					if id2 ~= nil then
+						vsstats_f(id, id2)
+					end
 				end
 			end
 		end
