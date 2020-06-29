@@ -1,0 +1,876 @@
+//
+// Anx Marketgarden-ET Release 2
+// Game Scripting
+
+game_manager
+{
+	spawn
+	{
+
+		create
+		{
+			scriptName "alliedroof1"
+			classname "func_fakebrush"
+			origin "-5043 697 1440"
+			contents 1  // SOLID
+			mins "-350 -250 -88"
+			maxs "350 250 88"
+		}
+
+		create
+		{
+			scriptName "alliedroof2"
+			classname "func_fakebrush"
+			origin "-6919 -1529 1446"
+			contents 1  // SOLID
+			mins "-200 -250 -88"
+			maxs "200 250 88"
+		}
+
+		create
+		{
+			scriptName "axisroof1"
+			classname "func_fakebrush"
+			origin "6720 -404 1602"
+			contents 1  // SOLID
+			mins "-400 -200 -88"
+			maxs "400 200 88"
+		}
+
+		create
+		{
+			scriptName "axisroof2"
+			classname "func_fakebrush"
+			origin "2039 -2456 1474"
+			contents 1  // SOLID
+			mins "-300 -200 -88"
+			maxs "300 200 88"
+		}
+
+		accum 1 set 0		
+		
+		// Game rules
+		wm_axis_respawntime	20
+		wm_allied_respawntime	20
+		wm_number_of_objectives 7
+		wm_set_round_timelimit	18
+
+		// Current main objectives for each team (0=Axis, 1=Allies)
+		wm_set_main_objective		2	0
+		wm_set_main_objective		2	1
+
+		// Objective overview status indicators
+		//wm_objective_status <objective> <team (0=Axis, 1=Allies)> <status (0=neutral 1=complete 2=failed)>
+		wm_objective_status 1 1 2
+		wm_objective_status 1 0 1
+		wm_objective_status 2 1 2
+		wm_objective_status 2 0 1
+		wm_objective_status 3 1 1
+		wm_objective_status 3 0 2
+		wm_objective_status 4 1 1
+		wm_objective_status 4 0 2
+		wm_objective_status 5 1 2
+		wm_objective_status 5 0 2
+		wm_objective_status 6 1 0
+		wm_objective_status 6 0 0
+		wm_objective_status 7 1 0
+		wm_objective_status 7 0 0
+
+	
+		// Stopwatch mode defending team (0=Axis, 1=Allies)
+		wm_set_defending_team	0
+
+		// If the round timer expires, the Axis have won, so set the current winning team
+		// Set the round winner:  0 == AXIS, 1 == ALLIED
+		wm_setwinner 0
+
+		setautospawn "Command Center"	0
+		setautospawn "The Bridge"	1
+	}
+//////////////////////////////////////////
+//Next Come the Triggers
+//////////////////////////////////////////
+
+trigger objective1 // Bridge Detonator
+	{
+		// Allied takes control of objective #1
+		wm_objective_status 2 1 1
+		wm_objective_status 2 0 2
+
+		// Change the variable within the script so that we can check if someone wins the round
+		accum 1 set 1
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Allied team defused the Bridge Detonator!"
+
+		// Call function to check if the round has been won
+		trigger game_manager checkgame
+	}
+
+trigger objective3 // Command Center
+	{
+		// Axis takes control of objective #3
+		wm_objective_status 3 1 2
+		wm_objective_status 3 0 1
+
+		// Change the variable within the script so that we can check if someone wins the round
+		accum 1 set 1
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Axis team destroyed the Allied Command Center!"
+
+		// Call function to check if the round has been won
+		trigger game_manager checkgame2
+	}
+
+trigger checkgame
+	{
+		accum 1 abort_if_not_equal 1
+
+		// Set the round winner:  0 == AXIS, 1 == ALLIED
+		wm_setwinner 1
+
+		wait 1500
+
+		// End the round
+		wm_endround
+	}
+
+trigger checkgame2
+	{
+		accum 1 abort_if_not_equal 1
+		// Set the round winner:  0 == AXIS, 1 == ALLIED
+		wm_setwinner 0
+
+		wait 1500
+
+		// End the round
+		wm_endround
+	}
+
+	trigger timelimit_hit
+		{
+		wm_setwinner -1
+		wait 250
+		wm_setwinner -1
+
+		}
+
+}
+
+axis_obj1 // The Allied Command Center
+{
+	spawn
+	{
+      	wait 200 
+      	constructible_class 3
+	}
+
+	death
+	{
+	trigger game_manager objective3
+	}
+}
+
+command_gate
+{
+	spawn
+	{
+      	wait 200 
+      	constructible_class 3
+	}
+	
+	death
+	{
+	wm_announce	"Axis have destroyed the Command Center gates!"
+	}
+}
+
+water_door
+{
+	spawn
+	{
+	wait 200
+	constructible_class 3
+        }
+
+	death
+	{
+	wm_announce	"Allies have destroyed the Water Tower Door!"
+	wm_objective_status 1 1 1
+	wm_objective_status 1 0 2
+	setstate cm_plunger_toi default
+	setstate cm_plunger default
+	}
+			
+}
+
+cm_plunger_toi
+{ 
+   spawn 
+   { 
+   setstate cm_plunger_toi invisible
+   } 
+} 
+
+cm_plunger
+{ 
+   spawn 
+   { 
+   setstate cm_plunger invisible
+   } 
+} 
+
+allied_obj1 // Bridge detonator
+{
+	death
+	{
+		// Allied team 'stole' the detonator
+		
+		trigger game_manager objective1
+	}
+}
+
+forwardaxis_wobj 
+{ 
+   spawn 
+   { 
+   setstate forwardaxis_wobj invisible
+   } 
+} 
+
+forwardallied_wobj 
+{ 
+   spawn 
+   { 
+   setstate forwardallied_wobj invisible
+   } 
+} 
+
+axis_cm_allied_flag_toi
+{
+   spawn
+   {
+   setstate axis_cm_allied_flag_toi invisible
+   }
+}
+
+allied_cm_axis_flag_toi
+{
+   spawn
+   {
+   setstate allied_cm_axis_flag_toi invisible
+   }
+}
+
+axis_cm_allied_flag
+{
+   spawn
+   {
+   setstate axis_cm_allied_flag invisible
+   }
+}
+
+allied_cm_axis_flag
+{
+   spawn
+   {
+   setstate allied_cm_axis_flag invisible
+   }
+}
+
+flag_respawn_obj
+{
+	spawn
+	{
+		accum 0 set 2	// Who has the flag: 0-Axis, 1-Allied, 2-Nobody
+	}
+	trigger axis_capture
+	{
+		accum 0 abort_if_equal 0 // do Axis own flag?
+
+		accum 0 set 0 // Axis own the pole
+		// Axis takes control of objective #2
+		wm_objective_status		5	0	1
+		wm_objective_status		5	1	2
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Axis capture the Forward Deployment Area!"
+		setstate flag_not_captured invisible
+		setstate flag_not_captured_toi invisible
+		wait 200
+      		setstate forwardallied_wobj invisible
+		setstate forwardaxis_wobj default
+		setstate axis_cm_allied_flag invisible
+		setstate axis_cm_allied_flag_toi invisible
+		setstate allied_cm_axis_flag default
+		setstate allied_cm_axis_flag_toi default
+	}
+
+	trigger allied_capture
+	{
+		accum 0 abort_if_equal 1 // do Allies own flag?
+
+		accum 0 set 1 // Allied own the flag
+		// Allied takes control of objective #2
+		wm_objective_status		5	1	1
+		wm_objective_status		5	0	2
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Allies capture the Forward Deployment Area!"
+		setstate flag_not_captured invisible
+		setstate flag_not_captured_toi invisible
+		wait 200
+      		setstate forwardaxis_wobj invisible
+      		setstate forwardallied_wobj default
+		setstate allied_cm_axis_flag invisible
+		setstate allied_cm_axis_flag_toi invisible
+		setstate axis_cm_allied_flag default
+		setstate axis_cm_allied_flag_toi default
+	}
+}
+
+allied_cp_built
+{
+	spawn
+	{
+		wait 400
+		trigger allied_cp_built setup
+
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+	}
+
+	buildstart final
+	{
+		setstate allied_cp_built_model underconstruction
+		setstate allied_cp_closed_clip default
+		setstate allied_cp_closed_model invisible
+	}
+
+	built final
+	{
+		setstate allied_cp_built_model default
+		setstate allied_cp_closed_clip invisible
+		setstate allied_cp_closed_model invisible
+
+		trigger allied_cp_built_model enable_allied_features
+
+		//enablespeaker allies_compost_sound
+	}
+
+	decayed final
+	{
+		setstate allied_cp_built_model invisible
+		setstate allied_cp_closed_clip default
+		setstate allied_cp_closed_model default
+	}
+
+	death
+	{
+		setstate allied_cp_built_model invisible
+		setstate allied_cp_closed_clip default
+		setstate allied_cp_closed_model default
+
+		trigger allied_cp_built_model disable_allied_features
+
+		//disablespeaker allies_compost_sound
+	}
+}
+
+allied_cp_built_model
+{
+	spawn
+	{
+		wait 400
+		setstate allied_cp_built_model invisible
+	}
+
+	trigger enable_allied_features
+	{
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+
+		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 6 0 2
+		wm_objective_status 6 1 1
+		setstate allied_cp_closed_speaker invisible
+		setstate allied_cp_built_speaker default
+	}
+
+	trigger disable_allied_features
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+
+		wm_announce	"Axis team has destroyed the Allied Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		//wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		//wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 6 0 0
+		wm_objective_status 6 1 0
+		setstate allied_cp_built_speaker invisible
+		setstate allied_cp_closed_speaker default
+	}
+}
+
+allied_cp_built_speaker
+{
+	spawn
+	{
+	setstate allied_cp_built_speaker invisible
+	}
+}
+
+axis_cp_built
+{
+	spawn
+	{
+		wait 400
+		trigger axis_cp_built setup
+
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+	}
+
+	buildstart final
+	{
+		setstate axis_cp_built_model underconstruction
+		setstate axis_cp_closed_clip default
+		setstate axis_cp_closed_model invisible
+	}
+
+	built final
+	{
+		setstate axis_cp_built_model default
+		setstate axis_cp_closed_clip invisible
+		setstate axis_cp_closed_model invisible
+
+		trigger axis_cp_built_model enable_axis_features
+
+		//enablespeaker axis_compost_sound
+	}
+
+	decayed final
+	{
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_closed_clip default
+		setstate axis_cp_closed_model default
+	}
+
+	death
+	{
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_closed_clip default
+		setstate axis_cp_closed_model default
+
+		trigger axis_cp_built_model disable_axis_features
+
+		//disablespeaker axis_compost_sound
+	}
+}
+
+axis_cp_built_model
+{
+	spawn
+	{
+		wait 400
+		setstate axis_cp_built_model invisible
+	}
+
+	trigger enable_axis_features
+	{
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 7 0 1
+		wm_objective_status 7 1 2
+		setstate axis_cp_closed_speaker invisible
+		setstate axis_cp_built_speaker default
+	}
+
+	trigger disable_axis_features
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		//wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+
+		//wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 7 0 0
+		wm_objective_status 7 1 0
+		setstate axis_cp_built_speaker invisible
+		setstate axis_cp_closed_speaker default
+	}
+}
+
+axis_cp_built_speaker
+{
+	spawn
+	{
+	setstate axis_cp_built_speaker invisible
+	}
+}
+
+
+scr_allied_ammohealth_constructible
+{
+	spawn
+	{
+		wait 200
+		constructible_class 2
+
+		constructible_constructxpbonus 3
+		constructible_destructxpbonus 3
+
+		setstate allied_health_rack			invisible
+		setstate allied_ammo_rack			invisible
+		setstate allied_ammohealth_constructible	invisible
+		setstate allied_health_trigger			invisible
+		setstate allied_ammo_trigger			invisible
+		setstate allied_ammohealth_TOI			invisible
+		setstate allied_ammohealth_CM_marker		invisible
+
+		setstate allied_ammo_model			invisible
+		setstate allied_health_model			invisible
+	}
+
+	buildstart final
+	{
+		setstate allied_ammo_model			underconstruction
+		setstate allied_health_model			underconstruction
+	}
+
+	built final
+	{
+		//setstate ammohealth_constructible_TOI	invisible
+		setstate allied_health_rack			default
+		setstate allied_ammo_rack			default
+		setstate allied_ammohealth_constructible	default
+		setstate allied_ammohealth_mover_damaged	invisible
+		setstate allied_ammo_rack_damaged		invisible
+		setstate allied_health_rack_damaged		invisible
+		setstate allied_health_trigger			default
+		setstate allied_ammo_trigger			default
+		setstate allied_ammohealth_TOI			default
+		setstate allied_ammohealth_CM_marker		default
+
+		setstate allied_ammo_model			invisible
+		setstate allied_health_model			invisible
+
+		wm_announce "The Allied Re-supply has been constructed!"
+	}
+
+	decayed final
+	{
+		setstate allied_ammo_model			invisible
+		setstate allied_health_model			invisible
+	}
+
+	death
+	{
+		//setstate ammohealth_constructible_TOI	default
+		setstate allied_health_rack			invisible
+		setstate allied_ammo_rack			invisible
+		setstate allied_ammohealth_constructible	invisible
+		setstate allied_ammohealth_mover_damaged	default
+		setstate allied_ammo_rack_damaged		default
+		setstate allied_health_rack_damaged		default
+		setstate allied_health_trigger			invisible
+		setstate allied_ammo_trigger			invisible
+		setstate allied_ammohealth_TOI			invisible
+		setstate allied_ammohealth_CM_marker		invisible
+
+		wm_announce "The Allied Re-supply has been destroyed!"
+	}
+}
+
+scr_axis_ammohealth_constructible
+{
+	spawn
+	{
+		wait 200
+		constructible_class 2
+
+		constructible_constructxpbonus 3
+		constructible_destructxpbonus 3
+
+		setstate axis_health_rack			invisible
+		setstate axis_ammo_rack				invisible
+		setstate axis_ammohealth_constructible		invisible
+		setstate axis_health_trigger			invisible
+		setstate axis_ammo_trigger			invisible
+		setstate axis_ammohealth_TOI			invisible
+		setstate axis_ammohealth_CM_marker		invisible
+
+		setstate axis_ammo_model			invisible
+		setstate axis_health_model			invisible
+	}
+
+	buildstart final
+	{
+		setstate axis_ammo_model			underconstruction
+		setstate axis_health_model			underconstruction
+	}
+
+	built final
+	{
+		//setstate ammohealth_constructible_TOI	invisible
+		setstate axis_health_rack			default
+		setstate axis_ammo_rack				default
+		setstate axis_ammohealth_constructible		default
+		setstate axis_ammohealth_mover_damaged		invisible
+		setstate axis_ammo_rack_damaged			invisible
+		setstate axis_health_rack_damaged		invisible
+		setstate axis_health_trigger			default
+		setstate axis_ammo_trigger			default
+		setstate axis_ammohealth_TOI			default
+		setstate axis_ammohealth_CM_marker		default
+
+		setstate axis_ammo_model			invisible
+		setstate axis_health_model			invisible
+
+		wm_announce "The Axis Re-supply has been constructed!"
+	}
+
+	decayed final
+	{
+		setstate axis_ammo_model			invisible
+		setstate axis_health_model			invisible
+	}
+
+	death
+	{
+		//setstate ammohealth_constructible_TOI	default
+		setstate axis_health_rack			invisible
+		setstate axis_ammo_rack				invisible
+		setstate axis_ammohealth_constructible		invisible
+		setstate axis_ammohealth_mover_damaged		default
+		setstate axis_ammo_rack_damaged			default
+		setstate axis_health_rack_damaged		default
+		setstate axis_health_trigger			invisible
+		setstate axis_ammo_trigger			invisible
+		setstate axis_ammohealth_TOI			invisible
+		setstate axis_ammohealth_CM_marker		invisible
+
+		wm_announce "The Axis Re-supply has been destroyed!"
+	}
+}
+
+cc_mg42
+{
+	spawn
+	{
+	setstate cc_mg42 invisible
+	}
+}
+
+cc_mg42_const
+{
+	spawn
+	{
+		wait 200
+		trigger self setup
+		constructible_class 1
+	}
+	trigger setup
+	{
+		setstate cc_mg42_const invisible
+		setstate cc_mg42_crates default
+	}
+	buildstart final
+	{
+		setstate cc_mg42_const invisible
+		setstate cc_mg42_crates default
+	}
+	built final
+	{
+		setstate cc_mg42_const invisible
+		setstate cc_mg42_crates invisible
+		setstate cc_mg42_toi invisible
+		setstate cc_mg42 default
+
+		wm_announce "The Allies have Deployed the Command Center MG-42!"
+	}
+}
+
+canal_mg42
+{
+	spawn
+	{
+	setstate canal_mg42 invisible
+	}
+}
+
+canal_mg42_const
+{
+	spawn
+	{
+		wait 200
+		trigger self setup
+		constructible_class 1
+	}
+	trigger setup
+	{
+		setstate canal_mg42_const invisible
+		setstate canal_mg42_crates default
+	}
+	buildstart final
+	{
+		setstate canal_mg42_const invisible
+		setstate canal_mg42_crates default
+	}
+	built final
+	{
+		setstate canal_mg42_const invisible
+		setstate canal_mg42_crates invisible
+		setstate canal_mg42_toi invisible
+		setstate canal_mg42 default
+
+		wm_announce "The Allies have Deployed the Canal MG-42!"
+	}
+}
+
+bridge_mg42
+{
+	spawn
+	{
+	setstate bridge_mg42 invisible
+	}
+}
+
+bridge_mg42_const
+{
+	spawn
+	{
+		wait 200
+		trigger self setup
+		constructible_class 1
+	}
+	trigger setup
+	{
+		setstate bridge_mg42_const invisible
+		setstate bridge_mg42_crates default
+	}
+	buildstart final
+	{
+		setstate bridge_mg42_const invisible
+		setstate bridge_mg42_crates default
+	}
+	built final
+	{
+		setstate bridge_mg42_const invisible
+		setstate bridge_mg42_crates invisible
+		setstate bridge_mg42_toi invisible
+		setstate bridge_mg42 default
+
+		wm_announce "The Axis have Deployed the Bridge MG-42!"
+	}
+}
+
+pillbox_mg42
+{
+	spawn
+	{
+	setstate pillbox_mg42 invisible
+	}
+}
+
+pillbox_mg42_const
+{
+	spawn
+	{
+		wait 200
+		trigger self setup
+		constructible_class 1
+	}
+	trigger setup
+	{
+		setstate pillbox_mg42_const invisible
+		setstate pillbox_mg42_crates default
+	}
+	buildstart final
+	{
+		setstate pillbox_mg42_const invisible
+		setstate pillbox_mg42_crates default
+	}
+	built final
+	{
+		setstate pillbox_mg42_const invisible
+		setstate pillbox_mg42_crates invisible
+		setstate pillbox_mg42_toi invisible
+		setstate pillbox_mg42 default
+
+		wm_announce "The Axis have Deployed the Pillbox MG-42!"
+	}
+}
