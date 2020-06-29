@@ -421,7 +421,7 @@ function getConfig(map)
         c.spawns[6] = {name = "Town Spawn 2nd floor", state = PROTECT_ALLIES, pos = {2296, -653, 1016}, radius2 = 225}
         
 -- Bremen B2 16.11.2008
-    elseif map == "bremen_b2" or map == "bremen_b3" or map == "fa_bremen_final" then
+    elseif map == "bremen_b2" or map == "bremen_b3" or map == "fa_bremen_b3" or map == "fa_bremen_final" then
         c.spawns[1] = {name = "Allied first spawn", state = PROTECT_ALLIES, pos = {-1957, -2222, 88}, radius2 = 440}
         c.spawns[6] = {name = "Allied first spawn*", state = PROTECT_ALLIES, pos = {-2264, -1512, 88}, radius2 = 406}
         c.spawns[2] = {state = NO_PROTECT} -- Axis Flag Spawn
@@ -588,6 +588,12 @@ function getConfig(map)
         c.spawns[2] = {state = "Allied 3", state = NO_PROTECT, pos = {-3506, -2322, 1776}, radius2 = 450}
 		c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "Allied 3"}
 
+-- marketgarden_et_r2
+    elseif map == "marketgarden_et_r2" then
+        c.spawns[1] = {state = "The Bridge", state = NO_PROTECT}
+        c.spawns[2] = {state = "Command Center", state = NO_PROTECT}
+        c.spawns[3] = {state = "Banner Room", pos = {-5068, 712, 1112}, state = PROTECT_ALLIES, radius2 = 400}
+        c.spawns[4] = {state = "South Arch", pos = {2137, -2488, 1104}, state = PROTECT_AXIS, radius2 = 400}
 
 -- goldendunk_a2
     elseif map == "goldendunk_a2" then
