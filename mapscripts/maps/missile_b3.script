@@ -604,10 +604,10 @@ truckboxtrans1
 
 powersupply
 {
-	spawn
-	{
-		setstate powersupply_exit invisible
-	}
+	//spawn
+	//{
+		//setstate powersupply_exit invisible
+	//}
 
 	trigger stolen
 	{
