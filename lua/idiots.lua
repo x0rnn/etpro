@@ -60,9 +60,9 @@ function et_InitGame(levelTime, randomSeed, restart)
 	end
 	et.trap_FS_FCloseFile(fd)
 	
-	player1[1] = { "guid1", nil, nil }
+	player1[1] = { "bla1", nil, nil }
 	--player1[2] = { "bla", nil, nil }
-	player2[1] = { "guid2", nil, nil }
+	player2[1] = { "bla2", nil, nil }
 	--player2[2] = { "blabla", nil, nil }
 end
 
@@ -122,7 +122,7 @@ function et_ClientBegin(clientNum)
 	end
 
 	-- team blocking & invisimuting players who aren't -3:
-	if cl_guid == "bla" or cl_guid == "bla2" then
+	if cl_guid == "bla1" or cl_guid == "bla2" or cl_guid == "bla3" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
 		invisible_mute[clientNum] = true
 	end
@@ -480,8 +480,47 @@ function et_RunFrame(levelTime)
 	end
 end
 
+function inSlot( PartName )
+  local x=0
+  local j=1
+  local size=tonumber(et.trap_Cvar_Get("sv_maxclients"))     --get the serversize
+  local matches = {}
+  while (x<size) do
+    found = string.find(string.lower(et.Q_CleanStr( et.Info_ValueForKey( et.trap_GetUserinfo( x ), "name" ) )),string.lower(PartName))
+    if(found~=nil) then
+        matches[j]=x
+        j=j+1
+    end
+    x=x+1
+  end
+  if (table.getn(matches)~=nil) then
+    x=1
+    while (x<=table.getn(matches)) do
+        matchingSlot = matches[x] 
+      x=x+1
+    end
+    if table.getn(matches) == 0 then
+      et.G_Print("You had no matches to that name.\n")
+      matchingSlot = nil
+    else
+      if table.getn(matches) >= 2 then
+        et.G_Print("Partial playername got more than 1 match\n")
+        matchingSlot = nil
+      else
+      end
+    end
+  end
+  return matchingSlot
+end
+
 function et_ClientCommand(id, cmd)
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
+	if cl_guid == "blablabla" and string.lower(cmd) == "callvote" then -- oink
+		if string.lower(et.trap_Argv(1)) == "kick" or string.lower(et.trap_Argv(1)) == "mute" then
+			et.trap_SendServerCommand(id, "cpm \"^1This command is not available to you.\n\"")
+			return 1
+		end
+	end
 	if goons[cl_guid] == true then
 		if string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
 			et.trap_SendServerCommand(id, "cpm \"^1You are muted. This command is not available to you.\n\"")
@@ -656,11 +695,34 @@ function et_ClientCommand(id, cmd)
 				end
 				if admin_flag == true then
 					if cnt ~= 5 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!teleport ^3id X Y Z ^7(/viewpos to see your location)\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!teleport ^3PartOfName X Y Z ^7(/viewpos to see your location)\"\n")
 					else
-						cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									if et.gentity_get(cno, "sess.sessionTeam") == 1 or et.gentity_get(cno, "sess.sessionTeam") == 2 then
+										if tonumber(et.gentity_get(cno, "health")) > 0 then
+											if tonumber(args_table[3]) and tonumber(args_table[4]) and tonumber(args_table[5]) then
+												flag2 = true
+											else
+												et.trap_SendServerCommand (id, "chat \"Usage: ^7!teleport ^3id X Y Z ^7(/viewpos to see your location)\"\n")
+											end
+										else
+											et.trap_SendServerCommand (id, "chat \"^7Target is not alive.\"\n")
+										end
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target is not in Axis or Allied team.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
 								if et.gentity_get(cno, "sess.sessionTeam") == 1 or et.gentity_get(cno, "sess.sessionTeam") == 2 then
 									if tonumber(et.gentity_get(cno, "health")) > 0 then
 										if tonumber(args_table[3]) and tonumber(args_table[4]) and tonumber(args_table[5]) then
@@ -677,8 +739,6 @@ function et_ClientCommand(id, cmd)
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
-						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					end
 				else
@@ -702,18 +762,28 @@ function et_ClientCommand(id, cmd)
 				end
 				if admin_flag == true then
 					if cnt < 3 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3id text\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3PartOfName text\"\n")
 					else
-						cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(3) .. "\"")
+									et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. et.ConcatArgs(3) .. "\n")
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
 								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(3) .. "\"")
 								et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. et.ConcatArgs(3) .. "\n")
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
-						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					end
 					return 1
@@ -778,7 +848,7 @@ function et_ClientCommand(id, cmd)
 			if flag2 == true then
 				ps_origin = { [1]=tonumber(args_table[3]),  [2]=tonumber(args_table[4]), [3]=tonumber(args_table[5]) }
 				et.gentity_set(cno, "ps.origin", ps_origin)
-				msg = string.format("chat  \"" ..  et.gentity_get(cno, "pers.netname") .. " ^3got teleported.\n")
+				msg = string.format("chat  \"" ..  et.gentity_get(cno, "pers.netname") .. " ^3got teleported.")
 				et.trap_SendServerCommand(-1, msg)
 			end
 	end

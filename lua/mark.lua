@@ -1,5 +1,5 @@
 -- mark.lua by x0rnn
--- mark players internally as suspicious or whatever (only visible to shrubbot level 5+ players)
+-- mark players internally as suspicious or whatever (only visible to shrubbot level 4+ players)
 -- !mark id <reason>
 -- !unmark id
 -- !marked (lists all marked players on server)
@@ -17,7 +17,7 @@ function et_InitGame(levelTime, randomSeed, restart)
 	if len > -1 then
 		local content = et.trap_FS_Read(fd, len)
 		for guid, level in string.gfind(content, "[Gg]uid%s*=%s*(%x+)%s*\n[Ll]evel\t%= (%d)") do
-			if tonumber(level) >= 5 then
+			if tonumber(level) >= 4 then
 				admins[guid] = true
 			end
 		end
@@ -68,6 +68,39 @@ function writeFile(marked)
 		end
 	)
 	et.trap_FS_FCloseFile(fd)
+end
+
+function inSlot( PartName )
+  local x=0
+  local j=1
+  local size=tonumber(et.trap_Cvar_Get("sv_maxclients"))     --get the serversize
+  local matches = {}
+  while (x<size) do
+    found = string.find(string.lower(et.Q_CleanStr( et.Info_ValueForKey( et.trap_GetUserinfo( x ), "name" ) )),string.lower(PartName))
+    if(found~=nil) then
+        matches[j]=x
+        j=j+1
+    end
+    x=x+1
+  end
+  if (table.getn(matches)~=nil) then
+    x=1
+    while (x<=table.getn(matches)) do
+        matchingSlot = matches[x] 
+      x=x+1
+    end
+    if table.getn(matches) == 0 then
+      et.G_Print("You had no matches to that name.\n")
+      matchingSlot = nil
+    else
+      if table.getn(matches) >= 2 then
+        et.G_Print("Partial playername got more than 1 match\n")
+        matchingSlot = nil
+      else
+      end
+    end
+  end
+  return matchingSlot
 end
 
 function et_ClientBegin(clientNum)
@@ -156,72 +189,187 @@ end
 function et_ClientCommand(id, command)
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
 	admin_flag = false
-	if et.trap_Argv(0) == "say" then
-		args = et.ConcatArgs(1)
-		local args_table = {}
-		local cnt = 0
-		for i in string.gfind(args, "%S+") do
-			table.insert(args_table, i)
-			cnt = cnt + 1
-		end
-		if args_table[1] == "!mark" or args_table[1] == "!unmark" or args_table[1] == "!marked" then
-			fd,len = et.trap_FS_FOpenFile(shrubbot, et.FS_READ)
-			if len ~= -1 then
-				filestr = et.trap_FS_Read(fd, len)
-				et.trap_FS_FCloseFile(fd)
-				for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
-					if tonumber(v) >= 5 then
-						admin_flag = true
-						break
-					end
-				end
-				filestr = nil
-			else
-				et.trap_FS_FCloseFile(fd)
-				et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
-			end
-			if admin_flag == true then
-				if args_table[1] == "!mark" then
-					if cnt < 3 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!mark ^3id <reason>\"\n")
-					else
-						local cno = tonumber(args_table[2])
-						if cno then
-							reason = et.ConcatArgs(3)
-							if et.gentity_get(cno, "pers.connected") == 2 then
-								mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
-								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
-							else
-								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
-							end
-						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+	if et.trap_Argv(0) == "say" or et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_buddy" or et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
+		if et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
+			if string.sub(et.trap_Argv(2), 1,6) == "!mark " or string.sub(et.trap_Argv(2), 1,8) == "!unmark " or string.sub(et.trap_Argv(2), 1,7) == "!marked" then
+				fd,len = et.trap_FS_FOpenFile(shrubbot, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 4 then
+							admin_flag = true
+							break
 						end
 					end
-					return 1
-				elseif args_table[1] == "!unmark" then
-					if cnt == 2 then
-						local cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
-								unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
-								et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
-							else
-								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
-							end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					local args_table = {}
+					for substr in string.gfind(et.trap_Argv(2), "%S+") do
+						table.insert(args_table, substr)
+					end
+					if args_table[1] == "!mark" then
+						if table.getn(args_table) < 3 then
+							et.trap_SendServerCommand(id, "chat \"Usage: ^7!mark ^3PartOfName <reason>\"\n")
 						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							if string.len(args_table[2]) < 3 then
+								local cno = tonumber(args_table[2])
+								if cno then
+									if et.gentity_get(cno, "pers.connected") == 2 then
+										local reason = ""
+											for j=3,table.getn(args_table) do
+												reason = reason .. args_table[j] .. " "
+											end
+										mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+										et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								cno = inSlot(args_table[2])
+								if cno ~= nil then
+									local reason = ""
+									for j=3,table.getn(args_table) do
+											reason = reason .. args_table[j] .. " "
+									end
+									mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+									et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							end
 						end
 						return 1
-					else
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!unmark ^3id\"\n")
+					elseif args_table[1] == "!unmark" then
+						if table.getn(args_table) == 2 then
+							if string.len(args_table[2]) < 3 then
+								local cno = tonumber(args_table[2])
+								if cno then
+									if et.gentity_get(cno, "pers.connected") == 2 then
+										unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
+										et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								cno = inSlot(args_table[2])
+								if cno ~= nil then
+									unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
+									et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							end
+							return 1
+						else
+							et.trap_SendServerCommand(id, "chat \"Usage: ^7!unmark ^3PartOfName\"\n")
+						end
+					elseif args_table[1] == "!marked" then
+						marked_cmd(id, 1)
+						return 1
 					end
-				elseif args_table[1] == "!marked" then
-					marked_cmd(id, 1)
-					return 1
+				else
+					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
 				end
-			else
-				et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
+			end
+		else
+			args = et.ConcatArgs(1)
+			local args_table = {}
+			local cnt = 0
+			for i in string.gfind(args, "%S+") do
+				table.insert(args_table, i)
+				cnt = cnt + 1
+			end
+			if args_table[1] == "!mark" or args_table[1] == "!unmark" or args_table[1] == "!marked" then
+				fd,len = et.trap_FS_FOpenFile(shrubbot, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 4 then
+							admin_flag = true
+							break
+						end
+					end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					if args_table[1] == "!mark" then
+						if cnt < 3 then
+							et.trap_SendServerCommand(id, "chat \"Usage: ^7!mark ^3PartOfName <reason>\"\n")
+						else
+							if string.len(args_table[2]) < 3 then
+								local cno = tonumber(args_table[2])
+								if cno then
+									if et.gentity_get(cno, "pers.connected") == 2 then
+										reason = et.ConcatArgs(3) 
+										mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+										et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								cno = inSlot(args_table[2])
+								if cno ~= nil then
+									reason = et.ConcatArgs(3) 
+									mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+									et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							end
+						end
+						return 1
+					elseif args_table[1] == "!unmark" then
+						if cnt == 2 then
+							if string.len(args_table[2]) < 3 then
+								local cno = tonumber(args_table[2])
+								if cno then
+									if et.gentity_get(cno, "pers.connected") == 2 then
+										unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
+										et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								cno = inSlot(args_table[2])
+								if cno ~= nil then
+									unmark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"))
+									et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " unmarked " .. et.gentity_get(cno, "pers.netname") .. "\n")
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							end
+							return 1
+						else
+							et.trap_SendServerCommand(id, "chat \"Usage: ^7!unmark ^3PartOfName\"\n")
+						end
+					elseif args_table[1] == "!marked" then
+						marked_cmd(id, 1)
+						return 1
+					end
+				else
+					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
+				end
 			end
 		end
 	end

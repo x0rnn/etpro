@@ -23,6 +23,39 @@ function et_InitGame(levelTime, randomSeed, restart)
 	end
 end
 
+function inSlot( PartName )
+  local x=0
+  local j=1
+  local size=tonumber(et.trap_Cvar_Get("sv_maxclients"))     --get the serversize
+  local matches = {}
+  while (x<size) do
+    found = string.find(string.lower(et.Q_CleanStr( et.Info_ValueForKey( et.trap_GetUserinfo( x ), "name" ) )),string.lower(PartName))
+    if(found~=nil) then
+        matches[j]=x
+        j=j+1
+    end
+    x=x+1
+  end
+  if (table.getn(matches)~=nil) then
+    x=1
+    while (x<=table.getn(matches)) do
+        matchingSlot = matches[x] 
+      x=x+1
+    end
+    if table.getn(matches) == 0 then
+      et.G_Print("You had no matches to that name.\n")
+      matchingSlot = nil
+    else
+      if table.getn(matches) >= 2 then
+        et.G_Print("Partial playername got more than 1 match\n")
+        matchingSlot = nil
+      else
+      end
+    end
+  end
+  return matchingSlot
+end
+
 function et_ClientBegin(clientNum)
 	clean_name = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "name"))
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
@@ -36,18 +69,20 @@ function et_ClientBegin(clientNum)
 		return false
 	end
 
-	if next(names_table) ~= nil then
-		if not has_value(names_table, cl_guid .. "	" .. clean_name) then
-			fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
+	if string.len(cl_guid) == 32 then
+		if next(names_table) ~= nil then
+			if not has_value(names_table, cl_guid .. "	" .. clean_name) then
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
+				count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
+				et.trap_FS_FCloseFile(fd)
+				table.insert(names_table, cl_guid .. "	" .. clean_name)
+			end
+		else
+			fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
 			count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
 			et.trap_FS_FCloseFile(fd)
 			table.insert(names_table, cl_guid .. "	" .. clean_name)
 		end
-	else
-		fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
-		count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
-		et.trap_FS_FCloseFile(fd)
-		table.insert(names_table, cl_guid .. "	" .. clean_name)
 	end
 end
 
@@ -74,7 +109,11 @@ function et_ClientCommand(id, command)
 					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
 				end
 				if admin_flag == true then
-					cno = tonumber(string.sub(et.trap_Argv(2), 11, 12))
+					local chunks = {}
+					for substr in string.gfind(et.trap_Argv(2), "%S+") do
+						table.insert(chunks, substr)
+					end
+					cno = tonumber(chunks[2])
 					if cno then
 						if et.gentity_get(cno, "pers.connected") == 2 then
 							flag2 = true
@@ -82,7 +121,12 @@ function et_ClientCommand(id, command)
 							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					else
-						et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+						cno = inSlot(chunks[2])
+						if cno ~= nil then
+							flag2 = true
+						else
+							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+						end
 					end
 				else
 					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
@@ -114,19 +158,29 @@ function et_ClientCommand(id, command)
 				end
 				if admin_flag == true then
 					if cnt ~= 2 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!altnames <^3clientNum^7>\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!altnames <^3PartOfName^7> or <^3clientNum^7>\"\n")
 					else
-						cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
-								flag2 = true
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									flag2 = true
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+									return 1
+								end
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 								return 1
 							end
 						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
-							return 1
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
+								flag2 = true
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								return 1
+							end
 						end
 					end
 				else
@@ -159,6 +213,7 @@ function et_ClientCommand(id, command)
 			for j = 1, tbl_cnt do
 				et.trap_SendServerCommand(id, "chat \"" .. player_name_tbl[j] .. "\"")
 			end
+			et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": !altnames " .. cno .. "\n")
 			return 1
 		end
 	end
