@@ -14,7 +14,7 @@ speclock_id = {}
 speclock_flag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("spec999.lua "..et.FindSelf())
+	et.RegisterModname("specs.lua "..et.FindSelf())
 
 	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
 	for i=0,maxClients-1 do
