@@ -14,7 +14,7 @@ speclock_id = {}
 speclock_flag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("specs.lua "..et.FindSelf())
+	et.RegisterModname("spec999.lua "..et.FindSelf())
 
 	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
 	for i=0,maxClients-1 do
@@ -106,6 +106,39 @@ function et_RunFrame(levelTime)
 			end
 		end
 	end
+end
+
+function inSlot( PartName )
+  local x=0
+  local j=1
+  local size=tonumber(et.trap_Cvar_Get("sv_maxclients"))     --get the serversize
+  local matches = {}
+  while (x<size) do
+    found = string.find(string.lower(et.Q_CleanStr( et.Info_ValueForKey( et.trap_GetUserinfo( x ), "name" ) )),string.lower(PartName))
+    if(found~=nil) then
+        matches[j]=x
+        j=j+1
+    end
+    x=x+1
+  end
+  if (table.getn(matches)~=nil) then
+    x=1
+    while (x<=table.getn(matches)) do
+        matchingSlot = matches[x] 
+      x=x+1
+    end
+    if table.getn(matches) == 0 then
+      et.G_Print("You had no matches to that name.\n")
+      matchingSlot = nil
+    else
+      if table.getn(matches) >= 2 then
+        et.G_Print("Partial playername got more than 1 match\n")
+        matchingSlot = nil
+      else
+      end
+    end
+  end
+  return matchingSlot
 end
 
 function et_ClientCommand(id, command)
@@ -220,24 +253,42 @@ function et_ClientCommand(id, command)
 				end
 				if admin_flag == true then
 					if cnt ~= 2 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!speclock <^3clientNum^7>\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!speclock <^3PartOfName^7>\"\n")
 					else
-						cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									local team = tonumber(et.gentity_get(cno, "sess.sessionTeam"))
+									if team == 3 then
+										speclock[cno] = true
+										table.insert(speclock_id, cno)
+										speclock_flag = true
+										et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3speclocked.\"\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target is not a spectator.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
 								local team = tonumber(et.gentity_get(cno, "sess.sessionTeam"))
 								if team == 3 then
 									speclock[cno] = true
 									table.insert(speclock_id, cno)
 									speclock_flag = true
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3speclocked.\"\n")
 								else
 									et.trap_SendServerCommand(id, "chat \"^7Target is not a spectator.\"\n")
 								end
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
-						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					end
 				else
@@ -262,25 +313,44 @@ function et_ClientCommand(id, command)
 				end
 				if admin_flag == true then
 					if cnt ~= 2 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!unspeclock <^3clientNum^7>\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!unspeclock <^3PartOfName^7>\"\n")
 					else
-						cno = tonumber(args_table[2])
-						if cno then
-							if et.gentity_get(cno, "pers.connected") == 2 then
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									if speclock[cno] == true then
+										speclock[cno] = nil
+										table.remove(speclock_id, cno)
+										if next(speclock) == nil then
+											speclock_flag = false
+										end
+										et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3unspeclocked.\"\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target is not speclocked.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
 								if speclock[cno] == true then
 									speclock[cno] = nil
 									table.remove(speclock_id, cno)
 									if next(speclock) == nil then
 										speclock_flag = false
 									end
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3unspeclocked.\"\n")
 								else
 									et.trap_SendServerCommand(id, "chat \"^7Target is not speclocked.\"\n")
 								end
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
-						else
-							et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 						end
 					end
 				else
