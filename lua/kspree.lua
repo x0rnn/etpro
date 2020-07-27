@@ -5,7 +5,7 @@
 -- $Date: 2007-02-28 20:17:56 +0100 (Mi, 28 Feb 2007) $
 -- $Revision: 174 $
 --
-version = "1.0.6"
+version = "1.0.7"
 
 -- kspree.lua logic "stolen" from Vetinari's rspree.lua, who "stole" from etadmin_mod.pl and so on
 -- CONSOLE COMMANDS : ksprees, kspeesall, kspreerecords
@@ -23,6 +23,7 @@ version = "1.0.6"
 -- x0rnn: added ammmo left message to vsay_team NeedAmmo
 -- x0rnn: added class message to vsay_team EnemyDisguised
 -- x0rnn: added !multikillstats, !vsstats for current map
+-- x0rnn: made kills and deaths preserve after switching teams
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -187,6 +188,10 @@ doublekill = {}
 et.CS_PLAYERS = 689
 kspree_endmsg = ""
 vsstats = {}
+kills = {}
+deaths = {}
+teamswitch = {}
+players = {}
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
 
@@ -233,6 +238,10 @@ function et_InitGame(levelTime, randomSeed, restart)
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
+        kills[i] = 0
+        deaths[i] = 0
+		players[i] = nil
+		teamswitch[i] = false
         client_msg[i] = false
         topshot_msg[i] = false
         if kmultitk_announce then
@@ -787,6 +796,13 @@ function topshots_f(id)
 				end
 			end
 		end
+		local p = 0
+		for p=0, sv_maxclients-1 do
+			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
+			if t == 1 or t == 2 then
+				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. "\"\n")
+			end
+		end
 	else
 		for j=1, 38 do
 			if max[j] > 1 then
@@ -1123,6 +1139,7 @@ function et_Obituary(victim, killer, mod)
             end
 
             killing_sprees[victim] = 0
+            deaths[victim] = deaths[victim] + 1
 
         elseif (v_teamid == k_teamid) then -- team kill
 
@@ -1142,6 +1159,8 @@ function et_Obituary(victim, killer, mod)
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
                 vsstats[killer][victim] = vsstats[killer][victim] + 1
+                kills[killer] = kills[killer] + 1
+                deaths[victim] = deaths[victim] + 1
                 local guid = getGuid(killer)
                 local posk = et.gentity_get(victim, "ps.origin")
 			    local posv = et.gentity_get(killer, "ps.origin")
@@ -1531,15 +1550,48 @@ function et_ClientBegin(id)
     updateUInfoStatus(id)
     
     local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+	if players[id] == nil then
+		players[id] = team
+	end
+
     if team == 1 then
     	axis_time[id] = et.trap_Milliseconds()
     elseif team == 2 then
     	allies_time[id] = et.trap_Milliseconds()
     end
+
+end
+
+function et_ClientUserinfoChanged(clientNum)
+    
+    local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
+
+    if players[clientNum] ~= team then
+        
+        if team == 1 or team == 2 then
+            teamswitch[clientNum] = true
+        else
+            teamswitch[clientNum] = false
+            kills[clientNum] = 0
+            deaths[clientNum] = 0
+        end
+
+    end
+    
+    players[clientNum] = team
+
 end
 
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
+        local health = tonumber(et.gentity_get(id, "health"))
+        -- sess.kills = 0 should mean this is the first spawn.
+        if health >= 100 and teamswitch[id] and et.gentity_get(id, "sess.kills") == 0 then
+			et.gentity_set(id, "sess.kills", kills[id])
+            et.gentity_set(id, "sess.deaths", deaths[id])
+            teamswitch[id] = false
+        end
+        
 		killing_sprees[id] = 0
 		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 		if team == 1 and axis_time[id] == 0 then
@@ -1574,6 +1626,10 @@ function et_ClientDisconnect(id)
     topshot_msg[id] = false
     axis_time[id] = 0
     allies_time[id] = 0
+    kills[id] = 0
+    deaths[id] = 0
+	players[id] = nil
+	teamswitch[id] = false
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
     if great_shot and last_killer[id] ~= nil then
         last_killer[id] = nil
@@ -1919,7 +1975,6 @@ function et_ClientCommand(id, command)
 			end
         end -- end lower
     end -- vsay_team
-
     return(0)
 end
 
