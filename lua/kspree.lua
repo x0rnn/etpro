@@ -1139,7 +1139,9 @@ function et_Obituary(victim, killer, mod)
             end
 
             killing_sprees[victim] = 0
-            deaths[victim] = deaths[victim] + 1
+			if mod == 37 then
+				deaths[victim] = deaths[victim] + 1
+			end
 
         elseif (v_teamid == k_teamid) then -- team kill
 
