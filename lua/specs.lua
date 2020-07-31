@@ -134,7 +134,6 @@ function inSlot( PartName )
       if table.getn(matches) >= 2 then
         et.G_Print("Partial playername got more than 1 match\n")
         matchingSlot = nil
-      else
       end
     end
   end
