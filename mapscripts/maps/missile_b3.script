@@ -139,10 +139,10 @@ game_manager
 		alertentity doors_dst3
 		setstate dcontrols_speaker invisible
 		setstate dcontrols_dst_speaker default
+		setstate powersupply_exit default
         globalaccum 1 abort_if_bitset 1
         globalaccum 1 abort_if_bitset 2
 		setautospawn "Forward Allies Bunker Spawn" 1
-		setstate powersupply_exit default
 	}
 
 
