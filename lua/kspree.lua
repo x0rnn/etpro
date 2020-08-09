@@ -190,8 +190,6 @@ kspree_endmsg = ""
 vsstats = {}
 kills = {}
 deaths = {}
-dmg_given = {}
-dmg_rcvd = {}
 teamswitch = {}
 players = {}
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
@@ -242,8 +240,6 @@ function et_InitGame(levelTime, randomSeed, restart)
         allies_time[i] = 0
         kills[i] = 0
         deaths[i] = 0
-        dmg_given[i] = 0
-		dmg_rcvd[i] = 0
 		players[i] = nil
 		teamswitch[i] = false
         client_msg[i] = false
@@ -1166,8 +1162,6 @@ function et_Obituary(victim, killer, mod)
                 vsstats[killer][victim] = vsstats[killer][victim] + 1
                 kills[killer] = kills[killer] + 1
                 deaths[victim] = deaths[victim] + 1
-                dmg_given[killer] = dmg_given[killer] + tonumber(et.gentity_get(killer, "sess.damage_given"))
-                dmg_rcvd[victim] = dmg_rcvd[victim] + tonumber(et.gentity_get(victim, "sess.damage_received"))
                 local guid = getGuid(killer)
                 local posk = et.gentity_get(victim, "ps.origin")
 			    local posv = et.gentity_get(killer, "ps.origin")
@@ -1581,8 +1575,6 @@ function et_ClientUserinfoChanged(clientNum)
             teamswitch[clientNum] = false
             kills[clientNum] = 0
             deaths[clientNum] = 0
-            dmg_given[clientNum] = 0
-            dmg_rcvd[clientNum] = 0
         end
 
     end
@@ -1598,8 +1590,6 @@ function et_ClientSpawn(id, revived)
         if health >= 100 and teamswitch[id] and et.gentity_get(id, "sess.kills") == 0 then
 			et.gentity_set(id, "sess.kills", kills[id])
             et.gentity_set(id, "sess.deaths", deaths[id])
-            et.gentity_set(id, "sess.damage_given", dmg_given[id])
-            et.gentity_set(id, "sess.damage_received", dmg_rcvd[id])
             teamswitch[id] = false
         end
         
@@ -1639,8 +1629,6 @@ function et_ClientDisconnect(id)
     allies_time[id] = 0
     kills[id] = 0
     deaths[id] = 0
-    dmg_given[id] = 0
-	dmg_rcvd[id] = 0
 	players[id] = nil
 	teamswitch[id] = false
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
@@ -1771,44 +1759,6 @@ function et_ClientCommand(id, command)
 					if id2 ~= nil then
 						vsstats_f(id, id2)
 					end
-				end
-			end
-		end
-        if et.trap_Argv(1) == "!getvsstats" then
-			if et.trap_Argc() ~= 4 then
-				et.trap_SendServerCommand(id, "chat \"Usage: ^3!getvsstats PartOfName1 PartOfName2\"")
-			else
-				local id2, id3
-				local flag1 = false
-				local flag2 = false
-				if string.len(et.trap_Argv(2)) < 3 then
-					id2 = tonumber(et.trap_Argv(2))
-					if id2 then
-						if et.gentity_get(id2, "pers.connected") == 2 then
-							flag1 = true
-						end
-					end
-				else
-					id2 = inSlot(et.trap_Argv(2))
-					if id2 ~= nil then
-						flag1 = true
-					end
-				end
-				if string.len(et.trap_Argv(3)) < 3 then
-					id3 = tonumber(et.trap_Argv(3))
-					if id3 then
-						if et.gentity_get(id3, "pers.connected") == 2 then
-							flag2 = true
-						end
-					end
-				else
-					id3 = inSlot(et.trap_Argv(3))
-					if id3 ~= nil then
-						flag2 = true
-					end
-				end
-				if flag1 == true and flag2 == true then
-					vsstats_f(id2, id3)
 				end
 			end
 		end
