@@ -1,4 +1,4 @@
--- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, etc.)
+-- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
 
 killing_sprees = {}
 death_sprees = {}
@@ -15,6 +15,16 @@ weaponstats = {}
 endplayers = {}
 endplayerscnt = 0
 tblcount = 0
+vsstats = {}
+vsstats_kills = {}
+vsstats_deaths = {}
+kills = {}
+deaths = {}
+worst_enemy = {}
+easiest_prey = {}
+vsstats = {}
+vsstats_kills = {}
+vsstats_deaths = {}
 
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree" }
 
@@ -32,7 +42,18 @@ function et_InitGame(levelTime, randomSeed, restart)
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
+        kills[i] = 0
+        deaths[i] = 0
     end
+
+	local j = 0
+	for j=0,sv_maxclients-1 do
+		vsstats[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		vsstats_kills[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		vsstats_deaths[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		worst_enemy[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		easiest_prey[j]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+	end 
 end
 
 function n2b(number) -- thanks to adawolfa
@@ -57,6 +78,19 @@ end
 local function roundNum(num, n)
 	local mult = 10^(n or 0)
 	return math.floor(num * mult + 0.5) / mult
+end
+
+function getKeysSortedByValue(tbl, sortFunction)
+	local keys = {}
+	for key in pairs(tbl) do
+		table.insert(keys, key)
+	end
+
+	table.sort(keys, function(a, b)
+		return sortFunction(tbl[a], tbl[b])
+	end)
+	
+	return keys
 end
 
 function topshots_f(id)
@@ -347,6 +381,63 @@ function topshots_f(id)
 				end
 			end
 		end
+		local p = 0
+		for p=0, sv_maxclients-1 do
+			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
+			if t == 1 or t == 2 then
+				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. "\"\n")
+				local top_we = {0, 0}
+				local top_ep = {0, 0}
+				local e = 0
+				for e=0, sv_maxclients-1 do
+					if e ~= p then
+						local t2 = tonumber(et.gentity_get(e, "sess.sessionTeam"))
+						if t2 == 1 or t2 == 2 then
+							if t ~= t2 then
+								vsstats_f(p, e)
+								if worst_enemy[p][e] > top_we[1] then
+									top_we[1] = worst_enemy[p][e]
+									top_we[2] = e
+								end
+								if easiest_prey[p][e] > top_ep[1] then
+									top_ep[1] = easiest_prey[p][e]
+									top_ep[2] = e
+								end
+							end
+						end
+					end
+				end
+				local sortedKeys = getKeysSortedByValue(vsstats_kills[p], function(a, b) return a > b end)
+				for _, key in ipairs(sortedKeys) do
+					if not (vsstats_kills[p][key] == 0 and vsstats_deaths[p][key] == 0) then
+						et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"") 
+					end
+				end
+				if top_ep[1] > 2 then
+					et.trap_SendServerCommand(p, "cpm \"^zEasiest prey: " .. et.gentity_get(top_ep[2], "pers.netname") .. "^z- Kills: ^1" .. top_ep[1] .. "\"\n")
+				end
+				if top_we[1] > 2 then
+					et.trap_SendServerCommand(p, "cpm \"^zWorst enemy: " .. et.gentity_get(top_we[2], "pers.netname") .. "^z- Deaths: ^1" .. top_we[1] .. "\"\n")
+				end
+			end
+		end
+	end
+end
+
+function vsstats_f(id, id2)
+	local ratio = 0
+	if vsstats[id2][id] == 0 then
+		ratio = vsstats[id][id2]
+	else
+		if vsstats[id][id2] == 0 then
+			ratio = -vsstats[id2][id]
+		else
+			ratio = roundNum(vsstats[id][id2]/vsstats[id2][id], 2)
+		end
+	end
+	if not (vsstats[id][id2] == 0 and vsstats[id2][id] == 0) then
+		vsstats_kills[id][id2] = vsstats[id][id2]
+		vsstats_deaths[id][id2] = vsstats[id2][id]
 	end
 end
 
@@ -544,18 +635,27 @@ function et_Obituary(victim, killer, mod)
             end
 
             killing_sprees[victim] = 0
+            if mod == 37 then
+				deaths[victim] = deaths[victim] + 1
+			end
 
         elseif (v_teamid == k_teamid) then -- team kill
 
             checkKSpreeEnd(victim)
             killing_sprees[victim] = 0
-            death_sprees[victim] = death_sprees[victim] + 1
+            --death_sprees[victim] = death_sprees[victim] + 1
 
         else -- nomal kill
             if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
                 death_sprees[victim] = death_sprees[victim] + 1
+
+				vsstats[killer][victim] = vsstats[killer][victim] + 1
+                kills[killer] = kills[killer] + 1
+                deaths[victim] = deaths[victim] + 1
+                worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
+                easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1 
 
                 checkMultiKill(killer, mod)
 
@@ -693,4 +793,19 @@ function et_ClientDisconnect(id)
     axis_time[id] = 0
     allies_time[id] = 0
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
+    vsstats[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+    vsstats_kills[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+    vsstats_deaths[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+    worst_enemy[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+    easiest_prey[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+	kills[id] = 0
+    deaths[id] = 0
+    local j = 0
+	for j=0,sv_maxclients-1 do
+		vsstats[j][id] = 0
+		worst_enemy[j][id] = 0
+		easiest_prey[j][id] = 0
+		vsstats_kills[j][id] = 0
+		vsstats_deaths[j][id] = 0
+	end
 end
