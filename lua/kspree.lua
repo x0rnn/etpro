@@ -824,7 +824,7 @@ function topshots_f(id)
 		for p=0, sv_maxclients-1 do
 			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
 			if t == 1 or t == 2 then
-				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. "\"\n")
+				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. " ^z- Damage given: ^1" .. dmg_given[p] .. "\"\n")
 				local top_we = {0, 0}
 				local top_ep = {0, 0}
 				local e = 0
@@ -852,10 +852,10 @@ function topshots_f(id)
 						et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"") 
 					end
 				end
-				if top_ep[1] > 2 then
+				if top_ep[1] > 3 then
 					et.trap_SendServerCommand(p, "cpm \"^zEasiest prey: " .. et.gentity_get(top_ep[2], "pers.netname") .. "^z- Kills: ^1" .. top_ep[1] .. "\"\n")
 				end
-				if top_we[1] > 2 then
+				if top_we[1] > 3 then
 					et.trap_SendServerCommand(p, "cpm \"^zWorst enemy: " .. et.gentity_get(top_we[2], "pers.netname") .. "^z- Deaths: ^1" .. top_we[1] .. "\"\n")
 				end
 			end
@@ -1842,6 +1842,23 @@ function et_ClientCommand(id, command)
 					if id2 ~= nil then
 						vsstats_f(id, id2, false)
 					end
+				end
+			end
+		end
+		if et.trap_Argv(1) == "!vsstatsall" then
+			local t = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			for e=0, sv_maxclients-1 do
+				local t2 = tonumber(et.gentity_get(e, "sess.sessionTeam"))
+				if t2 == 1 or t2 == 2 then
+					if t ~= t2 then
+						vsstats_f(id, e, true)
+					end
+				end
+			end
+			local sortedKeys = getKeysSortedByValue(vsstats_kills[id], function(a, b) return a > b end)
+			for _, key in ipairs(sortedKeys) do
+				if not (vsstats_kills[id][key] == 0 and vsstats_deaths[id][key] == 0) then
+					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[id][key] .. " ^3Deaths: ^7" .. vsstats_deaths[id][key] .. "\"") 
 				end
 			end
 		end
