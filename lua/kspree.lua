@@ -849,7 +849,12 @@ function topshots_f(id)
 				local sortedKeys = getKeysSortedByValue(vsstats_kills[p], function(a, b) return a > b end)
 				for _, key in ipairs(sortedKeys) do
 					if not (vsstats_kills[p][key] == 0 and vsstats_deaths[p][key] == 0) then
-						et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"") 
+						local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
+						if t3 == 1 or t3 == 2 then
+							if t ~= t3 then
+								et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"") 
+							end
+						end 
 					end
 				end
 				if top_ep[1] > 3 then
@@ -1858,7 +1863,12 @@ function et_ClientCommand(id, command)
 			local sortedKeys = getKeysSortedByValue(vsstats_kills[id], function(a, b) return a > b end)
 			for _, key in ipairs(sortedKeys) do
 				if not (vsstats_kills[id][key] == 0 and vsstats_deaths[id][key] == 0) then
-					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[id][key] .. " ^3Deaths: ^7" .. vsstats_deaths[id][key] .. "\"") 
+					local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
+					if t3 == 1 or t3 == 2 then
+						if t ~= t3 then
+							et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[id][key] .. " ^3Deaths: ^7" .. vsstats_deaths[id][key] .. "\"") 
+						end
+					end 
 				end
 			end
 		end
