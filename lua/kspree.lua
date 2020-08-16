@@ -1227,8 +1227,8 @@ function et_Obituary(victim, killer, mod)
                 vsstats[killer][victim] = vsstats[killer][victim] + 1
                 kills[killer] = kills[killer] + 1
                 deaths[victim] = deaths[victim] + 1
-                dmg_given[killer] = dmg_given[killer] + tonumber(et.gentity_get(killer, "sess.damage_given"))
-                dmg_rcvd[victim] = dmg_rcvd[victim] + tonumber(et.gentity_get(victim, "sess.damage_received"))
+                dmg_given[killer] = tonumber(et.gentity_get(killer, "sess.damage_given"))
+                dmg_rcvd[victim] = tonumber(et.gentity_get(victim, "sess.damage_received"))
                 worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
                 easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1
                 local guid = getGuid(killer)
