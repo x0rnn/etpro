@@ -385,7 +385,7 @@ function topshots_f(id)
 		for p=0, sv_maxclients-1 do
 			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
 			if t == 1 or t == 2 then
-				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. " ^z- Damage given: ^1" .. dmg_given[p] .. "\"\n"))
+				et.trap_SendServerCommand(p, "cpm \"^zKills: ^1" .. kills[p] .. " ^z- Deaths: ^1" .. deaths[p] .. \"\n"))
 				local top_we = {0, 0}
 				local top_ep = {0, 0}
 				local e = 0
