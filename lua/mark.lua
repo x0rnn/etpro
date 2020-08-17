@@ -315,8 +315,13 @@ function et_ClientCommand(id, command)
 								if cno then
 									if et.gentity_get(cno, "pers.connected") == 2 then
 										reason = et.ConcatArgs(3) 
-										mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
-										et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+										if reason == nil or reason == "" then
+											et.trap_SendServerCommand(id, "chat \"Please use the console to mark players.\"\n")
+											return 1
+										else
+											mark(id, et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid"), reason, et.gentity_get(id, "pers.netname"))
+											et.G_LogPrint("LUA event: " .. et.gentity_get(id, "pers.netname") .. " marked " .. et.gentity_get(cno, "pers.netname") .. ": " .. reason .. "\n")
+										end 
 									else
 										et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 									end
