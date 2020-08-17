@@ -38,7 +38,7 @@ function punish(id)
 		return
 	end
 
-	if adre_count[id] > adre_max then
+	if adre_count[id] >= adre_max then
 		math.randomseed(et.trap_Milliseconds())
 
 		if math.random(1, 100) <= punish_ratio then
