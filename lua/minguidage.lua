@@ -2,7 +2,7 @@
 -- you need to prepopulate knownguids.log with known guids or everyone will be considered new, e.g.:
 -- guid1	1054080000
 -- guid2 	1054080000
--- etc. (it's a tab not a space)
+-- etc. (it's a tab not a space, followed by timestamp (year 2003))
 
 filename = "knownguids.log"
 whitelist = {}
