@@ -395,15 +395,15 @@ function et_ConsoleCommand()
        		    end
      	    end
           else
-         	if string.len(et.trap_Argv(2)) < 3 then
-    			local cno = tonumber(et.trap_Argv(2))
+         	if string.len(et.trap_Argv(1)) < 3 then
+    			local cno = tonumber(et.trap_Argv(1))
    			 if cno then
   			 	if et.gentity_get(cno, "pers.connected") == 2 then
  						local userinfo = et.trap_GetUserinfo( cno )
           			 local PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
           			 oldname = et.Info_ValueForKey( userinfo, "name" )
-        			   newname = et.trap_Argv(1)
-          			 userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(1) )
+        			   newname = et.trap_Argv(2)
+          			 userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(2) )
          			  et.trap_SetUserinfo( cno, userinfo )
            			et.trap_SendConsoleCommand(et.EXEC_APPEND, "mute " .. "\"" .. PlayerName .. "\"" .. "\n" ) 
            			PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
@@ -415,12 +415,12 @@ function et_ConsoleCommand()
 					et.G_Print("You had no matches to that id.\n")
 				end
             else
-         	  local userinfo = et.trap_GetUserinfo( inSlot(et.trap_Argv(2)) )
+         	  local userinfo = et.trap_GetUserinfo( inSlot(et.trap_Argv(1)) )
          	  local PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
           	 oldname = et.Info_ValueForKey( userinfo, "name" )
-           	newname = et.trap_Argv(1)
-          	 userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(1) )
-          	 et.trap_SetUserinfo( inSlot(et.trap_Argv(2)), userinfo )
+           	newname = et.trap_Argv(2)
+          	 userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(2) )
+          	 et.trap_SetUserinfo( inSlot(et.trap_Argv(1)), userinfo )
           	 et.trap_SendConsoleCommand(et.EXEC_APPEND, "mute " .. "\"" .. PlayerName .. "\"" .. "\n" ) 
            	PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
           	 et.trap_SendConsoleCommand(et.EXEC_APPEND, "unmute " .. "\"" .. PlayerName .. "\"" .. "\n" )
