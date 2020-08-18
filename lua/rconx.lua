@@ -105,7 +105,7 @@ end
 
 function renameHelp()
   et.G_Print("renameplayer does what it says\n");
-    et.G_Print("usage: renameplayer [new name] -partial name- \n");
+    et.G_Print("usage: renameplayer [-partial name- or id] [new name]\n");
   et.G_Print("the last rename is stored until map restart so use renameplayer -new name- to revert to the original\n");
 end
 
