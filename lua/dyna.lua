@@ -129,8 +129,8 @@ function et_Print( text )
 			else team = 2 end
 			for index,temp in pairs(timer) do
 				if timer[index]["place"] == plant then
-					timer[index] = nil
 					print_message(-1, -2, timer[index]["place"])
+					timer[index] = nil
 					--et.G_LogPrint("dynamite removed: " .. index .. "\n")
 					return
 				end
