@@ -1,5 +1,6 @@
 -- balance.lua, original by harald, modified by x0rnn:
 -- notify players when teams are uneven (player count) or unbalanced (damage given)
+-- pause the match when one team has 3+ players more and unpause when teams are even again
 
 function et_InitGame(levelTime,randomSeed,restart)
 	et.RegisterModname("balance.lua "..et.FindSelf())
@@ -12,26 +13,45 @@ end
 
 players = {}
 checkInterval = 15000 -- 15 seconds
-checkInterval2 = 45000 -- must be equal or a multiplier of above
+checkInterval2 = 60000 -- must be equal or a multiplier of above
 unevenDiff = 2
 unbalancedDiff = 15000
 axisPlayers = {}
 alliedPlayers = {}
+numAlliedPlayers = 0
+numAxisPlayers = 0
+paused = false
 
 function et_RunFrame( levelTime )
 	if math.mod(levelTime,checkInterval) ~= 0 then return end
 	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 
 	if gamestate == 0 then
-		local numAlliedPlayers = table.getn( alliedPlayers )
-		local numAxisPlayers = table.getn( axisPlayers )
+		numAlliedPlayers = table.getn( alliedPlayers )
+		numAxisPlayers = table.getn( axisPlayers )
 		local axisdmg = 0
 		local alliesdmg = 0
 	
 		if numAlliedPlayers >= numAxisPlayers + unevenDiff then
-			et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+			if numAlliedPlayers >= numAxisPlayers + 3 then
+				if paused == false then
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
+					paused = true
+					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Even the teams!\"\n")
+				end
+			else
+				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+			end
 		elseif numAxisPlayers >= numAlliedPlayers + unevenDiff then
-			et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+			if numAxisPlayers >= numAlliedPlayers + 3 then
+				if paused == false then
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
+					paused = true
+					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Even the teams!\"\n")
+				end
+			else
+				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+			end
 		end
 
 		if math.mod(levelTime,checkInterval2) == 0 then
@@ -152,22 +172,48 @@ function et_ClientUserinfoChanged(clientNum)
 		if team == 1 then
 			if players[clientNum] == 2 then
 				table.remove( alliedPlayers, clientNum )
+				numAlliedPlayers = table.getn( alliedPlayers )
 			end
 			table.insert( axisPlayers, clientNum )
+			numAxisPlayers = table.getn( axisPlayers )
 			players[clientNum] = team
 		elseif team == 2 then
 			if players[clientNum] == 1 then
 				table.remove( axisPlayers, clientNum )
+				numAxisPlayers = table.getn( axisPlayers )
 			end
 			table.insert( alliedPlayers, clientNum )
+			numAlliedPlayers = table.getn( alliedPlayers )
 			players[clientNum] = team
 		else
 			if players[clientNum] == 1 then
 				table.remove( axisPlayers, clientNum )
+				numAxisPlayers = table.getn( axisPlayers )
 			elseif players[clientNum] == 2 then
 				table.remove( alliedPlayers, clientNum )
+				numAlliedPlayers = table.getn( alliedPlayers )
 			end
 			players[clientNum] = team
+		end
+	end
+
+	if paused == true then
+		if numAlliedPlayers > numAxisPlayers then
+			if numAlliedPlayers - numAxisPlayers < 2 then
+				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+				paused = false
+			end
+		elseif numAxisPlayers > numAlliedPlayers then
+			if numAxisPlayers - numAlliedPlayers < 2 then
+				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+				paused = false
+			end
+		elseif numAxisPlayers == numAlliedPlayers then
+			et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+			et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+			paused = false
 		end
 	end
 end
@@ -175,11 +221,43 @@ end
 function et_ClientDisconnect( clientNum )
 	if players[clientNum] == 1 then
 		table.remove( axisPlayers, clientNum )
+		numAxisPlayers = table.getn( axisPlayers )
 	end
 	if players[clientNum] == 2 then
 		table.remove( alliedPlayers, clientNum )
+		numAlliedPlayers = table.getn( alliedPlayers )
 	end
 	players[clientNum] = nil
+
+	if paused == true then
+		if numAlliedPlayers > numAxisPlayers then
+			if numAlliedPlayers - numAxisPlayers < 2 then
+				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+				paused = false
+			end
+		elseif numAxisPlayers > numAlliedPlayers then
+			if numAxisPlayers - numAlliedPlayers < 2 then
+				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+				paused = false
+			end
+		elseif numAxisPlayers == numAlliedPlayers then
+			et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+			et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
+			paused = false
+		end
+
+		local players = 0
+		for i=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+			if et.gentity_get(i,"inuse") then
+				players = players + 1
+			end
+		end
+		if players-1 == 0 then
+			et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
+		end 
+	end
 end
 
 function et_ConsoleCommand()
