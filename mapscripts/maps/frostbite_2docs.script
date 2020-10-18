@@ -12,9 +12,8 @@ game_manager
 			scriptname "docs2"
 			classname  "team_CTF_redflag"
 			model "models/multiplayer/secretdocs/secretdocs.md3"
-			origin     "9832 4702 -256"
 			origin "816 160 400"
-			message "the 2nd batch of Supply Documents"
+			message "a stack of Supply Documents"
 		}
 
 		// Game rules
@@ -54,6 +53,8 @@ game_manager
 
 		// Winner on expiration of round timer (0=Axis, 1=Allies)
 		wm_setwinner	0
+
+		globalaccum 0 set 0 //docs stolen
 
 		wait 500
 		// spawns:
@@ -291,32 +292,23 @@ docs
 {
       trigger stolen 
       { 
-         //wm_announce "Allies have stolen the 1st batch of Supply Documents!" 
-         //setstate docs_cm_marker invisible 
         globalaccum 0 inc 1
 		globalaccum 0 trigger_if_equal 2 docs stolen2
       } 
 
       trigger returned 
       { 
-         //wm_announce "Supply Documents returned!" 
 		 globalaccum 0 inc -1
         setstate docs_cm_marker default
       } 
 
 		trigger dropped
 		{
-			wm_announce "Allied team has dropped the 1st batch of Supply Documents!" 
-		}
-
-		trigger secured
-		{
-			wm_announce "Allied team has secured the 1st batch of Supply Documents!"
+			wm_announce "Allied team has dropped the Supply Documents!" 
 		}
 
 	trigger stolen2
 	{
-		//wm_announce "Allies have stolen the 1st batch of Supply Documents!" 
 		setstate docs_cm_marker invisible 
 	}
 }
@@ -325,32 +317,23 @@ docs2
 {
       trigger stolen 
       { 
-         //wm_announce "Allies have stolen the 2nd batch of Supply Documents!" 
-         //setstate docs_cm_marker invisible 
         globalaccum 0 inc 1
 		globalaccum 0 trigger_if_equal 2 docs stolen2
       } 
 
       trigger returned 
       { 
-         //wm_announce "Supply Documents returned!" 
 		 globalaccum 0 inc -1
         setstate docs_cm_marker default
       } 
 
 		trigger dropped
 		{
-			wm_announce "Allied team has dropped the 2nd batch of Supply Documents!" 
-		}
-
-		trigger secured
-		{
-			wm_announce "Allied team has secured the 2nd batch of Supply Documents!"
+			wm_announce "Allied team has dropped the stack of Supply Documents!" 
 		}
 
 	trigger stolen2
 	{
-		//wm_announce "Allies have stolen the 2nd batch of Supply Documents!" 
 		setstate docs_cm_marker invisible 
 	}
 }
@@ -1042,6 +1025,3 @@ platformmg42_script
       repairmg42 platformmg42 
    } 
 } 
-
-
-
