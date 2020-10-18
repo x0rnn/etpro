@@ -329,7 +329,7 @@ docs2
 
 		trigger dropped
 		{
-			wm_announce "Allied team has dropped the stack of Supply Documents!" 
+			wm_announce "Allied team has dropped a stack of Supply Documents!" 
 		}
 
 	trigger stolen2
@@ -350,7 +350,7 @@ transmitter
 
 	trigger one
 	{
-		wm_announce "The Allies have transmitted the 1st batch of Supply Documents!" 
+		wm_announce "The Allies have transmitted the 1st stack of Supply Documents!" 
 	}
 }
 
