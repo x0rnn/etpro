@@ -89,6 +89,7 @@ game_manager
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
 
+		wm_announce "^3Note: This version of Frostbite has 2 docruns, similar to Goldrush." 
 	}
 
 	trigger allies_transmit
