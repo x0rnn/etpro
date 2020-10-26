@@ -6,7 +6,7 @@
 ---- block them from joining a specific team (axis or allies) (!putaxis by admins still works for example) (can also be set for non -3 level players)
 ---- block them from playing a specific class
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
----- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players)
+---- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players) (doesn't seem to work for /m or /pm)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
 -- !fakechat id text: send chat in the name of another player
 -- !set_lua id entity value1 (value2): set client entity (health, ammo, etc.) to a value
@@ -39,6 +39,7 @@ player1 = {}
 player2 = {}
 player1_id = {}
 player2_id = {}
+connect_time = {}
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("idiots.lua "..et.FindSelf())
@@ -60,9 +61,9 @@ function et_InitGame(levelTime, randomSeed, restart)
 	end
 	et.trap_FS_FCloseFile(fd)
 	
-	player1[1] = { "bla1", nil, nil }
+	player1[1] = { "bla", nil, nil }
 	--player1[2] = { "bla", nil, nil }
-	player2[1] = { "bla2", nil, nil }
+	player2[1] = { "bla", nil, nil }
 	--player2[2] = { "blabla", nil, nil }
 end
 
@@ -97,7 +98,7 @@ function et_ClientBegin(clientNum)
 			block_class[clientNum][1] = true
 			block_class[clientNum][2] = 3 -- 0 = soldier, 1 = medic, 2 = engineer, 3 = fieldops, 4 = covertops
 			block_class[clientNum][3] = 3 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
-			block_class_flag = true -- set this to false if no class blocks, otherwise set to true
+			block_class_flag = false -- set this to false if no class blocks, otherwise set to true
 			
 			---- mute this specific idiot too? ----
 			-- goons[cl_guid] = true
@@ -121,9 +122,13 @@ function et_ClientBegin(clientNum)
 		block_class[clientNum][3] = 3 -- second class to block. Set to same as above if only 1 class is restricted for this idiot
 	end
 
-	-- team blocking & invisimuting players who aren't -3:
-	if cl_guid == "bla1" or cl_guid == "bla2" or cl_guid == "bla3" then
+	-- team blocking players who aren't -3:
+	if cl_guid == "bla" then
 		--block_team[clientNum] = { [1]=true, [2]="r" }
+	end
+
+	-- invisimuting players who aren't -3:
+	if cl_guid == "bla" or cl_guid == "bla2" or cl_guid == "bla3" then
 		invisible_mute[clientNum] = true
 	end
 end
@@ -131,6 +136,7 @@ end
 function et_ClientConnect(clientNum, firstTime, isBot)
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 
+	connect_time[clientNum] = et.trap_Milliseconds()
 	for i=1, table.getn(player1) do
 		if player1[i][1] == cl_guid then
 			player1[i][2] = clientNum
@@ -220,6 +226,7 @@ function et_ClientDisconnect(clientNum)
 		player2[player2_id[clientNum]][3] = nil
 		player2_id[clientNum] = nil
 	end
+	connect_time[clientNum] = nil
 end
 
 function et_ClientSpawn(clientNum, revived)
@@ -514,7 +521,7 @@ end
 
 function et_ClientCommand(id, cmd)
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
-	if cl_guid == "blablabla" and string.lower(cmd) == "callvote" then -- oink
+	if cl_guid == "bla" and string.lower(cmd) == "callvote" then
 		if string.lower(et.trap_Argv(1)) == "kick" or string.lower(et.trap_Argv(1)) == "mute" then
 			et.trap_SendServerCommand(id, "cpm \"^1This command is not available to you.\n\"")
 			return 1
@@ -597,8 +604,16 @@ function et_ClientCommand(id, cmd)
 			if string.lower(et.trap_Argv(1)) == "unmute" then
 				local client = findClient(et.trap_Argv(2))
 				if client ~= nil and goons[client.guid] == true then
-					et.trap_SendServerCommand(id, "chat \"You can't unmute " .. et.Q_CleanStr(client.name) .. ".\"\n")
+					et.trap_SendServerCommand(-1, "chat \"You can't unmute " .. et.Q_CleanStr(client.name) .. ".\"\n")
 					return 1
+				end
+			elseif string.lower(et.trap_Argv(1)) == "kick" then
+				local client = findClient(et.trap_Argv(2))
+				if client ~= nil and tonumber(et.gentity_get(client.slot, "sess.sessionTeam")) == 3 then
+					if et.trap_Milliseconds() - connect_time[client.slot] < 120000 then -- 2 minutes
+						et.trap_SendServerCommand(-1, "chat \"You can't kick " .. et.Q_CleanStr(client.name) .. " so fast.\"\n")
+						return 1
+					end
 				end
 			end
 		end
