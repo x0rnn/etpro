@@ -1,13 +1,88 @@
+//last edit: removed wait after transmit - Syd
+// x0rnn - changed allied spawntime to 25
+// x0rnn - changed to 2 docruns for public play - version 2:
+// Deciphered supply documents appear on the floor next to the transmitter after the initial documents are secured. Bring them to the escape truck near the (now disabled) axis garage spawn
+
 game_manager
 {
 	spawn
 	{
 	
-	
+	create
+		{
+			scriptname "docs2"
+			targetname "docs2"
+			classname  "team_CTF_redflag"
+			model "models/multiplayer/secretdocs/secretdocs.md3"
+			origin "-4656 2080 -160"
+			message "the Deciphered Supply Documents"
+		}
+
+	create
+		{
+		classname "misc_commandmap_marker"
+		origin "-4672 2080 -96"
+		scriptname "docs2_cm_marker"
+		targetname "docs2_cm_marker"
+		}
+
+	create
+		{
+		classname "trigger_objective_info"
+		customimage "gfx/limbo/cm_frostbitedocs" 
+		infoAllied "Deciphered Supply Documents"
+		infoAxis "Deciphered Supply Documents"
+		spawnflags "19"
+		origin "-4656 2080 -111"
+		mins "0 0 0"
+		maxs "110 110 100"
+		scriptname "docs2_toi"
+		shortname "Deciphered Supply Documents"
+		target "docs2_cm_marker"
+		targetname "docs2_toi"
+		track "the Deciphered Supply Documents"
+		}
+
+	create
+		{
+			scriptname "docs2_trigger"
+			targetname "docs2_trigger"
+			classname  "trigger_flagonly_multiple"
+			spawnflags "1"
+			origin "112 1560 72"
+			mins "-45 -45 -25"
+			maxs "45 45 25"
+		}
+
+	create
+		{
+		classname "misc_commandmap_marker"
+		origin "112 1560 96"
+		scriptname "docs2_trig_cm_marker"
+		targetname "docs2_trig_cm_marker"
+		}
+
+	create
+		{
+		classname "trigger_objective_info"
+		customimage "gfx/limbo/cm_truck"
+		infoAllied "the Escape Truck"
+		infoAxis "the Escape Truck"
+		spawnflags "19"
+		origin "112 1560 64"
+		mins "0 0 0"
+		maxs "400 400 100"
+		scriptname "docs2_trig_toi"
+		shortname "Escape Truck"
+		target "docs2_trig_cm_marker"
+		targetname "docs2_trig_toi"
+		track "the Escape Truck"
+		}
+
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	30
-		wm_number_of_objectives 6
+		wm_allied_respawntime	25
+		wm_number_of_objectives 7
 		wm_set_round_timelimit	15 //10
 
 		// Objectives
@@ -17,9 +92,10 @@ game_manager
 		// 4: Destroy the Service Door
 		// 5: Axis Field Command
 		// 6: Allies Base of Operations
+		// 7: Transmit the deciphered Supply Documents to the Escape Truck
 
-		wm_set_main_objective		1	0
-		wm_set_main_objective		1	1
+		wm_set_main_objective		7	0
+		wm_set_main_objective		7	1
 
 		// Objective overview status indicators
 		//wm_objective_status <objective> <team (0=Axis, 1=Allies)> <status (0=neutral 1=complete 2=failed)>
@@ -35,6 +111,8 @@ game_manager
 		wm_objective_status 5 0 0
 		wm_objective_status 6 1 0
 		wm_objective_status 6 0 0
+		wm_objective_status 7 1 0
+		wm_objective_status 7 0 0
 
 		// Stopwatch mode defending team (0=Axis, 1=Allies)
 		wm_set_defending_team	0
@@ -51,6 +129,11 @@ game_manager
 		setautospawn "Axis Barracks" 0
 		setautospawn "Upper Complex" 1
 		alertentity axis_garage_spawns //dont start active (so initial spawn is in barracks)
+
+		setstate docs2_cm_marker invisible
+		setstate docs2_toi invisible
+		setstate docs2_trig_cm_marker default
+		setstate docs2_trig_toi default
 
 
 		disablespeaker record_music
@@ -75,15 +158,37 @@ game_manager
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
 
+		wm_announce "^3Note: This version of Frostbite has 2 docruns:"
+		wm_announce "^3After securing the 1st documents, new deciphered documents appear next to the Transmitter."
+		wm_announce "^3Bring them to the back of the Escape Truck in the Axis garage!" 
 	}
 
-	trigger allies_transmit
+	trigger allies_transmit1
 	{
-	        wm_announce "The Allies have transmitted the Supply Documents!" 
-		wm_setwinner 1
-		wait 1500
-		wm_endround
+	        wm_announce "The Allies have transmitted the Supply Documents!"
+			setstate transmitter invisible
+			setstate transmitter_toi invisible
+			setstate axis_garage_wobj invisible
+			setstate axis_garage_spawns invisible
+			setstate docs2 default
+			alertentity docs2
+			setstate docs2_trigger default
+			setstate docs2_cm_marker default
+			setstate docs2_toi default
+			wm_announce "Bring the Deciphered Supply Documents to the Escape Truck!"
+			wm_objective_status 1 1 1
+			wm_objective_status 1 0 2
 	}
+
+	trigger allies_transmit2
+	{
+	        wm_announce "The Allies have transmitted the Deciphered Supply Documents to the Escape Truck!" 
+		wm_objective_status 7 1 1
+		wm_objective_status 7 0 2
+		wm_setwinner 1
+		//wait 1500
+		wm_endround
+	} 
 
 	trigger main_door_destroyed
 	{
@@ -288,19 +393,64 @@ docs
          setstate docs_cm_marker default 
       } 
 
-      trigger captured 
+      trigger dropped
+		{
+			wm_announce "Allied team has dropped the Supply Documents!" 
+		}
+}
+
+docs2
+{
+    spawn
+    {
+        wait 100
+        setstate docs2 invisible
+    }
+
+      trigger stolen 
       { 
+        setstate docs2_cm_marker invisible
       } 
+
+      trigger returned 
+      { 
+		 setstate docs2_cm_marker default
+      } 
+
+		trigger dropped
+		{
+			wm_announce "Allied team has dropped the Deciphered Supply Documents!" 
+		}
 }
 
 transmitter
 {
+	spawn
+	{
+		set
+		{
+			targetname "transmitter"
+		}
+	}
 	death
 	{
-		trigger game_manager allies_transmit
+		trigger game_manager allies_transmit1
 	}
 }
 
+docs2_trigger
+{
+    spawn
+    {
+        wait 100
+        setstate docs2_trigger invisible
+    }
+
+	death
+	{
+		trigger game_manager allies_transmit2
+	}
+}
 
 /////////////////////////////////////////////////
 // Spawn stuff
@@ -972,7 +1122,6 @@ platformmg42_script
       repairmg42 platformmg42 
    } 
 } 
-
 
 
 
