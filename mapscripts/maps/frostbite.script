@@ -686,7 +686,7 @@ axis_compost_built_model
 		wm_objective_status	5 0 1
 		wm_objective_status	5 1 2
 
-		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
