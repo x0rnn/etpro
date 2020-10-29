@@ -188,7 +188,7 @@ game_manager
 			setstate docs2_trigger default
 			setstate docs2_cm_marker default
 			setstate docs2_toi default
-			wm_announce "Bring the Deciphered Supply Documents to the Escape Truck!"
+			wm_announce "^4Allies: Bring the Deciphered Supply Documents to the Escape Truck!"
 			wm_objective_status 1 1 1
 			wm_objective_status 1 0 2
 	}
