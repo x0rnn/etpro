@@ -1,7 +1,52 @@
+// x0rnn - added axis garage spawns
+
 game_manager
 {
 	spawn
 	{
+
+		create
+		{
+			scriptName "axis_garagespawn"
+			targetname "axis_garagespawn"
+			classname "team_WOLF_objective"
+			description "Garage Spawn"
+			spawnflags 3
+			origin "2608 2552 24"
+		}
+		create
+		{
+			scriptName "axis_garagespawns"
+			classname "team_CTF_redspawn"
+			origin "2712 2632 24"
+			angle 270
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_garagespawns"
+			classname "team_CTF_redspawn"
+			origin "2656 2632 24"
+			angle 270
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_garagespawns"
+			classname "team_CTF_redspawn"
+			origin "2600 2632 24"
+			angle 270
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_garagespawns"
+			classname "team_CTF_redspawn"
+			origin "2544 2632 24"
+			angle 270
+			spawnflags 3
+		} 
+
 		// Set scenario information
 		remapshader "models/mapobjects/tanks_sd/mg42turret" "models/mapobjects/tanks_sd/mg42turret_2"
 		remapshaderflush
@@ -15,14 +60,14 @@ game_manager
 
 		// Set objective #1 properties
 
-		// Nazi's control objective #1 at the start
+		// Axis control objective #1 at the start
 		// SHORT DESCRIPTIONS
 
 		// Set Defending Team for SW Mode
 
 		wm_set_defending_team	0
 
-		// If the round timer expires, the Nazis have won, so set the current winning team
+		// If the round timer expires, the Axis have won, so set the current winning team
 		// Set the round winner:  0 == AXIS, 1 == ALLIED
 		wm_setwinner 0
 
