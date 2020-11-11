@@ -847,16 +847,28 @@ function topshots_f(id)
 					end
 				end
 				local sortedKeys = getKeysSortedByValue(vsstats_kills[p], function(a, b) return a > b end)
+				local players2 = {}
 				for _, key in ipairs(sortedKeys) do
 					if not (vsstats_kills[p][key] == 0 and vsstats_deaths[p][key] == 0) then
 						local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
 						if t3 == 1 or t3 == 2 then
 							if t ~= t3 then
-								et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"") 
+								--et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"")
+								table.insert(players2, {
+									et.gentity_get(key, "pers.netname"),
+									vsstats_kills[p][key],
+									vsstats_deaths[p][key]
+								})
 							end
-						end 
+						end
 					end
 				end
+				send_table(p, {
+					{name = "Player"                 },
+					{name = "Kills",  align = "right"},
+					{name = "Deaths", align = "right"},
+				}, players2)
+
 				if top_ep[1] > 3 then
 					et.trap_SendServerCommand(p, "cpm \"^zEasiest prey: " .. et.gentity_get(top_ep[2], "pers.netname") .. "^z- Kills: ^1" .. top_ep[1] .. "\"\n")
 				end
@@ -1861,16 +1873,27 @@ function et_ClientCommand(id, command)
 				end
 			end
 			local sortedKeys = getKeysSortedByValue(vsstats_kills[id], function(a, b) return a > b end)
+			local players2 = {}
 			for _, key in ipairs(sortedKeys) do
 				if not (vsstats_kills[id][key] == 0 and vsstats_deaths[id][key] == 0) then
 					local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
 					if t3 == 1 or t3 == 2 then
 						if t ~= t3 then
-							et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[id][key] .. " ^3Deaths: ^7" .. vsstats_deaths[id][key] .. "\"") 
+							table.insert(players2, {
+									et.gentity_get(key, "pers.netname"),
+									vsstats_kills[id][key],
+									vsstats_deaths[id][key]
+								})
+							--et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[id][key] .. " ^3Deaths: ^7" .. vsstats_deaths[id][key] .. "\"") 
 						end
-					end 
+					end
 				end
 			end
+			send_table(id, {
+					{name = "Player"                 },
+					{name = "Kills",  align = "right"},
+					{name = "Deaths", align = "right"},
+				}, players2)
 		end
         if et.trap_Argv(1) == "!getvsstats" then
 			if et.trap_Argc() ~= 4 then
@@ -2369,4 +2392,84 @@ function et_ConsoleCommand()
 		return 1
 	end
     return(0)
+end
+
+--- Sends a nice table to a client.
+-- @param id        client slot
+-- @param columns   {name = "column header title", align = "right/left/ommit"}, ...
+-- @param rows      { { x0, x1, ...} { ... } ... }
+-- @param separator print separators between rows?
+function send_table(id, columns, rows, separator)
+
+    local lens = {}
+
+    table.foreach(columns, function(index, column)
+        lens[index] = string.len(et.Q_CleanStr(column.name))
+    end)
+
+    table.foreach(rows, function(_, row)
+        
+        table.foreach(row, function(index, value)
+            
+            local len = string.len(et.Q_CleanStr(value))
+            
+            if lens[index] < len then
+                lens[index] = len
+            end
+
+        end)
+
+    end)
+
+    local width = 1
+
+    table.foreach(lens, function(_, len)
+        width = width + len + 3 -- 3 = padding around the value and cell separator
+    end)
+
+    -- Header separator
+    et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+
+    -- Column names
+    local row = "^7|"
+
+    table.foreach(columns, function(index, column)
+        row = row .. " " .. column.name .. string.rep(' ', lens[index] - string.len(et.Q_CleanStr(column.name))) .. " |"
+    end)
+
+    et.trap_SendServerCommand(id, "chat \"" .. row .. "\"")
+
+    if table.getn(rows) > 0 then
+
+        -- Data separator
+        et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+
+        -- Rows
+        table.foreach(rows, function(_, r)
+
+            local row = "^7|"
+
+            table.foreach(r, function(index, value)
+                if columns[index].align == "right" then
+                    row = row .. " " .. string.rep(' ', lens[index] - string.len(et.Q_CleanStr(value))) .. value .. " ^7|"
+                else
+                    row = row .. " " .. value .. string.rep(' ', lens[index] - string.len(et.Q_CleanStr(value))) .. " ^7|"
+                end
+            end)
+
+            et.trap_SendServerCommand(id, "chat \"" .. row .. "\"")                      -- values
+
+            if separator then
+                et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"") -- separator
+            end
+
+        end)
+
+    end
+
+    -- Bottom line
+    if not separator then
+        et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+    end
+
 end
