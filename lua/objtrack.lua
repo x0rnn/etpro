@@ -167,6 +167,7 @@ function et_Print(text)
 			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Gate Power Supply!\"\n")
 			objcarriers[objcarriers_id[1]] = nil
 			table.remove(objcarriers_id, 1)
+			second_obj = true
 		end
 		if(string.find(text, "Allies have transported the Rocket")) then
 			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
