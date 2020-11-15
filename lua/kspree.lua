@@ -199,7 +199,7 @@ players = {}
 worst_enemy = {}
 easiest_prey = {}
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved" }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved", [39]="Most objectives stolen" }
 
 weapontable = {
 [3]=	"MP40",
@@ -240,7 +240,7 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
         doublekill[i] = { [1]=0 }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0 }
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
@@ -504,8 +504,8 @@ function getKeysSortedByValue(tbl, sortFunction)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -747,11 +747,16 @@ function topshots_f(id)
 				max[38] = topshots[i][29]
 				max_id[38] = i
 			end
+			-- most objectives stolen
+			if topshots[i][30] > max[39] then
+				max[39] = topshots[i][30]
+				max_id[39] = i
+			end 
 		end
 	end
 	if id == -2 then
 		local ws_max = { 0, 0, 0, 0 }
-		local ws_max_id = { 0, 0, 0, 0}
+		local ws_max_id = { 0, 0, 0, 0 }
 		local cnt = 0
 		for cnt=0, sv_maxclients-1 do
 			if endplayers[cnt] then
@@ -782,26 +787,67 @@ function topshots_f(id)
 			end
 		end
 		local j = 1
-		for j=1, 38 do
+		local players2 = {}
+		for j=1, 39 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 36 then
 					if j == 8 then
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2)
+						})
 					elseif j == 9 then
 						-- dirty "fix" instead of reordering all indexes lol
 						if max[36] > 1 then
-							topshot_sayClients("^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+							--topshot_sayClients("^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+							table.insert(players2, {
+							topshot_names[36],
+							et.gentity_get(max_id[36], "pers.netname"),
+							max[36]
+						})
 						end
-						topshot_sayClients("^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						--topshot_sayClients("^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						table.insert(players2, {
+							topshot_names[25],
+							et.gentity_get(max_id[25], "pers.netname"),
+							max[25]
+						})
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 3) .. " seconds"
+						})
 					elseif j == 11 then
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2) .. " ^7m"
+						})
 					elseif j == 30 then
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7uses"
+						})
 					elseif j == 31 then
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2)
+						})
 					else
-						topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j]
+						})
 					end
 				end
 			end
@@ -810,16 +856,41 @@ function topshots_f(id)
 		for z = 1, 4 do
 			if ws_max[z] > 1 then
 				if z == 1 then
-					topshot_sayClients("^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					--topshot_sayClients("^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					table.insert(players2, {
+						"Highest light weapons accuracy",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						roundNum(ws_max[z], 2) .. " percent"
+					})
 				elseif z == 2 then
-					topshot_sayClients("^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					--topshot_sayClients("^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					table.insert(players2, {
+						"Highest headshot accuracy",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						roundNum(ws_max[z], 2) .. " percent"
+					})
 				elseif z == 3 then
-					topshot_sayClients("^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					--topshot_sayClients("^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					table.insert(players2, {
+						"Most headshots",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						ws_max[z]
+					})
 				elseif z == 4 then
-					topshot_sayClients("^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					--topshot_sayClients("^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					table.insert(players2, {
+						"Most bullets fired",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						ws_max[z]
+					})
 				end
 			end
 		end
+		send_table(-1, {
+			{name = "Award"                 },
+			{name = "Player",  align = "right"},
+			{name = "Value", align = "right"},
+		}, players2)
 		local p = 0
 		for p=0, sv_maxclients-1 do
 			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
@@ -847,14 +918,14 @@ function topshots_f(id)
 					end
 				end
 				local sortedKeys = getKeysSortedByValue(vsstats_kills[p], function(a, b) return a > b end)
-				local players2 = {}
+				local players3 = {}
 				for _, key in ipairs(sortedKeys) do
 					if not (vsstats_kills[p][key] == 0 and vsstats_deaths[p][key] == 0) then
 						local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
 						if t3 == 1 or t3 == 2 then
 							if t ~= t3 then
 								--et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"")
-								table.insert(players2, {
+								table.insert(players3, {
 									et.gentity_get(key, "pers.netname"),
 									vsstats_kills[p][key],
 									vsstats_deaths[p][key]
@@ -867,7 +938,7 @@ function topshots_f(id)
 					{name = "Player"                 },
 					{name = "Kills",  align = "right"},
 					{name = "Deaths", align = "right"},
-				}, players2)
+				}, players3)
 
 				if top_ep[1] > 3 then
 					et.trap_SendServerCommand(p, "cpm \"^zEasiest prey: " .. et.gentity_get(top_ep[2], "pers.netname") .. "^z- Kills: ^1" .. top_ep[1] .. "\"\n")
@@ -878,30 +949,76 @@ function topshots_f(id)
 			end
 		end
 	else
-		for j=1, 38 do
+		local players4 = {}
+		for j=1, 39 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 36 then
 					if j == 8 then
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 3) .. "\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2)
+						})
 					elseif j == 9 then
 						-- dirty "fix" instead of reordering all indexes lol
 						if max[36] > 1 then
-							et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+							--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[36] .. ": " .. et.gentity_get(max_id[36], "pers.netname") .. " ^z- ^1" .. max[36] .. "\"\n")
+							table.insert(players4, {
+								topshot_names[36],
+								et.gentity_get(max_id[36], "pers.netname"),
+								max[36]
+							})
 						end
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j].. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j].. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						table.insert(players4, {
+							topshot_names[25],
+							et.gentity_get(max_id[25], "pers.netname"),
+							max[25]
+						})
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 3) .. " seconds"
+						})
 					elseif j == 11 then
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2) .. " ^7m"
+						})
 					elseif j == 30 then
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zuses\"\n")
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7uses"
+						})
 					elseif j == 31 then
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " \"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " \"\n")
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2)
+						})
 					else
-						et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						table.insert(players4, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j]
+						})
 					end
 				end
 			end
 		end
+		send_table(id, {
+			{name = "Award"                 },
+			{name = "Player",  align = "right"},
+			{name = "Value", align = "right"},
+		}, players4)
 	end
 end
 
@@ -962,6 +1079,11 @@ function et_Print(text)
 			topshots[tonumber(id1)][28] = topshots[tonumber(id1)][28] + 1
 			topshots[tonumber(id2)][29] = topshots[tonumber(id2)][29] + 1
 		end
+		if string.find(text, "team_CTF_redflag") or string.find(text, "team_CTF_blueflag") then
+   	     local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			topshots[id][30] = topshots[id][30] + 1
+	    end 
 	end
 
     if kendofmap and string.find(text, "^WeaponStats: ") == 1 then
@@ -1711,7 +1833,7 @@ end
 
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0 }
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0 }
     vsstats[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     vsstats_kills[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     vsstats_deaths[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
@@ -1873,13 +1995,13 @@ function et_ClientCommand(id, command)
 				end
 			end
 			local sortedKeys = getKeysSortedByValue(vsstats_kills[id], function(a, b) return a > b end)
-			local players2 = {}
+			local players3 = {}
 			for _, key in ipairs(sortedKeys) do
 				if not (vsstats_kills[id][key] == 0 and vsstats_deaths[id][key] == 0) then
 					local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
 					if t3 == 1 or t3 == 2 then
 						if t ~= t3 then
-							table.insert(players2, {
+							table.insert(players3, {
 									et.gentity_get(key, "pers.netname"),
 									vsstats_kills[id][key],
 									vsstats_deaths[id][key]
@@ -1893,7 +2015,7 @@ function et_ClientCommand(id, command)
 					{name = "Player"                 },
 					{name = "Kills",  align = "right"},
 					{name = "Deaths", align = "right"},
-				}, players2)
+				}, players3)
 		end
         if et.trap_Argv(1) == "!getvsstats" then
 			if et.trap_Argc() ~= 4 then
