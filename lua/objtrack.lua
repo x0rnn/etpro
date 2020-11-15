@@ -12,7 +12,7 @@ second_obj = false
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("objtrack.lua "..et.FindSelf())
 
-	mapname = et.trap_Cvar_Get("mapname")
+	mapname = string.lower(et.trap_Cvar_Get("mapname"))
 end
 
 function et_Print(text)
