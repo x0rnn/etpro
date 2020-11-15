@@ -26,7 +26,7 @@ vsstats = {}
 vsstats_kills = {}
 vsstats_deaths = {}
 
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree" }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill with light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen" }
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -38,7 +38,7 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         death_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0 }
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0 }
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
@@ -94,8 +94,8 @@ function getKeysSortedByValue(tbl, sortFunction)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -312,6 +312,11 @@ function topshots_f(id)
 				max[35] = topshots[i][26]
 				max_id[35] = i
 			end
+			--most objectives stolen
+			if topshots[i][27] > max[36] then
+				max[36] = topshots[i][27]
+				max_id[36] = i
+			end
 		end
 	end
 	if id == -2 then
@@ -347,22 +352,53 @@ function topshots_f(id)
 			end
 		end
 		local j = 1
-		for j=1, 35 do
+		local players = {}
+		for j=1, 36 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 33 then
 					if j == 8 then
-						et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
+						table.insert(players, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2)
+						})
 					elseif j == 9 then
 						-- dirty "fix" instead of reordering all indexes lol
 						if max[33] > 1 then
-							et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[33] .. ": " .. et.gentity_get(max_id[33], "pers.netname") .. " ^z- ^1" .. max[33] .. "\"\n")
+							--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[33] .. ": " .. et.gentity_get(max_id[33], "pers.netname") .. " ^z- ^1" .. max[33] .. "\"\n")
+							table.insert(players, {
+							topshot_names[33],
+							et.gentity_get(max_id[33], "pers.netname"),
+							max[33]
+						})
 						end
-						et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
-						et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
+						table.insert(players, {
+							topshot_names[25],
+							et.gentity_get(max_id[25], "pers.netname"),
+							max[25]
+						})
+						table.insert(players, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 3) .. " seconds"
+						})
 					elseif j == 11 then
-						et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
+						table.insert(players, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2) .. " ^7m"
+						})
 					else
-						et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						table.insert(players, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j]
+						})
 					end
 				end
 			end
@@ -371,16 +407,41 @@ function topshots_f(id)
 		for z = 1, 4 do
 			if ws_max[z] > 1 then
 				if z == 1 then
-					et.trap_SendServerCommand(-1, "chat \"^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					--et.trap_SendServerCommand(-1, "chat \"^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					table.insert(players, {
+						"Highest light weapons accuracy",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						roundNum(ws_max[z], 2) .. " percent"
+					})
 				elseif z == 2 then
-					et.trap_SendServerCommand(-1, "chat \"^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					--et.trap_SendServerCommand(-1, "chat \"^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
+					table.insert(players, {
+						"Highest headshot accuracy",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						roundNum(ws_max[z], 2) .. " percent"
+					})
 				elseif z == 3 then
-					et.trap_SendServerCommand(-1, "chat \"^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					--et.trap_SendServerCommand(-1, "chat \"^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					table.insert(players, {
+						"Most headshots",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						ws_max[z]
+					})
 				elseif z == 4 then
-					et.trap_SendServerCommand(-1, "chat \"^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					--et.trap_SendServerCommand(-1, "chat \"^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
+					table.insert(players, {
+						"Most bullets fired",
+						et.gentity_get(ws_max_id[z], "pers.netname"),
+						ws_max[z]
+					})
 				end
 			end
 		end
+		send_table(-1, {
+			{name = "Award"                 },
+			{name = "Player",  align = "right"},
+			{name = "Value", align = "right"},
+		}, players)
 		local p = 0
 		for p=0, sv_maxclients-1 do
 			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
@@ -408,14 +469,14 @@ function topshots_f(id)
 					end
 				end
 				local sortedKeys = getKeysSortedByValue(vsstats_kills[p], function(a, b) return a > b end)
-				local players = {}
+				local players2 = {}
 				for _, key in ipairs(sortedKeys) do
 					if not (vsstats_kills[p][key] == 0 and vsstats_deaths[p][key] == 0) then
 						local t3 = tonumber(et.gentity_get(key, "sess.sessionTeam"))
 						if t3 == 1 or t3 == 2 then
 							if t ~= t3 then
 								--et.trap_SendServerCommand(p, "chat \"" .. et.gentity_get(key, "pers.netname") .. "^7: ^3Kills: ^7" .. vsstats_kills[p][key] .. " ^3Deaths: ^7" .. vsstats_deaths[p][key] .. "\"")
-								table.insert(players, {
+								table.insert(players2, {
 									et.gentity_get(key, "pers.netname"),
 									vsstats_kills[p][key],
 									vsstats_deaths[p][key]
@@ -428,7 +489,7 @@ function topshots_f(id)
 					{name = "Player"                 },
 					{name = "Kills",  align = "right"},
 					{name = "Deaths", align = "right"},
-				}, players)
+				}, players2)
 
 				if top_ep[1] > 3 then
 					et.trap_SendServerCommand(p, "cpm \"^zEasiest prey: " .. et.gentity_get(top_ep[2], "pers.netname") .. "^z- Kills: ^1" .. top_ep[1] .. "\"\n")
@@ -475,6 +536,11 @@ function et_Print(text)
 		    local id = tonumber(string.sub(text, i, j))
 			topshots[id][23] = topshots[id][23] + 1
 	    end
+		if string.find(text, "team_CTF_redflag") or string.find(text, "team_CTF_blueflag") then
+   	     local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			topshots[id][27] = topshots[id][27] + 1
+	    end 
 	end
 
     if kendofmap and string.find(text, "^WeaponStats: ") == 1 then
@@ -806,7 +872,7 @@ end
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     death_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0 }
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0 }
     axis_time[id] = 0
     allies_time[id] = 0
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
