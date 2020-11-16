@@ -64,7 +64,11 @@ function et_Print(text)
 			goldcarriers[id] = true
 			table.insert(goldcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
-			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Gold Crate!\"\n")
+			if table.getn(goldcarriers_id) == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+			elseif table.getn(goldcarriers_id) == 2 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+			end
 		end
 		if(string.find(text, "Allied team has secured the first Gold Crate")) then
 			local x = 1
@@ -96,7 +100,11 @@ function et_Print(text)
 			goldcarriers[id] = true
 			table.insert(goldcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
-			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Gold Crate!\"\n")
+			if table.getn(goldcarriers_id) == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+			elseif table.getn(goldcarriers_id) == 2 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+			end
 		end
 		if(string.find(text, "Allied team has secured the first Gold Crate")) then
 			local x = 1
