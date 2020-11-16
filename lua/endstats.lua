@@ -383,7 +383,7 @@ function topshots_f(id)
 						table.insert(players, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
-							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 3) .. " seconds"
+							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 2) .. "s"
 						})
 					elseif j == 11 then
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
