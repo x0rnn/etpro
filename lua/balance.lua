@@ -2,15 +2,6 @@
 -- notify players when teams are uneven (player count) or unbalanced (damage given)
 -- pause the match when one team has 3+ players more and unpause when teams are even again
 
-function et_InitGame(levelTime,randomSeed,restart)
-	et.RegisterModname("balance.lua "..et.FindSelf())
-
-	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
-	for i=0,maxClients-1 do
-		players[i] = nil
-	end
-end
-
 players = {}
 checkInterval = 15000 -- 15 seconds
 checkInterval2 = 60000 -- must be equal or a multiplier of above
@@ -21,6 +12,43 @@ alliedPlayers = {}
 numAlliedPlayers = 0
 numAxisPlayers = 0
 paused = false
+filename = "teameveners.log"
+eveners = {}
+
+function et_InitGame(levelTime,randomSeed,restart)
+	et.RegisterModname("balance.lua "..et.FindSelf())
+
+	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
+	for i=0,maxClients-1 do
+		players[i] = nil
+	end
+
+	local fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+	if len == -1 then
+		et.G_Print("balance.lua: no teameveners.log\n")
+		return(0)
+	end
+	local filestr = et.trap_FS_Read(fd, len)
+	et.trap_FS_FCloseFile(fd)
+
+	local guid, num
+	for guid, num in string.gfind(filestr,"([%x]+)\t([^\n]+)") do
+		eveners[guid] = tonumber(num)
+	end
+end
+
+function writeLog(eveners)
+	local fd, len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
+	if len == -1 then
+		et.G_Print("balance.lua: no teameveners.log\n")
+		return(0)
+	end
+	for key in pairs(eveners) do
+		local line = key .. "\t" .. eveners[key] .. "\n"
+		count = et.trap_FS_Write(line, string.len(line), fd)
+	end
+	et.trap_FS_FCloseFile(fd)
+end
 
 function et_RunFrame( levelTime )
 	if math.mod(levelTime,checkInterval) ~= 0 then return end
@@ -38,6 +66,7 @@ function et_RunFrame( levelTime )
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
 					paused = true
 					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Even the teams!\"\n")
+					et.G_LogPrint("LUA event: match auto-paused\n")
 				end
 			else
 				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
@@ -48,6 +77,7 @@ function et_RunFrame( levelTime )
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
 					paused = true
 					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Even the teams!\"\n")
+					et.G_LogPrint("LUA event: match auto-paused\n")
 				end
 			else
 				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
@@ -163,6 +193,7 @@ end
 
 function et_ClientUserinfoChanged(clientNum)
 	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
+	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 
 	if players[clientNum] == nil then
 		players[clientNum] = team
@@ -200,17 +231,44 @@ function et_ClientUserinfoChanged(clientNum)
 	if paused == true then
 		if numAlliedPlayers > numAxisPlayers then
 			if numAlliedPlayers - numAxisPlayers < 2 then
+				if players[clientNum] == 2 and team == 1 then
+					if eveners[cl_guid] == nil then
+						eveners[cl_guid] = 1
+					else
+						eveners[cl_guid] = eveners[cl_guid] + 1
+					end
+					writeLog(eveners)
+					et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+				end
 				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
 				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
 				paused = false
 			end
 		elseif numAxisPlayers > numAlliedPlayers then
 			if numAxisPlayers - numAlliedPlayers < 2 then
+				if players[clientNum] == 1 and team == 2 then
+					if eveners[cl_guid] == nil then
+						eveners[cl_guid] = 1
+					else
+						eveners[cl_guid] = eveners[cl_guid] + 1
+					end
+					writeLog(eveners)
+					et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+				end
 				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
 				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
 				paused = false
 			end
 		elseif numAxisPlayers == numAlliedPlayers then
+			if (players[clientNum] == 1 and team == 2) or (players[clientNum] == 2 and team == 1) then
+				if eveners[cl_guid] == nil then
+					eveners[cl_guid] = 1
+				else
+					eveners[cl_guid] = eveners[cl_guid] + 1
+				end
+				writeLog(eveners)
+				et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+			end
 			et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
 			et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
 			paused = false
