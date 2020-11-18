@@ -193,12 +193,13 @@ end
 
 function et_ClientUserinfoChanged(clientNum)
 	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
-	local tmp = team
 	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 
 	if players[clientNum] == nil then
 		players[clientNum] = team
 	end
+
+	local tmp = players[clientNum]
 
 	if players[clientNum] ~= team then
 		if team == 1 then
@@ -232,7 +233,7 @@ function et_ClientUserinfoChanged(clientNum)
 	if paused == true then
 		if numAlliedPlayers > numAxisPlayers then
 			if numAlliedPlayers - numAxisPlayers < 2 then
-				if players[clientNum] == 2 and tmp == 1 then
+				if tmp == 2 and team == 1 then
 					if eveners[cl_guid] == nil then
 						eveners[cl_guid] = 1
 					else
@@ -247,7 +248,7 @@ function et_ClientUserinfoChanged(clientNum)
 			end
 		elseif numAxisPlayers > numAlliedPlayers then
 			if numAxisPlayers - numAlliedPlayers < 2 then
-				if players[clientNum] == 1 and tmp == 2 then
+				if tmp == 1 and team == 2 then
 					if eveners[cl_guid] == nil then
 						eveners[cl_guid] = 1
 					else
@@ -261,7 +262,7 @@ function et_ClientUserinfoChanged(clientNum)
 				paused = false
 			end
 		elseif numAxisPlayers == numAlliedPlayers then
-			if (players[clientNum] == 1 and tmp == 2) or (players[clientNum] == 2 and tmp == 1) then
+			if (tmp == 1 and team == 2) or (tmp == 2 and team == 1) then
 				if eveners[cl_guid] == nil then
 					eveners[cl_guid] = 1
 				else
@@ -276,7 +277,7 @@ function et_ClientUserinfoChanged(clientNum)
 		end
 	else
 		if numAlliedPlayers == numAxisPlayers then
-			if (players[clientNum] == 1 and tmp == 2) or (players[clientNum] == 2 and tmp == 1) then
+			if (tmp == 1 and team == 2) or (tmp == 2 and team == 1) then
 				if eveners[cl_guid] == nil then
 					eveners[cl_guid] = 1
 				else
