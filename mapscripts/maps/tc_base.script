@@ -11,7 +11,7 @@ game_manager
 			targetname "axis_garagespawn"
 			classname "team_WOLF_objective"
 			description "Garage Spawn"
-			spawnflags 3
+			spawnflags 1
 			origin "2608 2552 24"
 		}
 		create
