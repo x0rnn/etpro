@@ -53,7 +53,7 @@ game_manager
 			targetname "axis_spawnblob_lower"
 			classname "team_WOLF_objective"
 			description "Lower Barracks"
-			spawnflags 3
+			spawnflags 1
 			origin "-294 1409 64"
 		}
 		create
