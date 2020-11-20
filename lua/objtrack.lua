@@ -310,16 +310,16 @@ function et_Print(text)
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
-			objcarriers[id] = true
-			table.insert(objcarriers_id, id)
+			doccarriers[id] = true
+			table.insert(doccarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
 			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Secret Documents!\"\n")
 		end
 		if(string.find(text, "The Allies have sent the secret docs")) then
-			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			local name = et.gentity_get(doccarriers_id[1], "pers.netname")
 			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Secret Documents!\"\n")
-			objcarriers[objcarriers_id[1]] = nil
-			table.remove(objcarriers_id, 1)
+			doccarriers[doccarriers_id[1]] = nil
+			table.remove(doccarriers_id, 1)
 		end
 	end -- end library_b3
 
@@ -407,6 +407,23 @@ function et_Print(text)
 			westflag = true
 		end
 	end -- end karsiah_te2
+
+	if mapname == "et_ufo_final" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			doccarriers[id] = true
+			table.insert(doccarriers_id, id)
+			local name = et.gentity_get(id, "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the UFO Documents!\"\n")
+		end
+		if(string.find(text, "Allies Transmitted the UFO Documents")) then
+			local name = et.gentity_get(doccarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the UFO Documents!\"\n")
+			doccarriers[doccarriers_id[1]] = nil
+			table.remove(doccarriers_id, 1)
+		end
+	end -- end et_ufo_final
 
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
@@ -535,6 +552,12 @@ function et_Obituary(victim, killer, mod)
 			x = x + 1
 		end
 	end
+	if mapname == "et_ufo_final" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
 	if mapname == "et_ice" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -650,6 +673,12 @@ function et_ClientDisconnect(i)
 				table.remove(objcarriers_id, x)
 			end
 			x = x + 1
+		end
+	end
+	if mapname == "et_ufo_final" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
 		end
 	end
 	if mapname == "et_ice" then
