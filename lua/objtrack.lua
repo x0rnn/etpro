@@ -440,7 +440,7 @@ function et_Print(text)
 			objcarriers[objcarriers_id[1]] = nil
 			table.remove(objcarriers_id, 1)
 		end
-	end -- end venice
+	end -- end sos_secret_weapon
 
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
@@ -594,7 +594,7 @@ function et_ClientDisconnect(i)
 		objcarriers[i] = nil
 		local x = 1
 		for index in pairs(objcarriers_id) do
-			if objcarriers_id[x] == victim then
+			if objcarriers_id[x] == i then
 				table.remove(objcarriers_id, x)
 			end
 			x = x + 1
@@ -667,46 +667,46 @@ function et_ClientDisconnect(i)
 		end
 	end
 	if mapname == "venice" then
-		objcarriers[victim] = nil
-		if objcarriers_id[1] == victim then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
 			table.remove(objcarriers_id, 1)
 		end
 	end
 	if mapname == "library_b3" then
-		doccarriers[victim] = nil
-		if doccarriers_id[1] == victim then
+		doccarriers[i] = nil
+		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
 		end
 	end
 	if mapname == "pirates" then
-		goldcarriers[victim] = nil
+		goldcarriers[i] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
-			if goldcarriers_id[x] == victim then
+			if goldcarriers_id[x] == i then
 				table.remove(goldcarriers_id, x)
 			end
 			x = x + 1
 		end
 	end
 	if mapname == "karsiah_te2" then
-		objcarriers[victim] = nil
+		objcarriers[i] = nil
 		local x = 1
 		for index in pairs(objcarriers_id) do
-			if objcarriers_id[x] == victim then
+			if objcarriers_id[x] == i then
 				table.remove(objcarriers_id, x)
 			end
 			x = x + 1
 		end
 	end
 	if mapname == "et_ufo_final" then
-		doccarriers[victim] = nil
-		if doccarriers_id[1] == victim then
+		doccarriers[i] = nil
+		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
 		end
 	end
 	if mapname == "sos_secret_weapon" then
-		objcarriers[victim] = nil
-		if objcarriers_id[1] == victim then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
 			table.remove(objcarriers_id, 1)
 		end
 	end
