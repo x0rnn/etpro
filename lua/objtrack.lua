@@ -8,6 +8,8 @@ doccarriers_id = {}
 objcarriers = {}
 objcarriers_id = {}
 second_obj = false
+eastflag = false
+westflag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("objtrack.lua "..et.FindSelf())
@@ -23,7 +25,13 @@ function et_Print(text)
 			objcarriers[id] = true
 			table.insert(objcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
-			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Radar Part!\"\n")
+			if eastflag == true then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the West Radar Parts!\"\n")
+			elseif westflag == true then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the East Radar Parts!\"\n")
+			else
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Radar Part!\"\n")
+			end
 		end
 		if(string.find(text, "Allies have secured the East")) then
 			local x = 1
@@ -39,6 +47,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
+			eastflag = true
 		end
 		if(string.find(text, "Allies have secured the West")) then
 			local x = 1
@@ -54,6 +63,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
+			westflag = true
 		end
 	end -- end radar
 
@@ -279,6 +289,125 @@ function et_Print(text)
 		end
 	end -- end et_beach
 
+	if mapname == "venice" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			objcarriers[id] = true
+			table.insert(objcarriers_id, id)
+			local name = et.gentity_get(id, "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Relic!\"\n")
+		end
+		if(string.find(text, "Allied team has secured the Relic")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Relic!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end venice
+
+	if mapname == "library_b3" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			objcarriers[id] = true
+			table.insert(objcarriers_id, id)
+			local name = et.gentity_get(id, "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Secret Documents!\"\n")
+		end
+		if(string.find(text, "The Allies have sent the secret docs")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Secret Documents!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end library_b3
+
+	if mapname == "pirates" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			goldcarriers[id] = true
+			table.insert(goldcarriers_id, id)
+			local name = et.gentity_get(id, "pers.netname")
+			if table.getn(goldcarriers_id) == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+			elseif table.getn(goldcarriers_id) == 2 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+			end
+		end
+		if(string.find(text, "Allied team has secured the first Gold Crate")) then
+			local x = 1
+			for index in pairs(goldcarriers_id) do
+				if goldcarriers[goldcarriers_id[x]] == true then
+					local redflag = et.gentity_get(goldcarriers_id[x], "ps.powerups", 6)
+					if redflag == 0 then
+						local name = et.gentity_get(goldcarriers_id[x], "pers.netname")
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
+						goldcarriers[goldcarriers_id[x]] = nil
+						table.remove(goldcarriers_id, x)
+					end
+				end
+				x = x + 1
+			end
+		end
+		if(string.find(text, "Allied team has secured the second Gold Crate")) then
+			local name = et.gentity_get(goldcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the second Gold Crate!\"\n")
+			goldcarriers[goldcarriers_id[1]] = nil
+			table.remove(goldcarriers_id, 1)
+		end
+	end -- end pirates
+
+	if mapname == "karsiah_te2" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			objcarriers[id] = true
+			table.insert(objcarriers_id, id)
+			local name = et.gentity_get(id, "pers.netname")
+			if eastflag == true then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
+			elseif westflag == true then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
+			else
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a stack of Documents!\"\n")
+			end
+		end
+		if(string.find(text, "Allies have transmitted the North Documents")) then
+			local x = 1
+			for index in pairs(objcarriers_id) do
+				if objcarriers[objcarriers_id[x]] == true then
+					local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
+					if redflag == 0 then
+						local name = et.gentity_get(objcarriers_id[x], "pers.netname")
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the North Documents!\"\n")
+						objcarriers[objcarriers_id[x]] = nil
+						table.remove(objcarriers_id, x)
+					end
+				end
+				x = x + 1
+			end
+			eastflag = true
+		end
+		if(string.find(text, "Allies have transmitted the South Documents")) then
+			local x = 1
+			for index in pairs(objcarriers_id) do
+				if objcarriers[objcarriers_id[x]] == true then
+					local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
+					if redflag == 0 then
+						local name = et.gentity_get(objcarriers_id[x], "pers.netname")
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the South Documents!\"\n")
+						objcarriers[objcarriers_id[x]] = nil
+						table.remove(objcarriers_id, x)
+					end
+				end
+				x = x + 1
+			end
+			westflag = true
+		end
+	end -- end karsiah_te2
+
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
 			local i, j = string.find(text, "%d+")   
@@ -374,6 +503,38 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
+	if mapname == "venice" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "library_b3" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
+	if mapname == "pirates" then
+		goldcarriers[victim] = nil
+		local x = 1
+		for index in pairs(goldcarriers_id) do
+			if goldcarriers_id[x] == victim then
+				table.remove(goldcarriers_id, x)
+			end
+			x = x + 1
+		end
+	end
+	if mapname == "karsiah_te2" then
+		objcarriers[victim] = nil
+		local x = 1
+		for index in pairs(objcarriers_id) do
+			if objcarriers_id[x] == victim then
+				table.remove(objcarriers_id, x)
+			end
+			x = x + 1
+		end
+	end
 	if mapname == "et_ice" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -457,6 +618,38 @@ function et_ClientDisconnect(i)
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
+		end
+	end
+	if mapname == "venice" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "library_b3" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
+	if mapname == "pirates" then
+		goldcarriers[victim] = nil
+		local x = 1
+		for index in pairs(goldcarriers_id) do
+			if goldcarriers_id[x] == victim then
+				table.remove(goldcarriers_id, x)
+			end
+			x = x + 1
+		end
+	end
+	if mapname == "karsiah_te2" then
+		objcarriers[victim] = nil
+		local x = 1
+		for index in pairs(objcarriers_id) do
+			if objcarriers_id[x] == victim then
+				table.remove(objcarriers_id, x)
+			end
+			x = x + 1
 		end
 	end
 	if mapname == "et_ice" then
