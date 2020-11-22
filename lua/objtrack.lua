@@ -8,8 +8,8 @@ doccarriers_id = {}
 objcarriers = {}
 objcarriers_id = {}
 second_obj = false
-eastflag = false
-westflag = false
+firstflag = false
+secondflag = false
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("objtrack.lua "..et.FindSelf())
@@ -25,9 +25,9 @@ function et_Print(text)
 			objcarriers[id] = true
 			table.insert(objcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
-			if eastflag == true then
+			if firstflag == true then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the West Radar Parts!\"\n")
-			elseif westflag == true then
+			elseif secondflag == true then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the East Radar Parts!\"\n")
 			else
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Radar Part!\"\n")
@@ -47,7 +47,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
-			eastflag = true
+			firstflag = true
 		end
 		if(string.find(text, "Allies have secured the West")) then
 			local x = 1
@@ -63,7 +63,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
-			westflag = true
+			secondflag = true
 		end
 	end -- end radar
 
@@ -75,7 +75,11 @@ function et_Print(text)
 			table.insert(goldcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
 			if table.getn(goldcarriers_id) == 1 then
-				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				if firstflag == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
+				end
 			elseif table.getn(goldcarriers_id) == 2 then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
 			end
@@ -94,6 +98,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
+			firstflag = true
 		end
 		if(string.find(text, "Allied team has secured the second Gold Crate")) then
 			local name = et.gentity_get(goldcarriers_id[1], "pers.netname")
@@ -111,7 +116,11 @@ function et_Print(text)
 			table.insert(goldcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
 			if table.getn(goldcarriers_id) == 1 then
-				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				if firstflag == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
+				end
 			elseif table.getn(goldcarriers_id) == 2 then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
 			end
@@ -130,6 +139,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
+			firstflag = true
 		end
 		if(string.find(text, "Allied team has secured the second Gold Crate")) then
 			local name = et.gentity_get(goldcarriers_id[1], "pers.netname")
@@ -331,7 +341,11 @@ function et_Print(text)
 			table.insert(goldcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
 			if table.getn(goldcarriers_id) == 1 then
-				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				if firstflag == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
+				end
 			elseif table.getn(goldcarriers_id) == 2 then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
 			end
@@ -350,6 +364,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
+			firstflag = true
 		end
 		if(string.find(text, "Allied team has secured the second Gold Crate")) then
 			local name = et.gentity_get(goldcarriers_id[1], "pers.netname")
@@ -366,9 +381,9 @@ function et_Print(text)
 			objcarriers[id] = true
 			table.insert(objcarriers_id, id)
 			local name = et.gentity_get(id, "pers.netname")
-			if eastflag == true then
+			if firstflag == true then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
-			elseif westflag == true then
+			elseif secondflag == true then
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
 			else
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a stack of Documents!\"\n")
@@ -388,7 +403,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
-			eastflag = true
+			firstflag = true
 		end
 		if(string.find(text, "Allies have transmitted the South Documents")) then
 			local x = 1
@@ -404,7 +419,7 @@ function et_Print(text)
 				end
 				x = x + 1
 			end
-			westflag = true
+			secondflag = true
 		end
 	end -- end karsiah_te2
 
