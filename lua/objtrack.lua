@@ -23,16 +23,24 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if firstflag == true then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the West Radar Parts!\"\n")
 				elseif secondflag == true then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the East Radar Parts!\"\n")
 				else
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Radar Part!\"\n")
+				end
+			elseif team == 1 then
+				if firstflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the West Radar Parts!\"\n")
+				elseif secondflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the East Radar Parts!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Radar Part!\"\n")
 				end
 			end
 		end
@@ -75,10 +83,10 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				goldcarriers[id] = true
 				table.insert(goldcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if table.getn(goldcarriers_id) == 1 then
 					if firstflag == false then
 						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
@@ -87,6 +95,16 @@ function et_Print(text)
 					end
 				elseif table.getn(goldcarriers_id) == 2 then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+				end
+			elseif team == 1 then
+				if firstflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+				else
+					if table.getn(goldcarriers_id) == 1 then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
+					end
 				end
 			end
 		end
@@ -119,10 +137,10 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname") 
 			if team == 2 then
 				goldcarriers[id] = true
 				table.insert(goldcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if table.getn(goldcarriers_id) == 1 then
 					if firstflag == false then
 						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
@@ -131,6 +149,16 @@ function et_Print(text)
 					end
 				elseif table.getn(goldcarriers_id) == 2 then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+				end
+			elseif team == 1 then
+				if firstflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+				else
+					if table.getn(goldcarriers_id) == 1 then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
+					end
 				end
 			end
 		end
@@ -163,14 +191,20 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if second_obj == false then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Supply Documents!\"\n")
 				else
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Deciphered Supply Documents!\"\n")
+				end
+			elseif team == 1 then
+				if second_obj == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Deciphered Supply Documents!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Supply Documents!\"\n")
 				end
 			end
 		end
@@ -194,14 +228,20 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if second_obj == false then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Gate Power Supply!\"\n")
 				else
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Rocket Control!\"\n")
+				end
+			elseif team == 1 then
+				if second_obj == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Rocket Control!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Gate Power Supply!\"\n")
 				end
 			end
 		end
@@ -225,11 +265,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				goldcarriers[id] = true
 				table.insert(goldcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a Gold Crate!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
 			end
 		end
 		if(string.find(text, "The Allies have secured a gold crate")) then
@@ -254,11 +296,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				goldcarriers[id] = true
 				table.insert(goldcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Gold Bars!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Gold Bars!\"\n")
 			end
 		end
 		if(string.find(text, "Allied team is escaping with the Gold")) then
@@ -274,11 +318,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Keycard!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Keycard!\"\n")
 			end
 		end
 		if(string.find(text, "The Allies have captured the keycard")) then
@@ -294,11 +340,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Documents!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Documents!\"\n")
 			end
 		end
 		if(string.find(text, "Allied team has transmitted the documents")) then
@@ -314,11 +362,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the War Documents!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the War Documents!\"\n")
 			end
 		end
 		if(string.find(text, "Allied team transmit the War Documents")) then
@@ -334,11 +384,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Relic!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Relic!\"\n")
 			end
 		end
 		if(string.find(text, "Allied team has secured the Relic")) then
@@ -354,11 +406,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Secret Documents!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Secret Documents!\"\n")
 			end
 		end
 		if(string.find(text, "The Allies have sent the secret docs")) then
@@ -374,10 +428,10 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				goldcarriers[id] = true
 				table.insert(goldcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if table.getn(goldcarriers_id) == 1 then
 					if firstflag == false then
 						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
@@ -386,6 +440,16 @@ function et_Print(text)
 					end
 				elseif table.getn(goldcarriers_id) == 2 then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+				end
+			elseif team == 1 then
+				if firstflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+				else
+					if table.getn(goldcarriers_id) == 1 then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
+					end
 				end
 			end
 		end
@@ -418,16 +482,24 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				if firstflag == true then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
 				elseif secondflag == true then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
 				else
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a stack of Documents!\"\n")
+				end
+			elseif team == 1 then
+				if firstflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the South Documents!\"\n")
+				elseif secondflag == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the North Documents!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a stack of Documents\"\n")
 				end
 			end
 		end
@@ -470,11 +542,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the UFO Documents!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the UFO Documents!\"\n")
 			end
 		end
 		if(string.find(text, "Allies Transmitted the UFO Documents")) then
@@ -490,11 +564,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Secret Weapon!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Secret Weapon!\"\n")
 			end
 		end
 		if(string.find(text, "Allied team has secured the secret weapon")) then
@@ -510,11 +586,13 @@ function et_Print(text)
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
 			if team == 1 then
 				doccarriers[id] = true
 				table.insert(doccarriers_id, id)
-				local name = et.gentity_get(id, "pers.netname")
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Secret War Documents!\"\n")
+			elseif team == 2 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Secret War Documents!\"\n")
 			end
 		end
 		if(string.find(text, "The Axis team has transmited the Secret")) then
