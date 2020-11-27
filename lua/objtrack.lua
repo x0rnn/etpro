@@ -1,4 +1,4 @@
--- objtrack.lua by x0rnn, tracks who stole and secured objectives
+-- objtrack.lua by x0rnn, tracks and announces who stole, returned or secured objectives
 
 mapname = ""
 goldcarriers = {}
