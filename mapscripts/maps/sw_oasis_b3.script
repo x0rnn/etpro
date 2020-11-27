@@ -1,4 +1,6 @@
 game_manager
+// Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
+// Harlekin - Timebonus
 {
 	spawn
 	{
@@ -56,7 +58,43 @@ game_manager
 //			mins "-10 -2 -11"
 //			maxs "10 2 11"
 //		}
+		// Harlekin - Roof over axis spawn
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "7400 4810 200"
+			contents 1  // SOLID
+			mins "-500 -450 -88"
+			maxs "500 450 88"
+		}
 		
+		// Harlekin - Roof over allies spawn
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "1000 2950 200"
+			contents 1  // SOLID
+			mins "-850 -750 -88"
+			maxs "850 750 88"
+		}
+
+		//jade - roof over flag spawn
+		create
+		{
+			scriptName "flagspawnroof"
+			classname "func_fakebrush"
+            targetname "flagspawnroof"
+			origin "4300 7000 130"
+			contents 1  // SOLID
+			mins "-1000 -700 -88"
+			maxs "1000 630 88"
+		}
+        setstate flagspawnroof invisible
+
+
+
 		accum 1 set 0		// State of objective number one
 		accum 5 set 0		// Corrent number of Pak 75mm guns destroyed
 		accum 6 set 0		// Current number of water pumps built
@@ -67,9 +105,9 @@ game_manager
 
 		// Game rules
 		wm_axis_respawntime	30
-		wm_allied_respawntime	15
+		wm_allied_respawntime	20
 		wm_number_of_objectives 8
-		wm_set_round_timelimit	20
+		wm_set_round_timelimit	12
 
 		// Objectives
 		// 1: Primary1 : Destroy the North gun
@@ -153,8 +191,27 @@ game_manager
 		wm_teamvoiceannounce 1 "oasis_allies_pump_repair"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +8 min Old City Wall"
+		wm_announce "^3	  *  +5 min first Anti Tank Gun"
+		// ----- Harlekin Timebonus Announce -----
 	}
-
+	// *add*: Trigger to handle timebonus for first destroyed Gun. - harlekin
+	trigger anti_tank_gun_timebonus
+	{
+		accum 2 abort_if_bitset 2
+		accum 2 bitset 2
+		wm_announce "^1+5 min Timebonus!"	
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+		cvar timelimit inc "1"
+	}
+	// *add*: End of added triggers. - harlekin
+	//*******************************************************************************************
 	trigger 75mm_gun_counter
 	{
 		globalaccum 2 abort_if_not_equal 1		// north gun destroyed?
@@ -334,8 +391,18 @@ oldcitywall //Broken section of Old City wall
 
 		trigger oldcityflag kill
 
-		wm_announce "Allies have breached the Old City wall and disabled power to the tunnel door"
-
+		wm_announce "Allies have breached the Old City wall and disabled power to the tunnel door!"
+		// ----- Harlekin Timebonus Old City wall -----
+		wm_announce "^1+8 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Old City wall -----
 
 		trigger tunnel1 open
 		accum 3 set 1
@@ -372,6 +439,9 @@ oldcitywall //Broken section of Old City wall
 
 		wm_set_main_objective	1 0
 		wm_set_main_objective	1 1
+        //jade - trigger for roof over flag spawn
+        setstate flagspawnroof default
+
 	}
 }
 
@@ -756,8 +826,13 @@ lever1
  trigger down
  {
   playsound sound/movers/switches/butn2.wav
-  wm_announce	"Tunnel door is opened!"
-
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
+  wm_announce	"^3Attention: ^1Tunnel door is opened!"
   faceangles 180 0 0 500  //speed of movement
   trigger tunnel1 open
  }
@@ -765,8 +840,10 @@ lever1
  trigger up
  {
   playsound sound/movers/switches/butn2.wav
-  wm_announce	"Tunnel door is closed!"
-
+  wm_announce	"^3Attention: ^1Tunnel door is closed!"
+  wm_announce	"^3Attention: ^1Tunnel door is closed!"
+  wm_announce	"^3Attention: ^1Tunnel door is closed!"
+  wm_announce	"^3Attention: ^1Tunnel door is closed!"
   faceangles 0 0 0 500
   trigger tunnel1 close
  }
@@ -889,7 +966,9 @@ pak75_clip_1
 		togglespeaker pak75_expl_1
 
 		wm_announce "Allies have destroyed the North Anti-Tank Gun!"
-
+		// ----- Harlekin Timebonus first anti tank gun -----
+		trigger game_manager anti_tank_gun_timebonus	// *add*: Apply timebous for first destroyed Anti-Tank Gun.
+		// ----- Harlekin Timebonus first anti tank gun -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paksouth_defend"
@@ -954,6 +1033,10 @@ pak75_clip_2
 		togglespeaker pak75_expl_2
 
 		wm_announce "Allied team has destroyed the South Anti-Tank Gun!"
+
+		// ----- Harlekin Timebonus first anti tank gun -----
+		trigger game_manager anti_tank_gun_timebonus	// *add*: Apply timebous for first destroyed Anti-Tank Gun.
+		// ----- Harlekin Timebonus first anti tank gun -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "oasis_axis_paknorth_defend"
