@@ -1,9 +1,40 @@
 game_manager
+// bani - bug fixes
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
 // Harlekin - Timebonus
+// x0rnn - corrected 2 allied spawn angles
 {
 	spawn
 	{
+		// delete wrong angle spawns
+		delete
+			{
+				origin "2592 2072 -548"
+			}
+		delete
+			{
+				origin "2584 2144 -546"
+			}
+		// recreate with correct angle
+		create
+		{
+  		 	scriptName "tunnel_spawn"
+   			classname "team_CTF_bluespawn"
+  			targetname "tunnel_spawn"
+   			origin "2592 2072 -548"
+			angle "90"
+   			spawnflags "1" 
+		}
+		create
+		{
+  		 	scriptName "tunnel_spawn"
+   			classname "team_CTF_bluespawn"
+  			targetname "tunnel_spawn"
+   			origin "2584 2144 -546"
+			angle "90"
+   			spawnflags "1" 
+		}
+
 		//bani - cheat fix
 //		create
 //		{
