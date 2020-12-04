@@ -595,9 +595,6 @@ game_manager
 	trigger timelimit_hit
 		{
 		wm_announce	"Axis have successfuly defended both Trucks!"
-		wm_setwinner 0
-		wm_endround
-		wait 500
 		// what can we say.. axis pulled it off.. =P
 		// thought of having an airplane taxi down the runway here as an ending if the axis win... hmmmzzz
 		}
