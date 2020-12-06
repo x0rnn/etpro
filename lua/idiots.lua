@@ -579,20 +579,20 @@ function et_ClientCommand(id, cmd)
 			end
 		end
 		if invisible_mute[id] == true then
-			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
-				if et.trap_Argv(0) == "say" then
+			if string.lower(cmd) == "say" or string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" or string.lower(cmd) == "say_buddy" or string.lower(cmd) == "m" or string.lower(cmd) == "pm" or string.lower(cmd) == "msg" then
+				if string.lower(cmd) == "say" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(1) .. "\"")
 					et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
-				elseif et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_teamnl" then
+				elseif string.lower(cmd) == "say_team" or string.lower(cmd) == "say_teamnl" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^5" .. et.ConcatArgs(1) .. "\"")
 					et.G_LogPrint("sayteam: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
-				elseif et.trap_Argv(0) == "say_buddy" then
+				elseif string.lower(cmd) == "say_buddy" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^3" .. et.ConcatArgs(1) .. "\"")
 					et.G_LogPrint("saybuddy: " .. et.gentity_get(id, "pers.netname") .. ": " .. et.ConcatArgs(1) .. " (InvisiMute)\n")
 					return 1
-				elseif et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
+				elseif string.lower(cmd) == "m" or string.lower(cmd) == "pm" or string.lower(cmd) == "msg" then
 					et.trap_SendServerCommand(id, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^7: ^1(private to '" .. et.trap_Argv(1) .. "^1')^7" .. et.ConcatArgs(2) .. "\"")
 					et.G_LogPrint("etpro privmsg: " .. et.gentity_get(id, "pers.netname") .. " to " .. et.trap_Argv(1) .. ": InvisiMute: " .. et.ConcatArgs(2) .. "\n")
 					return 1
