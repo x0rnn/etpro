@@ -75,10 +75,10 @@ game_manager
 	{
 	targetname "axislowerspawn"
 	scriptname "axislowerspawn"
-	angle "150"
-	spawnflags "3"
-	origin "2976 -840 -432"
 	classname "team_CTF_redspawn"
+	origin "2624 -656 -432"
+	spawnflags "3"
+	angle "180"
 	}
 
 	create
@@ -89,116 +89,6 @@ game_manager
 	origin "2552 -808 -432"
 	spawnflags "3"
 	angle "90"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2552 -872 -432"
-	angle "90"
-	spawnflags "3"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	angle "135"
-	spawnflags "3"
-	origin "2976 -936 -432"
-	classname "team_CTF_redspawn"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2976 -1000 -432"
-	spawnflags "3"
-	angle "135"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	angle "110"
-	origin "2728 -936 -432"
-	classname "team_CTF_redspawn"
-	spawnflags "3"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2792 -936 -432"
-	angle "110"
-	spawnflags "3"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	angle "100"
-	origin "2664 -936 -432"
-	classname "team_CTF_redspawn"
-	spawnflags "3"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2856 -936 -432"
-	spawnflags "3"
-	angle "110"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2888 -720 -432"
-	spawnflags "3"
-	angle "180"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	angle "135"
-	spawnflags "3"
-	origin "2728 -784 -432"
-	classname "team_CTF_redspawn"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2792 -784 -432"
-	spawnflags "3"
-	angle "180"
-	}
-
-	create
-	{
-	targetname "axislowerspawn"
-	scriptname "axislowerspawn"
-	classname "team_CTF_redspawn"
-	origin "2624 -656 -432"
-	spawnflags "3"
-	angle "180"
 	}
 
 	create
@@ -216,7 +106,7 @@ game_manager
 	targetname "axislowerspawn"
 	scriptname "axislowerspawn"
 	classname "team_CTF_redspawn"
-	origin "2616 -872 -432"
+	origin "2552 -872 -432"
 	angle "90"
 	spawnflags "3"
 	}
@@ -225,12 +115,12 @@ game_manager
 	{
 	targetname "axislowerspawn"
 	scriptname "axislowerspawn"
-	angle "90"
-	origin "2592 -1008 -432"
 	classname "team_CTF_redspawn"
+	origin "2616 -872 -432"
+	angle "90"
 	spawnflags "3"
 	}
-	
+
 		// ----- Harlekin Truck Spawn Start -----
 		// info_limbo_flag
 		create
