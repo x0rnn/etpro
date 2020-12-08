@@ -596,6 +596,13 @@ function getConfig(map)
         c.spawns[3] = {state = "Banner Room", pos = {-5068, 712, 1112}, state = PROTECT_ALLIES, radius2 = 400}
         c.spawns[4] = {state = "South Arch", pos = {2137, -2488, 1104}, state = PROTECT_AXIS, radius2 = 400}
 
+-- falkenstein_b3
+    elseif map == "falkenstein_b3" then
+        c.spawns[1] = {state = "Station Spawns", pos = {3217, -1241, 112}, state = PROTECT_AXIS, radius2 = 400}
+        c.spawns[2] = {state = "Base Spawns", pos = {7476, -3911, 352}, state = PROTECT_AXIS, radius2 = 400}
+        c.spawns[3] = {state = "Allied Spawn One", pos = {2263, -4409, 833}, state = PROTECT_ALLIES, radius2 = 600}
+        c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Allies gained access to the base"}
+
 -- goldendunk_a2
     elseif map == "goldendunk_a2" then
         c.spawns[1] = {name = "Axis Spawn1", pos = {-2370, 750, 60}, state = PROTECT_AXIS, radius2 = 250} 
