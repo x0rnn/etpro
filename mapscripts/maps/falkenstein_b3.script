@@ -2,12 +2,22 @@ game_manager
 {
 	spawn
 	{
+		// x0rnn - delete health pack because of missing texture
+		delete
+		{
+			origin "8320 -3584 80"
+		}
+		delete
+		{
+			origin "8324 -3536 82"
+		}
+
 		wait 50
 		// Allgemeine Mapdaten
-	        wm_axis_respawntime         13
-        	wm_allied_respawntime        8
+	        wm_axis_respawntime         25 // x0rnn changed from 13
+        	wm_allied_respawntime        20 // x0rnn changed from 8
 	        wm_number_of_objectives      7
-        	wm_set_round_timelimit      20
+        	wm_set_round_timelimit      12 // x0rnn changed and added 8min timebonus for generator
 		
 	        // Anzahl der Hauptziele je Team (Anzahl-Team)
         	wm_set_main_objective      6 0
@@ -62,6 +72,13 @@ game_manager
 
 		// *---------------------------------------------------------------------------------*
 
+		wm_announce "^3Allies need to capture the flag and blow the generator at the end of the railroad to open the two gates."
+		wm_announce "^3Inside, build the CP to spawn there, steal the Prototype and bring it to the train."
+		wm_announce "^3To open the Prototype door, construct the access panel (Engineer) or use a Covert Ops."
+
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +8 min Dynamite Generator"
 	}
 	
 	trigger entrances
@@ -194,7 +211,7 @@ access_construct
 	spawn
 	{
 		wait 50
-		constructible_class	2	// 2=Satchel 3=Dyna
+		constructible_class	3	// 2=Satchel 3=Dyna // x0rnn - changed to 3
 	}
 
 	//trigger setup
@@ -596,6 +613,17 @@ generator_obj1
 	death
 	{
 	wm_announce "Allies gained access to the base"
+
+	wm_announce "^1+8 min Timebonus!"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+ 	cvar timelimit inc "1"
+
 	trigger checkpoint1 spawns2station
 	trigger checkpoint1 remove_flag
 	trigger gate1 move_it
