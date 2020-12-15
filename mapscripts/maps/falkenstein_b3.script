@@ -1,0 +1,998 @@
+game_manager
+{
+	spawn
+	{
+		wait 50
+		// Allgemeine Mapdaten
+	        wm_axis_respawntime         13
+        	wm_allied_respawntime        8
+	        wm_number_of_objectives      7
+        	wm_set_round_timelimit      20
+		
+	        // Anzahl der Hauptziele je Team (Anzahl-Team)
+        	wm_set_main_objective      6 0
+	        wm_set_main_objective      6 1
+
+		
+          	// Status der Objectives bei Mapstart (Objective-Team-Status)
+        	wm_objective_status        1 0 0	//Checkpoint
+	        wm_objective_status        1 1 0
+		wm_objective_status        2 0 0	//main objective
+	        wm_objective_status        2 1 0
+        	wm_objective_status        3 0 0	//cp allies
+	        wm_objective_status        3 1 0
+		wm_objective_status	   4 0 0	//lower doors
+	        wm_objective_status	   4 1 0
+		wm_objective_status	   5 0 0	//upper doors
+	        wm_objective_status	   5 1 0	
+		wm_objective_status	   6 0 0	//generator
+	        wm_objective_status	   6 1 0
+		wm_objective_status	   7 0 0	//prototype access
+	        wm_objective_status	   7 0 0		
+
+		
+		// Die Axis verteidigen
+         	wm_set_defending_team   0
+
+         	// Die Axis sind Sieger, falls die Allierten versagen
+       		wm_setwinner                0
+		
+		wait 400
+		setautospawn "Allied Spawn One" 1
+		setautospawn "Check Point 1" 0
+		trigger radiosound1 radiostart
+				
+		// accum for the entrance check
+		accum 0 set 0					
+		
+		wait 2000
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "railgun_allies_depot_capture"
+		wm_teamvoiceannounce 1 "battery_allies_generator_destroy"
+
+		wm_teamvoiceannounce 0 "falken_axis_depot_yard_stop"
+		wm_teamvoiceannounce 0 "battery_axis_generator_defend"
+
+		wm_addteamvoiceannounce 1 "railgun_allies_depot_capture"
+		wm_addteamvoiceannounce 1 "battery_allies_generator_destroy"
+
+		wm_addteamvoiceannounce 0 "falken_axis_depot_yard_stop"
+		wm_addteamvoiceannounce 0 "battery_axis_generator_defend"
+
+		// *---------------------------------------------------------------------------------*
+
+	}
+	
+	trigger entrances
+	{
+	//check if both doors were destroyed
+	accum 0 inc 1
+	accum 0 abort_if_not_equal 2
+	wm_announce "Allies destroyed both entrances"
+	wm_removeteamvoiceannounce 1 "falken_allies_objective_steal"
+	wm_removeteamvoiceannounce 0 "radar_axis_entrances_defend"	
+	}
+
+	trigger end_of_game
+	{
+          // Siegesmeldung der Allierten
+          wm_announce        "ALLIES ESCAPED WITH THE OBJECTIVE!"
+	  wait 500
+
+	  // *----------------------------------- vo ------------------------------------------*
+	  wm_teamvoiceannounce 1 "allies_hq_objective_secure"
+	  wm_addteamvoiceannounce 1 "allies_hq_objective_secure"
+	  wm_teamvoiceannounce 0 "axis_hq_objective_lost"
+	  wm_addteamvoiceannounce 0 "axis_hq_objective_lost"
+	  // *----------------------------------- vo ------------------------------------------*
+
+          wait 2000
+          wm_setwinner        1  // 1=Allied 0=Axis
+          wm_endround	         // Runde beenden
+	}	
+}
+
+// ==================================================================
+// ===================== cvops	=====================================
+// =================================================================
+
+cvops_enter
+{
+	spawn
+	{
+	}
+	
+	trigger entered
+	{
+		wm_announce "Alarm! Allied intruder inside the base through service door!" 0
+		wm_announce "Alarm! Allied intruder inside the base through service door!" 0
+		wm_announce "Alarm! Allied intruder inside the base through service door!" 0
+	}
+}
+
+
+
+// ==================================================================
+// ===================== the water ==================================
+// =================================================================
+
+trigger_water
+{
+	spawn 
+	{
+		setstate button_water default	
+		setstate button_water2 invisible	
+	}
+
+	trigger water_moves_up
+	{
+		//wait 1000
+		trigger water hoch
+		//wait 1000
+	}
+
+	trigger water_moves_down
+	{
+		//wait 1000
+		trigger water down
+		//wait 1000
+	}
+}
+
+water
+{
+	spawn
+	{
+	}
+
+	trigger hoch
+	{
+		wait 400
+		setstate button_water2 default	
+		setstate button_water invisible
+		gotomarker water_up 10 wait
+	}
+	
+	trigger down
+	{
+		wait 400
+		setstate button_water default	
+		setstate button_water2 invisible
+		gotomarker water_down 10 wait
+	}
+}
+
+// ==================================================================
+// =======================door at obj               =================
+// ==================================================================
+
+door_obj
+{
+	spawn
+	{
+		trigger self close
+	}
+
+	trigger open
+	{
+		gotomarker door_appear 10000 wait	
+		faceangles 0 90 0 500
+	}
+
+	trigger close
+	{
+		faceangles 0 0 0 500
+		gotomarker door_disappear 10000 wait
+	}
+	
+
+}
+
+access_construct
+{
+	spawn
+	{
+		wait 50
+		constructible_class	2	// 2=Satchel 3=Dyna
+	}
+
+	//trigger setup
+//	{
+//		setstate alliedconstruct_n_materials1 default	// Crate Models
+//		setstate alliedconstruct_n_clip1 default		// Clip brushes
+//		setstate alliedconstruct_n_flag1 default
+//	}
+
+	built final
+	{
+//		setstate alliedconstruct_n_materials1 invisible	// Crate Models
+//		setstate alliedconstruct_n_clip1 invisible	// Clip brushes
+		setstate door_obj_real invisible
+		trigger door_obj open
+
+		wm_announce "Allied Team have built their access to the objective!"
+		wm_objective_status        7 0 2	//access
+		wm_objective_status        7 1 1	//access
+	}
+
+	decayed final
+	{
+	}
+
+	death
+	{
+		//trigger self setup
+		trigger door_obj close
+		//wait 1000
+		setstate door_obj_real default
+		wm_announce "Axis have destroyed allied access!" 
+		wm_objective_status        7 0 1	//access
+		wm_objective_status        7 1 2	//access
+	}
+}
+
+
+// ==================================================================
+// =========target script triggers at floor 1, 2, 3 =================
+// ==================================================================
+
+tat1
+{
+	trigger lift_goes_1
+	{	
+		trigger lift all_buttons_deactivate
+
+		wait 1000
+		trigger lift floor_1
+		wait 1000
+
+		trigger lift lift_goes_1_end
+	}
+}
+
+tat2
+{	
+	trigger lift_goes_2
+	{
+		trigger lift all_buttons_deactivate
+		
+		wait 1000
+		trigger lift runter
+		wait 1000
+
+		trigger lift lift_goes_2_end
+	}
+}
+
+tat3
+{	
+	trigger lift_goes_3
+	{
+		trigger lift all_buttons_deactivate
+
+		wait 1000
+		trigger lift hoch
+		wait 1000
+		trigger lift lift_goes_3_end
+	}
+}
+
+// ==================================================================
+// ===================== the lift at first stage=====================
+// ==================================================================
+
+lift
+{
+	spawn
+	{
+		wait 50
+		trigger lift init_lift
+	}
+	
+	trigger init_lift
+	{		
+		trigger lift all_buttons_deactivate
+		trigger lift idle_cable
+		trigger lift start_buttons
+	}
+	
+	trigger idle_cable
+	{
+		setstate cable_down invisible
+		setstate cable_up invisible
+		setstate cable_idle default
+	}
+	
+	trigger all_buttons_deactivate
+	{	
+		setstate at_1_to_1 invisible
+		setstate at_1_to_2 invisible
+		setstate at_1_to_3 invisible
+		setstate at_2_to_1 invisible
+		setstate at_2_to_2 invisible
+		setstate at_2_to_3 invisible
+		setstate at_3_to_1 invisible
+		setstate at_3_to_2 invisible
+		setstate at_3_to_2 invisible
+	}
+	
+	trigger start_buttons 
+	{	
+		setstate at_1_to_1 default
+		setstate at_2_to_1 default
+		setstate at_3_to_3 default
+		setstate at_2_to_3 default
+	}
+	trigger floor_1
+	{
+		wait 500
+		setstate cable_idle invisible
+		setstate cable_up default
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+		gotomarker floor1 100 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+		trigger lift idle_cable
+	}
+	trigger hoch
+	{
+		wait 500
+		setstate cable_idle invisible
+		setstate cable_down default
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+		gotomarker move_up 100 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+		trigger lift idle_cable
+	}
+	trigger runter
+	{
+		wait 500
+		setstate cable_idle invisible
+		setstate cable_up default
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+		gotomarker move_down 100 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+		trigger lift idle_cable
+	}
+	
+	trigger lift_goes_1_end
+	{
+		setstate at_1_to_2 default
+		setstate at_1_to_3 default
+		setstate at_2_to_2 default
+		setstate at_3_to_3 default
+	}
+	
+	trigger lift_goes_2_end
+	{
+		setstate at_2_to_1 default
+		setstate at_2_to_3 default
+		setstate at_1_to_1 default
+		setstate at_3_to_3 default
+	}
+	
+	trigger lift_goes_3_end
+	{
+		setstate at_3_to_1 default
+		setstate at_3_to_2 default
+		setstate at_1_to_1 default
+		setstate at_2_to_2 default
+	}
+	
+}
+
+
+// ==================================================================
+// ===================== the lift at base ===========================
+// ==================================================================
+
+lift_base_button_upper_tst
+{
+	trigger lift_base_goes_down
+	{	
+		wait 1000
+		trigger lift_base runter
+		wait 1000
+	}
+}
+
+lift_base_button_bottom_tst
+{	
+	trigger lift_base_goes_up
+	{				
+		wait 1000
+		trigger lift_base hoch
+		wait 1000
+
+	}
+}
+
+lift_base
+{
+	spawn
+	{
+		wait 50
+	}
+	trigger hoch
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+		gotomarker lift_base_up 100 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+	trigger runter
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+		gotomarker lift_base_down 100 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+// ==========================================================================
+// =====================sound & music====================================
+// ==========================================================================
+
+radiosound1
+{
+	spawn 
+	{
+	}
+	trigger radiostart
+	{
+		enablespeaker music1
+	}
+	
+	trigger radiodeath1 
+	{
+		disablespeaker music1
+	}
+}
+
+// ==============================================================================
+// ===================== catchable spawns====================================
+// ================================================================================
+
+checkpoint1
+{
+	spawn
+	{
+	accum 1 set 0
+	}
+	
+	trigger axis_capture
+	{
+	wm_objective_status        1 0 1	//Checkpoint
+	wm_objective_status        1 1 2	//Checkpoint
+	accum 1 abort_if_not_equal -1
+	alertentity checkpoint_wobj1
+	wait 400
+	setautospawn "Check Point 1" 0
+	wait 400
+	setautospawn "Allied Spawn One" 1
+	accum 1 set 0
+	
+	wm_announce	"Axis capture the Depot Yard!"	
+	// *----------------------------------- vo ------------------------------------------*
+	
+	wm_removeteamvoiceannounce 0 "railgun_axis_depot_capture"
+	
+	wm_addteamvoiceannounce 1 "railgun_allies_depot_capture"
+
+	wm_addteamvoiceannounce 0 "falken_axis_depot_yard_stop"
+
+	wm_teamvoiceannounce 0 "railgun_axis_depot_captured"
+
+	wm_teamvoiceannounce 1 "railgun_allies_depot_lost"
+
+	wm_teamvoiceannounce 1 "railgun_allies_depot_capture"
+	// *---------------------------------------------------------------------------------*
+
+	}
+
+
+	trigger allied_capture
+	{
+	accum 1 set -1
+	alertentity checkpoint_wobj1
+	wm_objective_status        1 0 2	//Checkpoint
+	wm_objective_status        1 1 1	//Checkpoint	
+	wait 400
+	setautospawn "Check Point 1" 1
+	wait 400
+	setautospawn "Station Spawns" 0
+
+	wm_announce	"Allies capture the Depot Yard!"	
+	// *----------------------------------- vo ------------------------------------------*
+	
+	wm_removeteamvoiceannounce 1 "railgun_allies_depot_capture"
+	wm_removeteamvoiceannounce 0 "falken_axis_depot_yard_stop"	
+	
+	wm_addteamvoiceannounce 0 "railgun_axis_depot_capture"
+
+	wm_teamvoiceannounce 0 "railgun_axis_depot_lost"
+
+	wm_teamvoiceannounce 1 "railgun_allies_depot_captured"
+
+	wm_teamvoiceannounce 1 "battery_allies_generator_destroy"
+
+	wm_teamvoiceannounce 0 "battery_axis_generator_defend"
+
+	wm_teamvoiceannounce 0 "railgun_axis_depot_capture"
+
+	// *---------------------------------------------------------------------------------*
+
+	}
+
+	trigger remove_flag
+	{
+	setstate checkpoint_toi invisible
+	setstate checkpoint1 invisible
+	setstate misc_commandmap_marker1 invisible
+	wait 1000
+	// *----------------------------------- vo ------------------------------------------*
+	wm_removeteamvoiceannounce 1 "battery_allies_generator_destroy"	
+	wm_removeteamvoiceannounce 0 "battery_axis_generator_defend"
+	wm_removeteamvoiceannounce 1 "railgun_allies_depot_capture"
+	wm_removeteamvoiceannounce 0 "falken_axis_depot_yard_stop"	
+	wm_removeteamvoiceannounce 0 "railgun_axis_depot_capture"	
+	wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+	wm_teamvoiceannounce 1 "radar_allies_entrances_destroy"
+	wm_teamvoiceannounce 1 "falken_allies_objective_steal"
+	wm_teamvoiceannounce 0 "radar_axis_entrances_defend"
+	wm_teamvoiceannounce 0 "falken_axis_objective_defend"
+	wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+	wm_addteamvoiceannounce 1 "radar_allies_entrances_destroy"
+	wm_addteamvoiceannounce 1 "falken_allies_objective_steal"
+	wm_addteamvoiceannounce 0 "radar_axis_entrances_defend"	
+	wm_addteamvoiceannounce 0 "falken_axis_objective_defend"
+	wm_addteamvoiceannounce 1 "falken_allies_objective_steal"
+
+	// *---------------------------------------------------------------------------------*
+
+	wait 500
+	setautospawn "Station Spawns" 1
+	setautospawn "Base Spawns" 0
+	accum 1 abort_if_not_equal 0
+	alertentity checkpoint_wobj1
+	alertentity checkpoint1_spawns
+	}
+	
+	trigger spawns2station
+	{
+	setstate  axis_station_spawns  invisible
+	alertentity WOBJ_station_spawns
+	alertentity allies_station_spawns
+	}
+}
+
+// ================================================================================
+// ============================ generator & opening gates================
+// ===========================================================================0
+
+generator_obj1
+{
+	spawn
+	{
+	wait 200 
+    	constructible_class 3
+	}
+	
+	death
+	{
+	wm_announce "Allies gained access to the base"
+	trigger checkpoint1 spawns2station
+	trigger checkpoint1 remove_flag
+	trigger gate1 move_it
+	wm_objective_status 2 0 2
+        wm_objective_status 2 1 1	
+	alertentity smoke_generator
+	alertentity rubble_generator
+	disablespeaker generator_sound
+
+	wait 500
+	setautospawn "Station Spawns" 1
+	}
+}
+
+gate1
+{
+	spawn
+	{
+	wait 50
+	setstate doorall invisible
+	setstate doorall2 invisible
+	}
+	
+	trigger move_it
+	{
+	setstate dooraxis invisible
+	setstate doorall default
+	playsound sound/movers/misc/garage_door_start_01.wav
+	wait 400
+	playsound sound/movers/misc/garage_door_loop_01.wav looping volume 800
+	gotomarker gate1_down 10 wait
+	stopsound
+	playsound sound/movers/misc/garage_door_end_01.wav
+	setstate doorall2 default
+	setstate cvops_alarm invisible
+	setstate base_back_door invisible
+	}
+}
+
+
+// ============================================================
+// ======================command post===========================
+// ============================================================
+
+allied_cp_open
+{
+	spawn
+	{
+		wait 100
+		accum 0 set 0			// 0=CP Closed, 1=CP Damaged
+		accum 1 set 0
+		constructible_class 2			// Dyno+Satchel
+
+		setstate allied_cp_damaged invisible	// Hide damaged CP clipbrush+model
+		setstate allied_cp_damaged_model invisible
+		trigger self disable_cp_features		// Default charge bar times
+
+	}
+
+	trigger disable_cp_features
+	{
+		setstate allied_cp_open_model invisible	// Hide Open CP model
+		setstate wobj_allies_cp_spawn invisible
+		setstate cp_allies_spawns invisible
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+
+		wm_objective_status 3 1 0
+		wm_objective_status 3 0 1
+
+		sethqstatus 1 0			// Landmines team warning message
+		wait 400
+		disablespeaker speaker_allied_cp		// Disable morse code sound
+		
+		accum 1 abort_if_equal 0
+		wm_announce "Axis team has destroyed the Allied Command Post! Allies lost their spawn at the Command Post!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger enable_cp_features
+	{
+		setstate allied_cp_open_model default	// Show open CP model
+		setstate wobj_allies_cp_spawn default
+		setstate cp_allies_spawns default
+		wait 400
+		setautospawn "CP Spawns" 1
+
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+
+		wm_objective_status 3 1 1
+		wm_objective_status 3 0 2
+
+		sethqstatus 1 1			// Landmines team warning message
+		enablespeaker speaker_allied_cp		// Enable morse code sound
+
+		wm_announce "Allied Command Post constructed. Allied spawn at the Command Post activated!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		// *----------------------------------- vo ------------------------------------------*
+
+	}
+
+	buildstart final
+	{
+		setstate allied_cp_closed invisible		// Hide closed CP clipbrush+model
+		setstate allied_cp_closed_model invisible
+		setstate allied_cp_damaged invisible	// Hide damaged CP clipbrush+model
+		setstate allied_cp_damaged_model invisible
+	}
+
+	built final
+	{
+		accum 0 set 1			// Only show the damaged CP model
+		accum 1 set 0
+		trigger self enable_cp_features		// Increase charge bar times
+	}
+
+	decayed final
+	{
+		setstate allied_cp_open_model invisible	// Hide Open CP model
+		trigger self show_damaged_cabinet	// Show previous cabinet state
+		trigger self show_closed_cabinet
+	}
+
+	death
+	{
+		accum 1 set 1
+		trigger self show_damaged_cabinet	// Show damaged CP model
+		trigger self disable_cp_features		// Default charge bar times
+	}
+
+	trigger show_closed_cabinet
+	{
+		accum 0 abort_if_equal 1		// Closed cabinet active yet?
+		setstate allied_cp_closed default
+		setstate allied_cp_closed_model default
+	}
+
+	trigger show_damaged_cabinet
+	{
+		accum 0 abort_if_equal 0		// Damaged cabinet active yet?
+		setstate allied_cp_damaged default
+		setstate allied_cp_damaged_model default
+	}
+}
+
+// ==============================================================================
+// ============================train ============================================
+// ==============================================================================
+
+train_box
+{
+	spawn
+	{
+	}
+	
+	death
+	{
+        wm_objective_status 6 0 2
+	wm_objective_status 6 1 1
+	trigger game_manager end_of_game
+	}
+}
+
+// =================================================================================
+// ======================== the BOx ==========================================
+// =================================================================================
+
+boxy
+{
+	spawn
+	{
+	}
+	
+	trigger returned
+	{
+	setstate box_clip default
+	}
+	trigger stolen
+	{
+	setstate box_clip invisible
+	}
+}
+
+// ===================================================================================
+// ====================== the entrances ==============================================
+// ===================================================================================
+
+lower_doors
+{
+	spawn
+	{
+	wait 200
+    	constructible_class 3
+	}
+
+	death
+	{
+	wm_announce "Allies destroyed the lower entrance"
+	setstate lower_doors_func_rotating invisible
+	wm_objective_status 4 0 2
+	wm_objective_status 4 1 1
+	trigger game_manager entrances
+	}
+}
+
+upper_doors
+{
+	spawn
+	{
+	wait 200
+    	constructible_class 3
+	}
+
+	death
+	{
+	wm_announce "Allies destroyed the upper entrance"
+	setstate upper_doors_func_rotating invisible
+	wm_objective_status 5 0 2
+	wm_objective_status 5 1 1
+	trigger game_manager entrances
+	}
+}
+
+// ================================================
+axis_cp_open
+{
+	spawn
+	{
+		wait 100
+		accum 0 set 0			// 0=CP Closed, 1=CP Damaged
+		constructible_class 2			// Dyno+Satchel
+
+		trigger self disable_cp_features		// Default charge bar times
+		setstate axis_cp_damaged invisible	// Hide damaged CP clipbrush+model
+		setstate axis_cp_damaged_model invisible
+
+		wait 1000
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger disable_cp_features
+	{
+		setstate axis_cp_open_model invisible	// Hide Open CP model
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+
+		sethqstatus 0 0			// Landmines team warning message
+		disablespeaker speaker_axis_cp		// Disable morse code sound
+	}
+
+	trigger enable_cp_features
+	{
+		setstate axis_cp_open_model default	// Show open CP model
+
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+
+		sethqstatus 0 1			// Landmines team warning message
+		enablespeaker speaker_axis_cp		// Enable morse code sound
+	}
+
+	buildstart final
+	{
+		setstate axis_cp_closed invisible		// Hide closed CP clipbrush+model
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_damaged invisible	// Hide damaged CP clipbrush+model
+		setstate axis_cp_damaged_model invisible
+	}
+
+	built final
+	{
+		accum 0 set 1			// Only show the damaged CP model
+		trigger self enable_cp_features		// Increase charge bar times
+
+		wm_announce "Axis Command Post constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate axis_cp_open_model invisible	// Hide Open CP model
+		trigger self show_damaged_cabinet	// Show previous cabinet state
+		trigger self show_closed_cabinet
+	}
+
+	death
+	{
+		trigger self show_damaged_cabinet	// Show damaged CP model
+		trigger self disable_cp_features		// Default charge bar times
+
+		wm_announce "Allied team has destroyed the Axis Command Post!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	trigger show_closed_cabinet
+	{
+		accum 0 abort_if_equal 1		// Closed cabinet active yet?
+		setstate axis_cp_closed default
+		setstate axis_cp_closed_model default
+	}
+
+	trigger show_damaged_cabinet
+	{
+		accum 0 abort_if_equal 0		// Damaged cabinet active yet?
+		setstate axis_cp_damaged default
+		setstate axis_cp_damaged_model default
+	}
+}
+
+axisconstruct_doors
+{
+	spawn
+	{
+		wait 50
+		setstate axisconstruct_doors_materials default	// Crate Models
+		setstate axisconstruct_doors_clip default	// Clip brushes
+		setstate axisconstruct_doors_flag default	
+		setstate axisconstruct_doors_const invisible
+		setstate axisconstruct_doors_door invisible	
+		constructible_class	2	// 2=Satchel 3=Dyna
+	}
+
+	trigger setup
+	{
+		setstate axisconstruct_doors_materials default	// Crate Models
+		setstate axisconstruct_doors_clip default	// Clip brushes
+		setstate axisconstruct_doors_flag default
+		setstate axisconstruct_doors_const invisible
+		setstate axisconstruct_doors_door invisible
+
+	}
+	
+	buildstart final
+	{
+		setstate axisconstruct_doors_door invisible
+		setstate axisconstruct_doors_const default
+	}
+
+
+	built final
+	{
+		setstate axisconstruct_doors_materials invisible	// Crate Models
+		setstate axisconstruct_doors_clip invisible	// Clip brushes
+		setstate axisconstruct_doors_flag invisible
+		setstate axisconstruct_doors_const invisible
+		setstate axisconstruct_doors_door default
+
+		wm_announce "Allied Team have built the barrier near the train!"
+	}
+
+	decayed final
+	{
+		trigger self setup
+	}
+
+	death
+	{
+		trigger self setup
+		wm_announce "allies have destroyed the barrier near the train!" 
+	}
+}
