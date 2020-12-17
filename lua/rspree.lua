@@ -592,7 +592,9 @@ function checkSpreeEnd(id, killer, normal_kill)
 end
 
 function et_ClientSpawn(id, revived)
-	revive_sprees[id] = 0
+	if revived ~= 1 then
+		revive_sprees[id] = 0
+	end
 end
 
 function et_ClientDisconnect(id)
@@ -843,6 +845,16 @@ function et_ConsoleCommand()
         return(1)        
     end
 
+    if et.trap_Argv(0) == "pb_sv_kick" then
+		if et.trap_Argc() >= 2 then
+			local cno = tonumber(et.trap_Argv(1))
+			if cno then
+				cno = cno - 1
+				et_ClientDisconnect(cno)
+			end
+		end
+		return 1
+	end
     return(0)
 end
 -- vim: ts=4 sw=4 expandtab syn=lua
