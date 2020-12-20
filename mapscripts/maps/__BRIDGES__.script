@@ -1,4 +1,5 @@
 /////__BRIDGES__/////
+// x0rnn increased truck/train speed by 50 units
 
 game_manager
 {
@@ -350,7 +351,7 @@ truck
 	trigger run_2
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_2 150 wait length 304
+		followspline 0 tspln_2 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 2
@@ -360,7 +361,7 @@ truck
 	trigger run_3
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_3 150 wait length 304
+		followspline 0 tspln_3 200 wait length 304
 		accum 1 bitreset 2
 
 		wm_removeteamvoiceannounce 1 "bridges_allies_truck_steal"
@@ -378,7 +379,7 @@ truck
 	trigger run_4
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_4 150 wait length 304
+		followspline 0 tspln_4 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 4
@@ -388,7 +389,7 @@ truck
 	trigger run_5
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_5 150 wait length 304
+		followspline 0 tspln_5 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 5
@@ -399,7 +400,7 @@ truck
 	{
 
 		accum 1 bitset 2
-		followspline 0 tspln_6 150 wait length 304
+		followspline 0 tspln_6 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 6
@@ -415,7 +416,7 @@ truck
 
 		
 		accum 1 bitset 2
-		followspline 0 tspln_7 115 wait length 304 
+		followspline 0 tspln_7 165 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 7
@@ -426,7 +427,7 @@ truck
 	trigger run_8
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_8 115 wait length 304 
+		followspline 0 tspln_8 165 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 8
@@ -484,7 +485,7 @@ truck
 		//togglespeaker wagner2
 		accum 1 bitset 2
 
-		followspline 0 tspln_9 115 wait length 304
+		followspline 0 tspln_9 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 9
@@ -494,7 +495,7 @@ truck
 	trigger run_10
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_10 115 wait length 304
+		followspline 0 tspln_10 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 10
@@ -504,7 +505,7 @@ truck
 	trigger run_11
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_11 115 wait length 304
+		followspline 0 tspln_11 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 11
@@ -514,7 +515,7 @@ truck
 	trigger run_12
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_12 115 wait length 304
+		followspline 0 tspln_12 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 12
@@ -524,7 +525,7 @@ truck
 	trigger run_13
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_13 115 wait length 304 
+		followspline 0 tspln_13 165 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 13
@@ -534,7 +535,7 @@ truck
 	trigger run_14
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_14 115 wait length 304 
+		followspline 0 tspln_14 165 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 14
@@ -544,7 +545,7 @@ truck
 	trigger run_15
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_15 115 wait length 304 
+		followspline 0 tspln_15 165 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 15
@@ -554,7 +555,7 @@ truck
 	trigger run_16
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_16 115 wait length 304  
+		followspline 0 tspln_16 165 wait length 304  
 		accum 1 bitreset 2
 
 		accum 3 set 16
@@ -564,7 +565,7 @@ truck
 	trigger run_17
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_17 115 wait length 304
+		followspline 0 tspln_17 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 17
@@ -574,7 +575,7 @@ truck
 	trigger run_18
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_18 115 wait length 304
+		followspline 0 tspln_18 165 wait length 304
 		accum 1 bitreset 2
 
 		//wait 500
@@ -612,7 +613,7 @@ truck
 	trigger run_19
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_19 115 wait length 304
+		followspline 0 tspln_19 165 wait length 304
 		accum 1 bitreset 2
 
 
@@ -624,7 +625,7 @@ truck
 	trigger run_20
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_20 115 wait length 304
+		followspline 0 tspln_20 165 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 20
@@ -634,7 +635,7 @@ truck
 	trigger run_21
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_21 150 wait length 304
+		followspline 0 tspln_21 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 21
@@ -644,7 +645,7 @@ truck
 	trigger run_22
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_22 150 wait length 304
+		followspline 0 tspln_22 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 22
@@ -654,7 +655,7 @@ truck
 	trigger run_23
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_23 150 wait length 304
+		followspline 0 tspln_23 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 23
@@ -664,7 +665,7 @@ truck
 	trigger run_24
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_24 150 wait length 304
+		followspline 0 tspln_24 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 24
@@ -674,7 +675,7 @@ truck
 	trigger run_25
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_25 150 wait length 304 
+		followspline 0 tspln_25 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 25
@@ -684,7 +685,7 @@ truck
 	trigger run_26
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_26 150 wait length 304 
+		followspline 0 tspln_26 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 26
@@ -694,7 +695,7 @@ truck
 	trigger run_27
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_27 150 wait length 304
+		followspline 0 tspln_27 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 27
@@ -704,7 +705,7 @@ truck
 	trigger run_28
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_28 150 wait length 304
+		followspline 0 tspln_28 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 28
@@ -714,7 +715,7 @@ truck
 	trigger run_29
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_29 150 wait length 304
+		followspline 0 tspln_29 200 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 29
@@ -724,7 +725,7 @@ truck
 	trigger run_30
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_30 156 wait length 304
+		followspline 0 tspln_30 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 30
@@ -734,7 +735,7 @@ truck
 	trigger run_31
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_31 156 wait length 304 
+		followspline 0 tspln_31 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 31
@@ -744,7 +745,7 @@ truck
 	trigger run_32
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_32 156 wait length 304 
+		followspline 0 tspln_32 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 32
@@ -754,7 +755,7 @@ truck
 	trigger run_33
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_33 156 wait length 304 
+		followspline 0 tspln_33 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 33
@@ -764,7 +765,7 @@ truck
 	trigger run_34
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_34 156 wait length 304 
+		followspline 0 tspln_34 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 34
@@ -774,7 +775,7 @@ truck
 	trigger run_35
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_35 156 wait length 304
+		followspline 0 tspln_35 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 35
@@ -784,7 +785,7 @@ truck
 	trigger run_36
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_36 156 wait length 304
+		followspline 0 tspln_36 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 36
@@ -794,7 +795,7 @@ truck
 	trigger run_37
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_37 150 wait length 304 
+		followspline 0 tspln_37 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 37
@@ -804,7 +805,7 @@ truck
 	trigger run_38
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_38 150 wait length 304 
+		followspline 0 tspln_38 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 38
@@ -814,7 +815,7 @@ truck
 	trigger run_39
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_39 150 wait length 304 
+		followspline 0 tspln_39 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 39
@@ -825,7 +826,7 @@ truck
 	trigger run_40
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_40 150 wait length 304 
+		followspline 0 tspln_40 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 40
@@ -835,7 +836,7 @@ truck
 	trigger run_41
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_41 150 wait length 304 
+		followspline 0 tspln_41 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 41
@@ -845,7 +846,7 @@ truck
 	trigger run_42
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_42 150 wait length 304 
+		followspline 0 tspln_42 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 42
@@ -855,7 +856,7 @@ truck
 	trigger run_43
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_43 150 wait length 304 
+		followspline 0 tspln_43 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 43
@@ -865,7 +866,7 @@ truck
 	trigger run_44
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_44 150 wait length 304 
+		followspline 0 tspln_44 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 44
@@ -875,7 +876,7 @@ truck
 	trigger run_45
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_45 150 wait length 304 
+		followspline 0 tspln_45 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 45
@@ -885,7 +886,7 @@ truck
 	trigger run_46
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_46 150 wait length 304 
+		followspline 0 tspln_46 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 46
@@ -895,7 +896,7 @@ truck
 	trigger run_47
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_47 150 wait length 304 
+		followspline 0 tspln_47 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 47
@@ -905,7 +906,7 @@ truck
 	trigger run_48
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_48 150 wait length 304 
+		followspline 0 tspln_48 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 48
@@ -915,7 +916,7 @@ truck
 	trigger run_49
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_49 150 wait length 304 
+		followspline 0 tspln_49 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 49
@@ -925,7 +926,7 @@ truck
 	trigger run_50
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_50 150 wait length 304 
+		followspline 0 tspln_50 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 50
@@ -935,7 +936,7 @@ truck
 	trigger run_51
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_51 150 wait length 304 
+		followspline 0 tspln_51 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 51
@@ -945,7 +946,7 @@ truck
 	trigger run_52
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_52 150 wait length 304 
+		followspline 0 tspln_52 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 52
@@ -955,7 +956,7 @@ truck
 	trigger run_53
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_53 150 wait length 304 
+		followspline 0 tspln_53 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 53
@@ -965,7 +966,7 @@ truck
 	trigger run_54
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_54 150 wait length 304 
+		followspline 0 tspln_54 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 54
@@ -975,7 +976,7 @@ truck
 	trigger run_55
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_55 150 wait length 304 
+		followspline 0 tspln_55 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 55
@@ -985,7 +986,7 @@ truck
 	trigger run_56
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_56 150 wait length 304 
+		followspline 0 tspln_56 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 56
@@ -995,7 +996,7 @@ truck
 	trigger run_57
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_57 150 wait length 304 
+		followspline 0 tspln_57 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 57
@@ -1005,7 +1006,7 @@ truck
 	trigger run_58
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_58 150 wait length 304 
+		followspline 0 tspln_58 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 58
@@ -1015,7 +1016,7 @@ truck
 	trigger run_59
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_59 150 wait length 304 
+		followspline 0 tspln_59 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 59
@@ -1025,7 +1026,7 @@ truck
 	trigger run_60
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_60 150 wait length 304 
+		followspline 0 tspln_60 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 60
@@ -1035,7 +1036,7 @@ truck
 	trigger run_61
 	{
 		accum 1 bitset 2
-		followspline 0 tspln_61 150 wait length 304 
+		followspline 0 tspln_61 200 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 61
@@ -1586,7 +1587,7 @@ train
 	{
 		
 		accum 1 bitset 2
-		followspline 0 trnspln2 156 wait length 304 
+		followspline 0 trnspln2 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 2
@@ -1596,7 +1597,7 @@ train
 	trigger run_3
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln3 156 wait length 304 
+		followspline 0 trnspln3 206 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 3
@@ -1607,7 +1608,7 @@ train
 	trigger run_4
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln4 156 wait length 304
+		followspline 0 trnspln4 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 4
@@ -1618,7 +1619,7 @@ train
 	{
 		
 		accum 1 bitset 2
-		followspline 0 trnspln5 156 wait length 304
+		followspline 0 trnspln5 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 5
@@ -1628,7 +1629,7 @@ train
 	trigger run_6
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln6 156 wait length 304
+		followspline 0 trnspln6 206 wait length 304
 		accum 1 bitreset 2
 
 		//wait 500
@@ -1680,7 +1681,7 @@ train
 	trigger run_7
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln7 140 wait length 304
+		followspline 0 trnspln7 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 7
@@ -1690,7 +1691,7 @@ train
 	trigger run_8
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln8 140 wait length 304
+		followspline 0 trnspln8 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 8
@@ -1700,7 +1701,7 @@ train
 	trigger run_9
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln9 140 wait length 304
+		followspline 0 trnspln9 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 9
@@ -1710,7 +1711,7 @@ train
 	trigger run_10
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln10 140 wait length 304 
+		followspline 0 trnspln10 190 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 10
@@ -1720,7 +1721,7 @@ train
 	trigger run_11
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln11 140 wait length 304 
+		followspline 0 trnspln11 190 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 11
@@ -1730,7 +1731,7 @@ train
 	trigger run_12
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln12 140 wait length 304 
+		followspline 0 trnspln12 190 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 12
@@ -1740,7 +1741,7 @@ train
 	trigger run_13
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln13 140 wait length 304 
+		followspline 0 trnspln13 190 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 13
@@ -1750,7 +1751,7 @@ train
 	trigger run_14
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln14 140 wait length 304 
+		followspline 0 trnspln14 190 wait length 304 
 		accum 1 bitreset 2
 
 		accum 3 set 14
@@ -1760,7 +1761,7 @@ train
 	trigger run_15
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln15 140 wait length 304
+		followspline 0 trnspln15 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 15
@@ -1770,7 +1771,7 @@ train
 	trigger run_16
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln16 140 wait length 304
+		followspline 0 trnspln16 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 16
@@ -1780,7 +1781,7 @@ train
 	trigger run_17
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln17 140 wait length 304
+		followspline 0 trnspln17 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 17
@@ -1791,7 +1792,7 @@ train
 	trigger run_18
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln18 140 wait length 304
+		followspline 0 trnspln18 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 18
@@ -1802,7 +1803,7 @@ train
 	{
 		
 		accum 1 bitset 2
-		followspline 0 trnspln19 140 wait length 304
+		followspline 0 trnspln19 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 19
@@ -1812,7 +1813,7 @@ train
 	trigger run_20
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln20 140 wait length 304
+		followspline 0 trnspln20 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 20
@@ -1822,7 +1823,7 @@ train
 	trigger run_21
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln21 140 wait length 304
+		followspline 0 trnspln21 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 21
@@ -1832,7 +1833,7 @@ train
 	trigger run_22
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln22 140 wait length 304
+		followspline 0 trnspln22 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 22
@@ -1842,7 +1843,7 @@ train
 	trigger run_23
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln23 140 wait length 304
+		followspline 0 trnspln23 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 23
@@ -1852,7 +1853,7 @@ train
 	trigger run_24
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln24 140 wait length 304
+		followspline 0 trnspln24 190 wait length 304
 		accum 1 bitreset 2
 		
 		accum 3 set 24
@@ -1863,7 +1864,7 @@ train
 	trigger run_25
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln25 140 wait length 304
+		followspline 0 trnspln25 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 25
@@ -1872,7 +1873,7 @@ train
 	trigger run_26
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln26 140 wait length 304
+		followspline 0 trnspln26 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 26
@@ -1881,7 +1882,7 @@ train
 	trigger run_27
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln27 140 wait length 304
+		followspline 0 trnspln27 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 27
@@ -1891,7 +1892,7 @@ train
 	trigger run_28
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln28 140 wait length 304
+		followspline 0 trnspln28 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 28
@@ -1901,7 +1902,7 @@ train
 	trigger run_29
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln29 140 wait length 304
+		followspline 0 trnspln29 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 29
@@ -1911,7 +1912,7 @@ train
 	trigger run_30
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln30 140 wait length 304
+		followspline 0 trnspln30 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 30
@@ -1921,7 +1922,7 @@ train
 	trigger run_31
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln31 140 wait length 304
+		followspline 0 trnspln31 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 31
@@ -1931,7 +1932,7 @@ train
 	trigger run_32
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln32 140 wait length 304
+		followspline 0 trnspln32 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 32
@@ -1941,7 +1942,7 @@ train
 	trigger run_33
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln33 140 wait length 304
+		followspline 0 trnspln33 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 33
@@ -1951,7 +1952,7 @@ train
 	trigger run_34
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln34 140 wait length 304
+		followspline 0 trnspln34 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 34
@@ -1961,7 +1962,7 @@ train
 	trigger run_35
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln35 140 wait length 304
+		followspline 0 trnspln35 190 wait length 304
 		accum 1 bitreset 2
 
 
@@ -1973,7 +1974,7 @@ train
 	trigger run_36
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln36 140 wait length 304
+		followspline 0 trnspln36 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 36
@@ -1983,7 +1984,7 @@ train
 	trigger run_37
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln37 140 wait length 304
+		followspline 0 trnspln37 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 37
@@ -1993,7 +1994,7 @@ train
 	trigger run_38
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln38 156 wait length 304
+		followspline 0 trnspln38 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 38
@@ -2003,7 +2004,7 @@ train
 	trigger run_39
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln39 156 wait length 304
+		followspline 0 trnspln39 206 wait length 304
 		accum 1 bitreset 2
 
 		//wait 500
@@ -2041,7 +2042,7 @@ train
 	trigger run_40
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln40 156 wait length 304
+		followspline 0 trnspln40 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 40
@@ -2051,7 +2052,7 @@ train
 	trigger run_41
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln41 156 wait length 304
+		followspline 0 trnspln41 206 wait length 304
 		accum 1 bitreset 2
 
 
@@ -2062,7 +2063,7 @@ train
 	trigger run_42
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln42 140 wait length 304
+		followspline 0 trnspln42 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 42
@@ -2072,7 +2073,7 @@ train
 	trigger run_43
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln43 140 wait length 304
+		followspline 0 trnspln43 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 43
@@ -2082,7 +2083,7 @@ train
 	trigger run_44
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln44 140 wait length 304
+		followspline 0 trnspln44 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 44
@@ -2092,7 +2093,7 @@ train
 	trigger run_45
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln45 140 wait length 304
+		followspline 0 trnspln45 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 45
@@ -2102,7 +2103,7 @@ train
 	trigger run_46
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln46 140 wait length 304
+		followspline 0 trnspln46 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 46
@@ -2112,7 +2113,7 @@ train
 	trigger run_47
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln47 140 wait length 304
+		followspline 0 trnspln47 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 47
@@ -2122,7 +2123,7 @@ train
 	trigger run_48
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln48 140 wait length 304
+		followspline 0 trnspln48 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 48
@@ -2132,7 +2133,7 @@ train
 	trigger run_49
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln49 140 wait length 304
+		followspline 0 trnspln49 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 49
@@ -2142,7 +2143,7 @@ train
 	trigger run_50
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln50 140 wait length 304
+		followspline 0 trnspln50 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 50
@@ -2152,7 +2153,7 @@ train
 	trigger run_51
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln51 140 wait length 304
+		followspline 0 trnspln51 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 51
@@ -2162,7 +2163,7 @@ train
 	trigger run_52
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln52 140 wait length 304
+		followspline 0 trnspln52 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 52
@@ -2172,7 +2173,7 @@ train
 	trigger run_53
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln53 140 wait length 304
+		followspline 0 trnspln53 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 53
@@ -2182,7 +2183,7 @@ train
 	trigger run_54
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln54 140 wait length 304
+		followspline 0 trnspln54 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 54
@@ -2192,7 +2193,7 @@ train
 	trigger run_55
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln55 140 wait length 304
+		followspline 0 trnspln55 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 55
@@ -2202,7 +2203,7 @@ train
 	trigger run_56
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln56 140 wait length 304
+		followspline 0 trnspln56 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 56
@@ -2212,7 +2213,7 @@ train
 	trigger run_57
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln57 140 wait length 304
+		followspline 0 trnspln57 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 57
@@ -2222,7 +2223,7 @@ train
 	trigger run_58
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln58 140 wait length 304
+		followspline 0 trnspln58 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 58
@@ -2232,7 +2233,7 @@ train
 	trigger run_59
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln59 140 wait length 304
+		followspline 0 trnspln59 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 59
@@ -2244,7 +2245,7 @@ train
 		//trigger boathouse_bridge remove
 
 		accum 1 bitset 2
-		followspline 0 trnspln60 140 wait length 304
+		followspline 0 trnspln60 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 60
@@ -2254,7 +2255,7 @@ train
 	trigger run_61
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln61 156 wait length 304
+		followspline 0 trnspln61 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 61
@@ -2264,7 +2265,7 @@ train
 	trigger run_62
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln62 140 wait length 304
+		followspline 0 trnspln62 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 62
@@ -2274,7 +2275,7 @@ train
 	trigger run_63
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln63 140 wait length 304
+		followspline 0 trnspln63 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 63
@@ -2284,7 +2285,7 @@ train
 	trigger run_64
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln64 140 wait length 304
+		followspline 0 trnspln64 190 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 64
@@ -2294,7 +2295,7 @@ train
 	trigger run_65
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln65 156 wait length 304
+		followspline 0 trnspln65 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 65
@@ -2304,7 +2305,7 @@ train
 	trigger run_66
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln66 156 wait length 304
+		followspline 0 trnspln66 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 66
@@ -2314,7 +2315,7 @@ train
 	trigger run_67
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln67 156 wait length 304
+		followspline 0 trnspln67 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 67
@@ -2324,7 +2325,7 @@ train
 	trigger run_68
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln68 156 wait length 304
+		followspline 0 trnspln68 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 68
@@ -2334,7 +2335,7 @@ train
 	trigger run_69
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln69 156 wait length 304
+		followspline 0 trnspln69 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 69
@@ -2344,7 +2345,7 @@ train
 	trigger run_70
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln70 156 wait length 304
+		followspline 0 trnspln70 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 70
@@ -2354,7 +2355,7 @@ train
 	trigger run_71
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln71 156 wait length 304
+		followspline 0 trnspln71 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 71
@@ -2364,7 +2365,7 @@ train
 	trigger run_72
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln72 156 wait length 304
+		followspline 0 trnspln72 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 72
@@ -2374,7 +2375,7 @@ train
 	trigger run_73
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln73 156 wait length 304
+		followspline 0 trnspln73 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 73
@@ -2384,7 +2385,7 @@ train
 	trigger run_74
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln74 156 wait length 304
+		followspline 0 trnspln74 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 74
@@ -2395,7 +2396,7 @@ train
 	trigger run_75
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln75 156 wait length 304
+		followspline 0 trnspln75 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 75
@@ -2405,7 +2406,7 @@ train
 	trigger run_76
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln76 156 wait length 304
+		followspline 0 trnspln76 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 76
@@ -2415,7 +2416,7 @@ train
 	trigger run_77
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln77 156 wait length 304
+		followspline 0 trnspln77 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 77
@@ -2425,7 +2426,7 @@ train
 	trigger run_78
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln78 156 wait length 304
+		followspline 0 trnspln78 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 78
@@ -2435,7 +2436,7 @@ train
 	trigger run_79
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln79 156 wait length 304
+		followspline 0 trnspln79 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 79
@@ -2445,7 +2446,7 @@ train
 	trigger run_80
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln80 156 wait length 304
+		followspline 0 trnspln80 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 80
@@ -2455,7 +2456,7 @@ train
 	trigger run_81
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln81 156 wait length 304
+		followspline 0 trnspln81 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 81
@@ -2465,7 +2466,7 @@ train
 	trigger run_82
 	{
 		accum 1 bitset 2
-		followspline 0 trnspln82 156 wait length 304
+		followspline 0 trnspln82 206 wait length 304
 		accum 1 bitreset 2
 
 		accum 3 set 82
