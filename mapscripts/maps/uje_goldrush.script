@@ -11,12 +11,12 @@
 // x0rnn - allied spawnroof disabled after truck with gold is near truck barrier #2
 // x0rnn - added lower axis spawns in 2nd spawn
 // x0rnn - blocked new doors
+// x0rnn - deleted most upper axis spawns and added default lower spawns
 
 game_manager
 {
 	spawn
 	{
-
 	create
 	{
 		scriptName "doorblock1"
@@ -118,6 +118,326 @@ game_manager
 	classname "team_CTF_redspawn"
 	origin "2616 -872 -432"
 	angle "90"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "135"
+	spawnflags "3"
+	origin "3048 -1000 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "3048 -936 -432"
+	spawnflags "3"
+	angle "135"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	spawnflags "3"
+	angle "110"
+	origin "3104 -1096 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2960 -656 -432"
+	spawnflags "3"
+	angle "180"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "110"
+	spawnflags "3"
+	origin "2856 -1000 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	spawnflags "3"
+	classname "team_CTF_redspawn"
+	origin "2664 -1000 -432"
+	angle "110"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "180"
+	spawnflags "3"
+	origin "3048 -768 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "180"
+	spawnflags "3"
+	origin "2792 -656 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2728 -656 -432"
+	spawnflags "3"
+	angle "180"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	spawnflags "3"
+	classname "team_CTF_redspawn"
+	origin "2552 -936 -432"
+	angle "90"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "180"
+	spawnflags "3"
+	origin "2888 -656 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "3048 -840 -432"
+	spawnflags "3"
+	angle "150"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	spawnflags "3"
+	angle "110"
+	origin "2792 -1000 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	spawnflags "3"
+	classname "team_CTF_redspawn"
+	origin "2728 -1000 -432"
+	angle "110"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "150"
+	spawnflags "3"
+	origin "2976 -840 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2976 -768 -432"
+	spawnflags "3"
+	angle "180"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "3032 -1096 -432"
+	angle "110"
+	spawnflags "3"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "135"
+	spawnflags "3"
+	origin "2976 -936 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2976 -1000 -432"
+	spawnflags "3"
+	angle "135"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "110"
+	origin "2728 -936 -432"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2792 -936 -432"
+	angle "110"
+	spawnflags "3"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "100"
+	origin "2664 -936 -432"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2856 -936 -432"
+	spawnflags "3"
+	angle "110"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2888 -720 -432"
+	spawnflags "3"
+	angle "180"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "135"
+	spawnflags "3"
+	origin "2728 -784 -432"
+	classname "team_CTF_redspawn"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	classname "team_CTF_redspawn"
+	origin "2792 -784 -432"
+	spawnflags "3"
+	angle "180"
+	}
+	
+	create
+	{
+	targetname "axislowerspawn"
+	scriptname "axislowerspawn"
+	angle "90"
+	origin "2592 -1008 -432"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axisupperspawn"
+	scriptname "axisupperspawn"
+	angle "60"
+	origin "2240 -536 -192"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axisupperspawn"
+	scriptname "axisupperspawn"
+	angle "90"
+	origin "2288 -536 -192"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axisupperspawn"
+	scriptname "axisupperspawn"
+	angle "135"
+	origin "2336 -536 -192"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axisupperspawn"
+	scriptname "axisupperspawn"
+	angle "270"
+	origin "2272 -936 -192"
+	classname "team_CTF_redspawn"
+	spawnflags "3"
+	}
+
+	create
+	{
+	targetname "axisupperspawn"
+	scriptname "axisupperspawn"
+	angle "225"
+	origin "2368 -984 -192"
+	classname "team_CTF_redspawn"
 	spawnflags "3"
 	}
 
@@ -372,7 +692,7 @@ game_manager
 		alertentity tankdepot_allied_spawns
 		alertentity tankdepotblob		// Tank Depot team_WOLF_objective
 
-		setautospawn	"Axis Spawn"	0
+		setautospawn	"Axis Lower Spawn"	0
 		setautospawn	"Tank Depot"	1
 
 		accum 4 set 1
@@ -408,6 +728,14 @@ game_manager
 
 		wm_removeteamvoiceannounce 0 "goldrush_axis_tank_steal"
 		// *---------------------------------------------------------------------------------*
+	}
+}
+
+axisspawn
+{
+	spawn
+	{
+		remove
 	}
 }
 
