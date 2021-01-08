@@ -4,12 +4,23 @@
 // Mapscript by Dynasty
 // Modified : 02/17/17
 // ============================================================================
-
+// x0rnn - prevented securing access codes at truck
 
 game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "playerclip"
+			targetname "playerclip"
+			classname "func_fakebrush"
+			origin "3319 2581 14"
+			contents 65536 // CONTENTS_PLAYERCLIP
+			mins "-30 -100 -300"
+			maxs "30 100 300"
+		}
+
 		
 		accum 1 set 0
       		
@@ -112,6 +123,7 @@ transmitter_obj
 	death
 	{
 		wm_announce "The Allies have transmitted the Access codes. The main gate is opening!!"
+		setstate playerclip invisible
 		
 		trigger maingate move_up
 
