@@ -1,0 +1,1126 @@
+// ============================================================================
+// Map: Decay
+// Author:  Dynasty
+// Mapscript by Dynasty
+// Modified : 02/17/17
+// ============================================================================
+
+
+game_manager
+{
+	spawn
+	{
+		
+		accum 1 set 0
+      		
+// Game rules
+		wm_axis_respawntime	30
+		wm_allied_respawntime	20
+		wm_set_round_timelimit	15
+		wm_number_of_objectives 8
+
+
+		// Stopwatch mode defending team (0=Axis, 1=Allies)
+		wm_set_defending_team	0
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies, -1=Nobody)
+		wm_setwinner 0
+		
+		wait 100
+
+		setautospawn "Allied Camp" 1
+		setautospawn "Forward Flag" 0
+
+		wait 100
+		
+		//setstate alliesroomspawn_wobj invisible
+		
+		wait 100
+		
+		//setstate lockerroom_spawns invisible
+      
+      	// Current main objectives for each team (0=Axis, 1=Allies) Status <0=neutral,1=complete,2=failed>
+      	wm_objective_status 1 0 0  //access code pick up
+      	wm_objective_status 1 1 0  
+      	wm_objective_status 2 0 0  //access code drop off
+      	wm_objective_status 2 1 0  
+      	wm_objective_status 3 0 1  //forward spawn
+      	wm_objective_status 3 1 0  //
+      	wm_objective_status 4 0 0  //Side Entrance
+      	wm_objective_status 4 1 0  //
+      	wm_objective_status 5 0 0  //command post
+      	wm_objective_status 5 1 0  //
+      	wm_objective_status 6 0 0  //generator
+      	wm_objective_status 6 1 0  //
+      	wm_objective_status 7 0 0  //gold crates
+      	wm_objective_status 7 1 0  //
+      	wm_objective_status 8 0 0  //getaway Truck
+      	wm_objective_status 8 1 0  //
+	
+
+		//main objective is to cap gold crates
+		//wm_set_main_objective 1 1
+		//wm_set_main_objective 1 0
+		
+		wait 500
+		trigger game_manager startvos
+
+	}
+
+	trigger startvos
+	{
+	// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "radar_axis_entrances_defend"
+		wm_teamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_teamvoiceannounce 1 "radar_allies_entrances_destroy"
+
+		wm_addteamvoiceannounce 0 "radar_axis_entrances_defend"
+		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+		//wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_addteamvoiceannounce 1 "radar_allies_entrances_destroy"
+	// *---------------------------------------------------------------------------------*	
+	}	
+	
+	trigger objective_counter
+	{
+		accum 1 inc 1
+		trigger game_manager checkgame
+	}
+
+	trigger checkgame
+	{
+		accum 1 abort_if_not_equal 2
+
+		wm_announce "Allies have escaped with the Gold!"
+		wm_setwinner 1
+		wait 750
+		wm_endround
+	}		
+
+}
+
+//End of Game_manager section
+
+transmitter_obj
+{
+	spawn
+	{
+	}
+	death
+	{
+		wm_announce "The Allies have transmitted the Access codes. The main gate is opening!!"
+		
+		trigger maingate move_up
+
+		trigger forward_flag	 force_allied 	// if obj captured, only allies can spawn at the forward spawn
+
+		trigger forward_flag	 check_obj
+
+		trigger forward_flag	 kill
+
+		wait 100
+
+		setautospawn "Axis Garrison"	0		// axis are now forced to spawn at Axis Garrison
+
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1
+		remove
+		
+	}
+}
+
+secretdocs
+{
+    spawn
+    {
+	    wait 200
+    }
+    trigger stolen 
+    {
+    	//when the objective is taken 
+    	// Hide command map marker of docs at table
+    	setstate secret_docs invisible 
+		wm_objective_status	1 1 1
+		wm_objective_status	1 0 2
+	}
+	trigger dropped
+	{
+		//when the player carrying the objective is killed 
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_objective_lost"
+		// *---------------------------------------------------------------------------------*
+		wm_announce "The Allies have dropped the Access Codes" 
+	}
+	trigger returned
+	{
+		//when defending team touches the dropped objective
+		// Show command map marker of docs at table
+		setstate secret_docs default 
+
+		wm_objective_status	1 1 2
+		wm_objective_status	1 0 1
+	} 
+	trigger captured
+	{
+		//when the objective is delivered to its deliverypoint 
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_lost"
+		wm_teamvoiceannounce 1 "allies_hq_objective_captured"
+		wm_addteamvoiceannounce 0 "battery_axis_generator_defend"
+		wm_addteamvoiceannounce 1 "battery_allies_generator_destroy"
+		wm_teamvoiceannounce 0 "battery_axis_generator_defend"
+		wm_teamvoiceannounce 1 "battery_allies_generator_destroy"
+		wm_addteamvoiceannounce 0 "goldrush_axis_gold_defend"
+		wm_addteamvoiceannounce 1 "goldrush_allies_gold_get"
+		wm_teamvoiceannounce 0 "goldrush_axis_gold_defend"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold_get"
+		
+		// *---------------------------------------------------------------------------------*
+		
+		wm_announce "The Allies have permanently secured the forward bunker"
+
+		wm_objective_status	2 1 1
+		wm_objective_status	2 0 2
+
+
+
+	}
+}
+
+
+
+forward_flag	 
+{
+
+	spawn
+	{
+
+		accum 2 set 0 // Who owns flag: 0-Axis, 1-Allied, 2-Nobody
+
+	}
+
+	trigger axis_capture // Touched by an Axis player
+
+	{
+
+		accum 2 abort_if_equal 0 // do Axis own flag?
+
+		accum 2 trigger_if_equal 1 forward_flag axis_reclaim // Reclaimed from Allies
+
+		accum 2 set 0 // Axis own the flag
+
+		wm_announce "Axis have captured the Forward Flag!"
+
+		wm_objective_status 		3 0 1	// Forward Flag	-axis	-spawn taken
+		wm_objective_status 		3 1 2	// Forward Flag	-allies	-failed
+
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+
+		wm_teamvoiceannounce 0 "radar_axis_bunker_reclaimed"
+		wm_teamvoiceannounce 1 "radar_allies_bunker_reclaimed"
+		// *---------------------------------------------------------------------------------*
+
+	}
+	
+	trigger axis_reclaim
+
+	{
+
+		alertentity forward_wobj // Switch command map marker
+		setautospawn "Forward Flag" 0
+
+	}
+
+	trigger allied_capture // Touched by an allied player
+
+	{
+
+		accum 2 abort_if_equal 1 // do Allies own flag?
+
+		accum 2 set 1 // Allied own the flag
+
+		wm_announce "Allies have captured the Forward Flag!"
+
+		wm_objective_status 		3 0 2	//Forward Flag	-axis	-failed
+		wm_objective_status 		3 1 1	//Forward Flag	-allies	-taken
+	
+		alertentity forward_wobj // Switch command map marker
+		setautospawn "Forward Flag" 1
+
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
+		wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
+
+		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+		// *---------------------------------------------------------------------------------*
+
+	}
+	
+	trigger check_obj
+	{
+		accum 2 abort_if_equal 1 				// no action needed if flag is already owned by allies
+
+		wm_objective_status 		3 0 2	//Forward Flag	-axis	-failed
+		wm_objective_status 		3 1 1	//Forward Flag	-allies	-taken
+
+	}
+
+	trigger force_allied
+	{
+		accum 2 abort_if_equal 1 				// no action needed if flag is already owned by allies
+		setautospawn "Forward Flag" 1
+		alertentity forward_wobj
+		alertentity forward_spawns
+
+
+		// *----------------------------------- vo ------------------------------------------*
+        globalaccum 2 abort_if_equal 1
+		wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
+		wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
+
+		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+		// *---------------------------------------------------------------------------------*
+
+	}
+
+	trigger kill							//removes spawnflag 
+	{
+		remove
+	}
+	 
+}
+
+//////////sidegate	 
+
+allied_sidegate	 	 
+{	 	 
+ 	spawn	 
+ 	{	 
+ 	 	wait 300
+ 	 	constructible_class 3 // 2=satchel 3=dyna
+ 	}	 
+ 	death	 
+ 	{	 
+ 	 	alertentity sidegate_bits
+ 	 	trigger allied_sidegate_toi remove
+ 	 	 
+ 	 	wm_announce "The Allies have destroyed the side entrance!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "radar_axis_entrance2_destroyed"
+		wm_teamvoiceannounce 1 "radar_allies_entrance2_destroyed"
+
+		wm_removeteamvoiceannounce 1 "radar_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 0 "radar_axis_entrances_defend"
+
+		// *---------------------------------------------------------------------------------*
+
+wm_objective_status 		4 0 2	//side gate	-axis	-failed
+wm_objective_status 		4 1 1	//side gate	-allies	-destroyed
+ 	}	 
+}	 	 
+ 	 	 
+allied_sidegate_toi	 	 
+{	 	 
+ 	trigger remove	 
+ 	{	 
+ 	 	remove
+ 	}	 
+}
+
+
+maingate
+{
+	spawn
+	{
+		wait 200
+		gotomarker path1_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker path1_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+
+axisramp_1
+{
+	spawn
+	{
+		wait 50
+		trigger self setup
+		constructible_class	2	// 2=Satchel 3=Dyna
+	}
+
+	trigger setup
+	{
+		setstate axisramp_1_materials default	// Crate Models
+		setstate axisramp_1_clip default		// Clip brushes
+		setstate axisramp_1_flag default
+	}
+
+	built final
+	{
+		setstate axisramp_1_materials invisible	// Crate Models
+		setstate axisramp_1_clip invisible	// Clip brushes
+		setstate axisramp_1_flag invisible
+
+		wm_announce "Axis Team have built the Ramp!"
+	}
+
+	decayed final
+	{
+		trigger self setup
+	}
+
+	death
+	{
+		trigger self setup
+		wm_announce "Allied have destroyed the Ramp!" 
+	}
+}
+
+axisfence_1
+{
+	spawn
+	{
+		wait 50
+		trigger self setup
+		constructible_class	2	// 2=Satchel 3=Dyna
+	}
+
+	trigger setup
+	{
+		setstate axisfence_1_materials default	// Crate Models
+		setstate axisfence_1_clip default		// Clip brushes
+		setstate axisfence_1_flag default
+	}
+
+	built final
+	{
+		setstate axisfence_1_materials invisible	// Crate Models
+		setstate axisfence_1_clip invisible	// Clip brushes
+		setstate axisfence_1_flag invisible
+
+		wm_announce "Axis Team have built the Fence!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_depotdef_constructed"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	decayed final
+	{
+		trigger self setup
+	}
+
+	death
+	{
+		trigger self setup
+		wm_announce "Allied have destroyed the Fence!" 
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_depotdef_destroyed"
+		wm_teamvoiceannounce 1 "allies_depotdef_destroyed"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+
+
+vault_gen	 	 
+{	 	 
+ 	spawn	 
+ 	{	 
+ 	 	wait 300
+ 	 	constructible_class 3 // 2=satchel 3=dyna
+ 	}	 
+ 	death	 
+ 	{	 
+ 	 	alertentity vault_gen_bits
+ 	 	trigger vault_gen_toi remove
+		disablespeaker gen_engine
+ 	 	 
+ 	 	wm_announce "The Allies have destroyed the generator, the vault doors are opening!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "battery_allies_generator_destroyed"
+		wm_teamvoiceannounce 0 "battery_axis_generator_destroyed"
+		
+		wm_removeteamvoiceannounce 0 "battery_axis_generator_defend"
+		wm_removeteamvoiceannounce 1 "battery_allies_generator_destroy"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold_defend"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold_get"
+		// *---------------------------------------------------------------------------------*
+
+
+     		//setstate alliesroomspawn_wobj default 
+		//setstate genroom_spawns default
+        	
+		trigger alliesroomspawn_wobj on
+	      //setstate alliesroomspawn_wobj default
+	      //setstate lockerroom_spawns default
+
+		setautospawn "Locker Room" 1
+
+		trigger vaultdoor1 move_up
+		trigger vaultdoor2 move_up
+		trigger vaultdoor3 move_up
+		trigger vaultdoor4 move_up
+		trigger vaultdoor5 move_up
+		trigger vaultdoor6 move_up
+		trigger vaultdoor7 move_up
+		trigger vaultdoor8 move_up
+
+
+wm_objective_status 		6 0 2	//generator	-axis	-failed
+wm_objective_status 		6 1 1	//generator	-allies	-destroyed
+		
+
+ 	}	 
+}
+
+
+//=============================== locker room spawns
+
+
+alliesroomspawn_wobj 
+{
+   	spawn
+	{
+	  wait 200
+	  setstate alliesroomspawn_wobj invisible
+	}
+    
+	trigger on
+    	{
+      	setstate alliesroomspawn_wobj default
+      	setstate lockerroom_spawns default
+	alertentity lockerroom_spawns
+      
+    	}
+
+}
+
+
+lockerroom_spawns 
+{
+   	spawn
+	{
+	  wait 200
+	  setstate lockerroom_spawns invisible
+	}
+}
+
+	 	  	 
+vault_gen_toi	 	 
+{	 	 
+ 	trigger remove	 
+ 	{	 
+ 	 	remove
+ 	}	 
+}
+
+
+vaultdoor1
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath1_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath1_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+vaultdoor2
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath2_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath2_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+vaultdoor3
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath3_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath3_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+vaultdoor4
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath4_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath4_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+vaultdoor5
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath5_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath5_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+vaultdoor6
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath6_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath6_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+vaultdoor7
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath7_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath7_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+vaultdoor8
+{
+	spawn
+	{
+		wait 200
+		gotomarker vaultpath8_0 1000
+	}
+	
+	trigger move_up
+	{
+		wait 500
+		playsound sound/movers/misc/garage_door_start_01.wav
+		wait 400
+		playsound sound/movers/misc/garage_door_loop_01.wav looping forever
+		gotomarker vaultpath8_1 80 wait
+		stopsound
+		playsound sound/movers/misc/garage_door_end_01.wav
+	}
+}
+
+
+fan01
+{
+	spawn
+	{
+		wait 50
+		setrotation	-650 0 0
+	}
+}
+
+
+axis_gold1
+{
+	spawn
+	{
+		wait 200
+		setstate axis_gold_captured1 invisible
+
+	}
+
+	trigger stolen
+	{
+		setstate axis_gold_cm_marker invisible
+
+		wm_objective_status 7 0 2
+		wm_objective_status 7 1 1
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold1_taken"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold1_taken"
+	}
+
+	trigger dropped
+	{
+		//when the player carrying the objective is killed 
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "goldrush_allies_gold1_lost"
+		wm_teamvoiceannounce 0 "goldrush_axis_gold1_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger returned
+	{
+		setstate axis_gold_cm_marker default
+
+		wm_announce "The Axis have intercepted the stolen gold crate!"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold1_returned"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold1_returned"
+
+		wm_objective_status 7 0 1
+		wm_objective_status 7 1 0
+	}
+
+	trigger captured
+	{
+		setstate axis_gold_cm_marker default
+
+		trigger golddoor1 auf				
+
+		trigger game_manager objective_counter
+
+		wm_announce "The Allies have secured a gold crate!"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold1_secured"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold1_secured"
+		wm_objective_status 7 0 2
+		wm_objective_status 7 1 1
+	}
+}
+
+axis_gold2
+{
+	spawn
+	{
+		wait 200
+
+		setstate axis_gold_captured2 invisible
+	}
+
+	trigger stolen
+	{
+		setstate axis_gold_cm_marker invisible
+
+		wm_announce "The Allies have stolen a gold crate!"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold2_taken"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold2_taken"
+		wm_objective_status 7 0 2
+		wm_objective_status 7 1 1
+	}
+
+	trigger dropped
+	{
+		//when the player carrying the objective is killed 
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "goldrush_allies_gold2_lost"
+		wm_teamvoiceannounce 0 "goldrush_axis_gold2_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger returned
+	{
+		setstate axis_gold_cm_marker default
+
+		wm_announce "The Axis have intercepted the stolen gold crate!"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold2_returned"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold2_returned"
+		wm_objective_status 7 0 1
+		wm_objective_status 7 1 0
+	}
+
+	trigger captured
+	{
+		trigger game_manager objective_counter
+
+		wm_announce "The Allies have secured a gold crate!"
+
+		wm_teamvoiceannounce 0 "goldrush_axis_gold2_secured"
+		wm_teamvoiceannounce 1 "goldrush_allies_gold2_secured"
+		wm_objective_status 7 0 2
+		wm_objective_status 7 1 1
+	}
+}
+
+truckbed_trigger1
+{
+	spawn
+	{
+	}
+
+	death
+	{
+		setstate axis_gold_red1 invisible
+		setstate axis_gold_captured1 default
+		trigger game_manager checkgame
+		wm_objective_status 7 0 0
+		wm_objective_status 7 1 0
+
+		remove
+	}
+}
+
+truckbed_trigger2
+{
+	spawn
+	{
+	}
+
+	death
+	{
+		setstate axis_gold_red2 invisible
+		setstate axis_gold_captured2 default
+		wm_objective_status 8 0 2
+		wm_objective_status 8 1 1
+
+		trigger game_manager checkgame
+
+		remove
+	}
+}
+
+golddoor1
+{
+	spawn
+	{
+	}
+
+	trigger auf
+	{
+		wait 500
+
+		playsound sound/movers/doors/door5_open.wav
+
+		faceangles 0 270 0 3000
+	}
+	
+
+}
+
+
+
+
+
+
+// *********************************************
+// ************** COMMAND POST *****************
+// *********************************************
+// ================================================
+neutral_cp_toi
+{
+	trigger show_neutral_cabinet			// Show Neutral Closed CP
+	{
+		setstate neutral_cp_closed default
+		setstate neutral_cp_closed_model default
+	}
+
+	trigger hide_neutral_cabinet			// Hide Neutral Closed CP
+	{
+		setstate neutral_cp_closed invisible
+		setstate neutral_cp_closed_model invisible
+	}
+}
+
+// ================================================
+allied_cp_open
+{
+	spawn
+	{
+		wait 100
+		constructible_class 2			// Dyno+Satchel
+
+		trigger self disable_cp_features	// Default charge bar times
+	}
+
+	trigger disable_cp_features
+	{
+		setstate allied_cp_open_model invisible	// Hide Open CP model
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+
+		sethqstatus 1 0				// Landmines team warning message
+		disablespeaker allied_cp_sound		// Disable morse code sound
+	}
+
+	trigger enable_cp_features
+	{
+		setstate allied_cp_open_model default	// Show open CP model
+
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		
+		
+		wm_objective_status 5 0 2
+        	wm_objective_status 5 1 1
+        
+        // ENABLE NEW SPAWN
+        trigger allied2spawn_wobj on
+
+		sethqstatus 1 1					// Landmines team warning message
+		enablespeaker allied_cp_sound			// Enable morse code sound
+      
+	}
+
+	buildstart final
+	{
+		trigger neutral_cp_toi hide_neutral_cabinet	// Hide Neutral CP model+clip brush
+	}
+
+	built final
+	{
+		trigger self enable_cp_features			// Increase charge bar times
+
+		wm_announce "Allied Command Post constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate allied_cp_open_model invisible		// Hide Open CP model
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+	}
+
+	death
+	{
+		
+	wm_objective_status 5 0 0
+      	wm_objective_status 5 1 0
+		
+	  //DISABLE NEW SPAWN
+      trigger allied2spawn_wobj off
+      
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+		trigger self disable_cp_features		// Default charge bar times
+
+		wm_announce "Axis team has destroyed the Allied Command Post!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+}
+
+// ================================================
+axis_cp_open
+{
+	spawn
+	{
+		wait 100
+		constructible_class 2				// Dyno+Satchel
+
+		trigger self disable_cp_features		// Default charge bar times
+	}
+
+	trigger disable_cp_features
+	{
+		setstate axis_cp_open_model invisible		// Hide Open CP model
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+
+		sethqstatus 0 0					// Landmines team warning message
+		disablespeaker axis_cp_sound			// Disable morse code sound
+	}
+
+	trigger enable_cp_features
+	{
+		setstate axis_cp_open_model default		// Show open CP model
+
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+
+		sethqstatus 0 1					// Landmines team warning message
+		enablespeaker axis_cp_sound			// Enable morse code sound
+
+		wm_objective_status 5 1 2
+        	wm_objective_status 5 0 1
+	}
+
+	buildstart final
+	{
+		trigger neutral_cp_toi hide_neutral_cabinet	// Hide Neutral CP model+clip brush
+	}
+
+	built final
+	{
+		trigger self enable_cp_features			// Increase charge bar times
+
+		wm_announce "Axis Command Post constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate axis_cp_open_model invisible		// Hide Open CP model
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+	}
+
+	death
+	{
+
+	wm_objective_status 5 0 0
+      	wm_objective_status 5 1 0
+
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+		trigger self disable_cp_features		// Default charge bar times
+
+		wm_announce "Allied team has destroyed the Axis Command Post!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+}
+
+//=============================== spawns
+
+
+allied2spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	  setstate allied2spawn_spawns invisible
+	}
+} 
+
+allied2spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	  setstate allied2spawn_wobj invisible
+	}
+	trigger off
+    {
+      setstate allied2spawn_wobj invisible
+      setstate allied2spawn_spawns invisible
+	  alertentity allied2spawn_spawns
+    }
+    trigger on
+    {
+      setstate allied2spawn_wobj default
+      setstate allied2spawn_spawns default
+	  alertentity allied2spawn_spawns
+      
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
