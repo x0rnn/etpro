@@ -5,6 +5,8 @@
 -1021 -905 113 "Backroad"
 4171 627 -155 "Boat"
 2052 -418 65 "Broken Tanks"
+-352 4405 243 "Bunker Health & Ammo"
+406 3987 535 "Bunker Health & Ammo Catwalk"
 -153 2939 327 "Catwalk"
 397 3054 327 @
 -967 2267 167 "Command Post"
@@ -29,4 +31,5 @@
 1992 3164 319 "Upper Office"
 1162 3807 319 @
 2096 4619 319 @
+334 5053 536 "Vent Room"
 194 2742 63 "Warehouse"
