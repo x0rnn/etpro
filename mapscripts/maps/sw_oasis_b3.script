@@ -2,7 +2,7 @@ game_manager
 // bani - bug fixes
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
 // Harlekin - Timebonus
-// x0rnn - corrected 2 allied spawn angles
+// x0rnn - corrected 2 allied spawn angles, moved axis garrison wobj closer to main entrance
 {
 	spawn
 	{
@@ -295,6 +295,17 @@ game_manager
 	{
 		trigger end_boom_north check_0
 		trigger end_boom_south check_1
+	}
+}
+
+axis_garrison_wobj
+{
+	spawn
+	{
+		set
+		{
+			origin "7349 4830 -456"
+		}
 	}
 }
 
