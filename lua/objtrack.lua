@@ -1,4 +1,4 @@
--- objtrack.lua by x0rnn, tracks who stole, returned or secured objectives
+-- objtrack.lua by x0rnn, tracks and announces who stole, returned or secured objectives
 -- preconfigured maps only; support for additional maps needs to be added manually
 
 mapname = ""
