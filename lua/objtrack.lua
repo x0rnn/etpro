@@ -1,4 +1,4 @@
--- objtrack.lua by x0rnn, tracks and announces who stole, returned or secured objectives
+-- objtrack.lua by x0rnn, tracks who stole, returned or secured objectives
 -- preconfigured maps only; support for additional maps needs to be added manually
 
 mapname = ""
@@ -582,6 +582,81 @@ function et_Print(text)
 		end
 	end -- end sos_secret_weapon
 
+	if mapname == "falkenstein_b3" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Prototype!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Prototype!\"\n")
+			end
+		end
+		if(string.find(text, "ALLIES ESCAPED WITH THE OBJECTIVE")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Prototype!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end falkenstein_b3
+
+	if mapname == "decay_b7" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Access Codes!\"\n")
+				else
+					if firstflag == false then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+					end
+				end
+			elseif team == 1 then
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Access Codes!\"\n")
+				else
+					if firstflag == false then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the first Gold Crate!\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					end
+				end
+			end
+		end
+		if(string.find(text, "The Allies have transmitted the Access codes")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Access Codes!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			second_obj = true
+		end
+		if(string.find(text, "The Allies have secured a gold crate!")) then
+			if firstflag == false then
+				local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
+				objcarriers[objcarriers_id[1]] = nil
+				table.remove(objcarriers_id, 1)
+				firstflag = true
+			elseif firstflag == true then
+				local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the second Gold Crate!\"\n")
+				objcarriers[objcarriers_id[1]] = nil
+				table.remove(objcarriers_id, 1)
+			end
+		end
+	end -- end decay_b7
+
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
 			local i, j = string.find(text, "%d+")   
@@ -726,6 +801,18 @@ function et_Obituary(victim, killer, mod)
 			table.remove(objcarriers_id, 1)
 		end
 	end
+	if mapname == "falkenstein_b3" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "decay_b7" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
 	if mapname == "et_ice" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -850,6 +937,18 @@ function et_ClientDisconnect(i)
 		end
 	end
 	if mapname == "sos_secret_weapon" then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "falkenstein_b3" then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "decay_b7" then
 		objcarriers[i] = nil
 		if objcarriers_id[1] == i then
 			table.remove(objcarriers_id, 1)
