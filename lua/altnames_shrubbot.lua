@@ -68,19 +68,21 @@ function et_ClientBegin(clientNum)
 		return false
 	end
 
-	if string.len(cl_guid) == 32 then
-		if next(names_table) ~= nil then
-			if not has_value(names_table, cl_guid .. "	" .. clean_name) then
-				fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
+	if string.lower(clean_name) ~= "etplayer" then
+		if string.len(cl_guid) == 32 then
+			if next(names_table) ~= nil then
+				if not has_value(names_table, cl_guid .. "	" .. clean_name) then
+					fd,len = et.trap_FS_FOpenFile(filename, et.FS_APPEND)
+					count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
+					et.trap_FS_FCloseFile(fd)
+					table.insert(names_table, cl_guid .. "	" .. clean_name)
+				end
+			else
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
 				count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
 				et.trap_FS_FCloseFile(fd)
 				table.insert(names_table, cl_guid .. "	" .. clean_name)
 			end
-		else
-			fd,len = et.trap_FS_FOpenFile(filename, et.FS_WRITE)
-			count = et.trap_FS_Write(cl_guid .. "	" .. clean_name .. "\n", string.len(cl_guid .. "	" .. clean_name .. "\n"), fd)
-			et.trap_FS_FCloseFile(fd)
-			table.insert(names_table, cl_guid .. "	" .. clean_name)
 		end
 	end
 end
