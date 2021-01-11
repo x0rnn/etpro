@@ -1821,15 +1821,28 @@ function et_ClientSpawn(id, revived)
             et.gentity_set(id, "sess.deaths", deaths[id])
             et.gentity_set(id, "sess.damage_given", dmg_given[id])
             et.gentity_set(id, "sess.damage_received", dmg_rcvd[id])
-            teamswitch[id] = false
         end
         
 		killing_sprees[id] = 0
 		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
-		if team == 1 and axis_time[id] == 0 then
-			axis_time[id] = et.trap_Milliseconds()
-		elseif team == 2 and allies_time[id] == 0 then
-			allies_time[id] = et.trap_Milliseconds()
+		if teamswitch[id] == true then
+			if team == 1 and axis_time[id] == 0 then
+				axis_time[id] = allies_time[id]
+				allies_time[id] = 0
+			elseif team == 2 and allies_time[id] == 0 then
+				allies_time[id] = axis_time[id]
+				axis_time[id] = 0
+			end
+			teamswitch[id] = false
+		else
+			if team == 1 and axis_time[id] == 0 then
+				axis_time[id] = et.trap_Milliseconds()
+			elseif team == 2 and allies_time[id] == 0 then
+				allies_time[id] = et.trap_Milliseconds()
+			elseif team == 3 then
+				axis_time[id] = 0
+				allies_time[id] = 0
+			end
 		end
 
 		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + id)
