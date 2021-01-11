@@ -884,6 +884,9 @@ function et_ClientSpawn(id, revived)
 			axis_time[id] = et.trap_Milliseconds()
 		elseif team == 2 and allies_time[id] == 0 then
 			allies_time[id] = et.trap_Milliseconds()
+		elseif team == 3 then
+			axis_time[id] = 0
+			allies_time[id] = 0
 		end
 	end
 end
