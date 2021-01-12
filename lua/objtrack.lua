@@ -657,6 +657,28 @@ function et_Print(text)
 		end
 	end -- end decay_b7
 
+	if mapname == "te_escape2" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Unholy Grail^7!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Unholy Grail^7!\"\n")
+			end
+		end
+		if(string.find(text, "The Allied team escaped with the Unholy Grail")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the ^1Unholy Grail^7!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end te_escape2
+
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
 			local i, j = string.find(text, "%d+")   
@@ -813,6 +835,12 @@ function et_Obituary(victim, killer, mod)
 			table.remove(objcarriers_id, 1)
 		end
 	end
+	if mapname == "te_escape2" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
 	if mapname == "et_ice" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -949,6 +977,12 @@ function et_ClientDisconnect(i)
 		end
 	end
 	if mapname == "decay_b7" then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	if mapname == "te_escape2" then
 		objcarriers[i] = nil
 		if objcarriers_id[1] == i then
 			table.remove(objcarriers_id, 1)
