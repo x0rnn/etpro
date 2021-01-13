@@ -11,7 +11,7 @@ game_manager
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
 		wm_number_of_objectives 8
-		wm_set_round_timelimit	22
+		wm_set_round_timelimit	15
 
 		// Objectives
 		// 1: Get into radar installation
@@ -52,14 +52,14 @@ game_manager
 		// Abandoned Villa
 		// Forward Bunker
 		// Lower Warehouse
-		setautospawn "Forward Bunker" 1
+		setautospawn "Abandoned Villa" 1
 		setautospawn "Forward Bunker" 0
 
 		disablespeaker allies_compost_sound
 		disablespeaker axis_compost_sound
 
 		setstate bunkerdoor_destroy invisible
-		setstate truck_trigger invisible
+		//setstate truck_trigger invisible
 
 		// wait for everything to settle
 		wait 500
@@ -79,6 +79,13 @@ game_manager
 		wm_teamvoiceannounce 1 "radar_allies_entrances_destroy"
 		wm_teamvoiceannounce 1 "radar_allies_bunker_capture"
 		// *---------------------------------------------------------------------------------*
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3*Initial Map time 15 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +3 min Main Entrance"
+		wm_announce "^3	  *  +2 min Side Entrance"
+		wm_announce "^3	  *  +2 min Documents"
+		// ----- Harlekin Timebonus Announce -----
 	}
 
 	trigger maindoor1_destroyed
@@ -98,7 +105,16 @@ game_manager
 
 		trigger roadbunker kill // Switch forward spawn to Allied ONLY
 		wm_announce	"Allies have breached the Main Entrance and secured the Forward Bunker!"
-		setstate truck_trigger default
+
+		// ----- Harlekin Timebonus Main Entrance -----
+		wm_announce "^1+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Main Entrance -----
+
+		//setstate truck_trigger default
+		trigger truck enable_stage1
 
 		wait 1000
 
@@ -127,6 +143,12 @@ game_manager
 		wm_set_main_objective		2	1
 
 		wm_announce	"Allies have breached the Side Entrance!"
+
+		// ----- Harlekin Timebonus Side Entrance -----
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Side Entrance -----
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
@@ -183,6 +205,12 @@ documents
 
 		wm_teamvoiceannounce 1 "allies_hq_objective_secure"
 		// *---------------------------------------------------------------------------------*
+
+		// ----- Harlekin Timebonus Documents -----
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Documents -----
 	}
 
 	trigger returned
@@ -1026,6 +1054,7 @@ axisfinalspawns_obj
 		setstate axishutspawns invisible
 		wait 50
 		setautospawn "Axis Final" 0
+		wm_announce "^1Axis Abandoned Villa spawn enabled!"
 		setstate eastside_wobj invisible
 		setstate eastsidespawns invisible
 		
@@ -1414,7 +1443,9 @@ truck
 {
 	spawn
 	{
+		//constructible_health 20000 // make indestructible?
 		faceangles 0 90 0 50
+		accum 1 bitset 0
 	}
 
 	// ========================================
@@ -1654,7 +1685,7 @@ truck
 
 		accum 3 set 15
 
-		trigger axisfinalspawns_obj on
+		trigger truck stuck_check_entrance
 
 		trigger truck run_continue
 	}
@@ -1666,6 +1697,9 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 16
+
+		trigger axisfinalspawns_obj on
+
 		trigger truck run_continue
 	}
 
@@ -2084,6 +2118,7 @@ truck
 		accum 1 bitreset 3
 
 		trigger truck stuck_check_documents
+		trigger truck stuck_check_entrance
 		trigger truck stuck_check_barrier3
 		trigger truck stuck_check_barrier4
 		trigger truck stuck_check_scriptlockout
@@ -2109,6 +2144,15 @@ truck
 		accum 3 abort_if_not_equal 0
 
 		accum 0 abort_if_greater_than 0
+
+		accum 1 bitset 3
+	}
+
+	trigger stuck_check_entrance
+	{
+		accum 3 abort_if_not_equal 15
+
+		accum 1 abort_if_not_bitset 0
 
 		accum 1 bitset 3
 	}
