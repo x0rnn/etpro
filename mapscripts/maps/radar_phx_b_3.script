@@ -86,6 +86,8 @@ game_manager
 		wm_announce "^3	  *  +2 min Side Entrance"
 		wm_announce "^3	  *  +2 min Documents"
 		// ----- Harlekin Timebonus Announce -----
+
+		wm_announce "^3Steal the documents by blowing the door under the Wooden Bridge!"
 	}
 
 	trigger maindoor1_destroyed
@@ -1664,6 +1666,9 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 13
+
+		trigger truck stuck_check_entrance
+
 		trigger truck run_continue
 	}
 
@@ -1674,6 +1679,7 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 14
+
 		trigger truck run_continue
 	}
 
@@ -1684,8 +1690,6 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 15
-
-		trigger truck stuck_check_entrance
 
 		trigger truck run_continue
 	}
@@ -2150,7 +2154,7 @@ truck
 
 	trigger stuck_check_entrance
 	{
-		accum 3 abort_if_not_equal 15
+		accum 3 abort_if_not_equal 13
 
 		accum 1 abort_if_not_bitset 0
 
