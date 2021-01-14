@@ -7,6 +7,11 @@ game_manager
 {
 	spawn
 	{
+		delete
+		{
+			origin "-857 -1225 1270" //remove documents room door
+		}
+
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
