@@ -92,7 +92,8 @@ game_manager
 		wm_announce "^3	  *  +2 min Documents"
 		// ----- Harlekin Timebonus Announce -----
 
-		wm_announce "^3Steal the documents by blowing the door under the Wooden Bridge!"
+		wm_announce "^3Steal the Documents by blowing the Door under the Wooden Bridge!"
+		wm_announce "^3Bring the Documents to the Escape Truck outside the Axis Garage!"
 	}
 
 	trigger maindoor1_destroyed
