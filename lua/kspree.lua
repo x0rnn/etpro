@@ -1794,9 +1794,13 @@ function et_ClientUserinfoChanged(clientNum)
     
     local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
 
+	if players[clientNum] == nil then
+		players[clientNum] = team
+	end
+
     if players[clientNum] ~= team then
         
-        if team == 1 or team == 2 then
+        if (team == 1 or team == 2) and players[clientNum] ~= 3 then
             teamswitch[clientNum] = true
         else
             teamswitch[clientNum] = false
