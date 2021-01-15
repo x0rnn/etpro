@@ -183,7 +183,7 @@ game_manager
 		wm_objective_status 5 0 2
 		wm_objective_status 5 1 1
 
-		wait 3000
+		wait 1000
 		wm_endround
 	}
 }
@@ -412,6 +412,7 @@ defense3
 		trigger defense3 setup
 
 		constructible_class 3
+		constructible_chargebarreq 0.75
 	}
 
 	trigger setup
@@ -523,6 +524,7 @@ defense4
 		trigger defense4 setup
 
 		constructible_class 3
+		constructible_chargebarreq 0.75
 	}
 
 	trigger setup
