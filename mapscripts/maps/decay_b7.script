@@ -5,7 +5,7 @@
 // Modified : 02/17/17
 // Modified : 05/01/20
 // ============================================================================
-
+// x0rnn - removed gold door that is closed until 1st gold is secured, both golds are accessible now
 
 game_manager
 {
@@ -870,7 +870,7 @@ axis_gold1
 	{
 		setstate axis_gold_cm_marker default
 
-		trigger golddoor1 auf				
+		//trigger golddoor1 auf				
 
 		trigger game_manager objective_counter
 
@@ -1001,16 +1001,17 @@ golddoor1
 {
 	spawn
 	{
+		remove
 	}
 
-	trigger auf
-	{
-		wait 500
-
-		playsound sound/movers/doors/door5_open.wav
-
-		faceangles 0 270 0 3000
-	}
+	//trigger auf
+	//{
+	//	wait 500
+    //
+	//	playsound sound/movers/doors/door5_open.wav
+    //
+	//	faceangles 0 270 0 3000
+	//}
 	
 
 }
