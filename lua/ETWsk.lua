@@ -266,13 +266,13 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- Würzburg Radar
+-- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
         c.spawns[2] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {2504, 3422, 1333}, radius2 = 999}
         c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 730}
-        c.spawns[3] = {state = NO_PROTECT, radius2 = 785}
+        c.spawns[3] = {name = "Forward Bunker", state = NO_PROTECT, pos = {-581, 1661, 1364}, radius2 = 785}
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
         c.spawns[7] = {name = "Lower Warehouse II", state = PROTECT_AXIS, pos = {-1270, -3772, 1248}, radius2 = 230}
@@ -281,7 +281,7 @@ function getConfig(map)
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
         c.spawns[2] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {2504, 3422, 1333}, radius2 = 999}
         c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 730}
-        c.spawns[3] = {state = NO_PROTECT, radius2 = 785}
+        c.spawns[3] = {name = "Forward Bunker", state = NO_PROTECT, pos = {-581, 1661, 1364}, radius2 = 785}
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
         c.spawns[7] = {name = "Lower Warehouse II", state = PROTECT_AXIS, pos = {-1270, -3772, 1248}, radius2 = 230}
