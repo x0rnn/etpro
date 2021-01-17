@@ -122,7 +122,7 @@ game_manager
 		// ----- Harlekin Timebonus Main Entrance -----
 
 		//setstate truck_trigger default
-		trigger truck enable_stage1
+		trigger truck enable_stage0
 
 		wait 1000
 
@@ -1430,7 +1430,7 @@ truck_construct
 //  - bit 2: spline status 		( 0 = not moving, 	1 = moving 		)
 //  - bit 3: stuck check flag 	( 0 = not stuck, 	1 = stuck 		)
 //  - bit 4: script lockout 	( 0 = no lockout, 	1 = lockout		)
-//  - bit 5: blank 				( 									)
+//  - bit 5: main door status 	( 0 = intact, 		1 = destroyed	)
 //  - bit 6: temp register 		(XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
 //  - bit 7: death status 		( 0 = alive, 		1 = dead		)
 //  - bit 8: player check 		( 0 = players, 		1 = no players	)
@@ -2164,7 +2164,7 @@ truck
 	{
 		accum 3 abort_if_not_equal 13
 
-		accum 1 abort_if_not_bitset 0
+		accum 1 abort_if_bitset 5
 
 		accum 1 bitset 3
 	}
@@ -2365,6 +2365,11 @@ truck
 
 	// ========================================
 	// barriers
+
+	trigger enable_stage0
+	{
+		accum 1 bitset 5
+	}
 
 	trigger enable_stage1
 	{
