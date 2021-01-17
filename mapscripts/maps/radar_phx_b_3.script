@@ -12,6 +12,27 @@ game_manager
 			origin "-857 -1225 1270" //remove documents room door
 		}
 
+		// Harlekin - Roof over Abondoned Villa 
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "2504 3422 2000"
+			contents 1  // SOLID
+			mins "-960 -938 -88"
+			maxs "960 938 88"
+		}
+		// Harlekin - Roof over Forward Hut 
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "-3625 -969 2000"
+			contents 1  // SOLID
+			mins "-300 -300 -88"
+			maxs "300 300 88"
+		}
+
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
