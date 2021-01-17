@@ -92,6 +92,10 @@ game_manager
 		//*---------------*
 
 		setstate powersupply_exit invisible
+		wm_announce "^3*Initial Map time 15 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +5 min Rocket Controls"
+
 	}
 
 	trigger doors_destroyed
@@ -237,6 +241,14 @@ setstate rocketcontrol default
 alertentity glotz_blub
 
 wm_announce "The Rocket Controls have been dismantled."
+
+wm_announce "^1+5 min Timebonus!"
+
+cvar timelimit inc "1"
+cvar timelimit inc "1"
+cvar timelimit inc "1"
+cvar timelimit inc "1"
+cvar timelimit inc "1"
 
 setstate drocketcontrols_toi default
 setstate t25 default
