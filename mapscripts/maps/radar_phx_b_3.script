@@ -1476,7 +1476,6 @@ truck
 	{
 		//constructible_health 20000 // make indestructible?
 		faceangles 0 90 0 50
-		accum 1 bitset 0
 	}
 
 	// ========================================
@@ -1695,8 +1694,6 @@ truck
 		accum 1 bitreset 2
 
 		accum 3 set 13
-
-		trigger truck stuck_check_entrance
 
 		trigger truck run_continue
 	}
