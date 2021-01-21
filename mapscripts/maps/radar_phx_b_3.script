@@ -111,6 +111,8 @@ game_manager
 		wm_announce "^3	  *  +3 min Main Entrance"
 		wm_announce "^3	  *  +2 min Side Entrance"
 		wm_announce "^3	  *  +2 min Documents"
+		wm_announce "^3	  *  +2 min 1st Barrier"
+
 		// ----- Harlekin Timebonus Announce -----
 
 		wm_announce "^3Steal the Documents by blowing the Door under the Wooden Bridge!"
@@ -1854,6 +1856,11 @@ truck
 		// **************************
 		trigger defense3 remove
 		// **************************
+
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus 1st Barrier -----
 
 		accum 1 bitset 2
 		followspline 0 tspln_28 125 wait length 304
