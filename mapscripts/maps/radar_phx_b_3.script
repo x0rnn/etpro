@@ -242,6 +242,8 @@ documents
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus Documents -----
+		wm_axis_respawntime	25
+		wm_announce "Axis respawn time changed to 25"
 	}
 
 	trigger returned
