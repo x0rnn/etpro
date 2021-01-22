@@ -214,7 +214,7 @@ function et_ClientCommand(id, command)
 			for j = 1, tbl_cnt do
 				et.trap_SendServerCommand(id, "chat \"" .. player_name_tbl[j] .. "\"")
 			end
-			et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": !altnames " .. cno .. "\n")
+			et.G_LogPrint("say: " .. et.gentity_get(id, "pers.netname") .. ": !altnames " .. et.gentity_get(cno, "pers.netname") .. "\n")
 			return 1
 		end
 	end
