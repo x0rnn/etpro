@@ -3,9 +3,37 @@ game_manager
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
 // Harlekin - Timebonus
 // x0rnn - corrected 2 allied spawn angles, moved axis garrison wobj closer to main entrance
+// x0rnn - added backplant protection at both guns
+
 {
 	spawn
 	{
+	create
+		{
+			scriptname "antibackplantsouth"
+			targetname "antibackplantsouth"
+			spawnflags 24
+			classname  "trigger_hurt"
+			dmg        15
+			sound      "sound/player/hurt_barbwire.wav"
+			origin     "9832 3936 -256"
+			mins       "-100 -150 -30"
+			maxs       "100 150 30"
+		}
+
+		create
+		{
+			scriptname "antibackplantnorth"
+			targetname "antibackplantnorth"
+			spawnflags 24
+			classname  "trigger_hurt"
+			dmg        15
+			sound      "sound/player/hurt_barbwire.wav"
+			origin     "9832 4702 -256"
+			mins       "-100 -150 -30"
+			maxs       "100 150 30"
+		}
+		
 		// delete wrong angle spawns
 		delete
 			{
