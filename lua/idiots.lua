@@ -864,6 +864,7 @@ function et_ClientCommand(id, cmd)
 				et.gentity_set(cno, "ps.origin", ps_origin)
 				msg = string.format("chat  \"" ..  et.gentity_get(cno, "pers.netname") .. " ^3got teleported.")
 				et.trap_SendServerCommand(-1, msg)
+				et.G_LogPrint("LUA event: " .. et.gentity_get(cno, "pers.netname") .. " got teleported by " .. et.gentity_get(id, "pers.netname") .. ".\n")
 			end
 	end
 	return(0)
