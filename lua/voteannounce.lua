@@ -4,7 +4,6 @@ votecount = {}
 voteflag = false
 teamvote = nil
 
-
 function et_InitGame(levelTime, randomSeed, restart)
  	et.RegisterModname("voteannounce.lua "..et.FindSelf())
 
