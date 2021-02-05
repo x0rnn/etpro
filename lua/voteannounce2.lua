@@ -27,7 +27,7 @@ function et_ClientCommand(id, command)
 	if et.trap_Argv(0) == "vote" then
 		local cs = et.trap_GetConfigstring(6)
 		local cs2 = et.trap_GetConfigstring(7)
-		if string.sub(cs2,1,5) == "KICK " or string.sub(cs2,1,5) == "MUTE " or string.sub(cs2,1,8) == "PUTSPEC " or string.sub(cs2,1,11) == "SWAPPLAYER " then
+		if string.sub(cs2,1,5) == "KICK " or string.sub(cs2,1,5) == "MUTE " or string.sub(cs2,1,8) == "PUTSPEC " or string.sub(cs2,1,8) == "PUTAXIS " or string.sub(cs2,1,10) == "PUTALLIES " then
 			noannounce = true
 		else
 			noannounce = false
