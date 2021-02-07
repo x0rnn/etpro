@@ -1,3 +1,6 @@
+-- To be used with etadmin_mod rights.cfg
+-- x0rnn: added megaslap, addtime, rconx
+
 --  0.1 17/02/2006
 --  0.2 added slap and renameplayer
 --  0.3 take partial names as input instead of slotnumber and optimize for use with
@@ -475,7 +478,27 @@ function et_ConsoleCommand()
       end
       return 1
     end
-        return 0
+
+	if et.trap_Argv(0) == "addtime" then
+		if et.trap_Argc() == 2 then
+			local time = tonumber(et.trap_Argv(1))
+			if time then
+				et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") + time)
+			else
+				et.G_Print("Not a valid number.\n")
+			end
+		end
+		return 1
+	end
+	
+	if et.trap_Argv(0) == "rconx" then
+		if et.trap_Argc() == 2 then
+			et.trap_SendConsoleCommand(et.EXEC_APPEND, et.trap_Argv(1) .. "\n" )
+		end
+		return 1
+	end
+	
+	return 0
 end
 
 function et_ClientCommand( clientNum, cmd )
