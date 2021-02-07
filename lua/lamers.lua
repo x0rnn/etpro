@@ -5,6 +5,7 @@
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2 and 3, put spec at 4)
 -- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
+-- removed panzerfaust when less than 12 players
 
 panzerlamers = {}
 mortarlamers = {}
@@ -46,6 +47,10 @@ al_threshold_1 = 10
 al_threshold_2 = 20
 al_threshold_3 = 35
 al_threshold_4 = 55
+
+checkInterval = 10000
+playerCount = 0
+GS = 2
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("lamers.lua "..et.FindSelf())
@@ -484,6 +489,21 @@ function et_Print(text)
 	end
 end
 
+function et_RunFrame( levelTime )
+	if math.mod(levelTime,checkInterval) ~= 0 then return end
+
+	GS = tonumber(et.trap_Cvar_Get("gamestate"))
+	if GS == 0 then
+		playerCount = 0
+		for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+			local team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
+			if team == 1 or team == 2 then
+				playerCount = playerCount + 1
+			end
+		end
+	end
+end
+
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
 		local team = et.gentity_get(id, "sess.sessionTeam")
@@ -497,6 +517,17 @@ function et_ClientSpawn(id, revived)
 				end
 				et.gentity_set(id, "ps.ammo", 12, 0)
 				et.gentity_set(id, "ps.ammoclip", 12, 0)
+			end
+		end
+		if GS == 0 then
+			if playerCount < 12 then
+				if et.gentity_get(id,"sess.latchPlayerType") == 0 then
+					if et.gentity_get(id, "sess.latchPlayerWeapon") == 5 then
+						et.gentity_set(id,"sess.latchPlayerType", 1)
+						et.G_Damage(id, 80, 1022, 1000, 8, 34)
+						et.trap_SendServerCommand(-1, "chat \"^3No panzerfaust when less than 12 players!\"")
+					end
+				end
 			end
 		end
 	end
