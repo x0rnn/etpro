@@ -1847,8 +1847,6 @@ function et_ClientSpawn(id, revived)
             et.gentity_set(id, "sess.damage_received", dmg_rcvd[id])
 			teamswitch[id] = false
         end
-        
-		killing_sprees[id] = 0
 
 		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + id)
 	    if et.Info_ValueForKey(cs, "c") == "1" then
@@ -1866,6 +1864,7 @@ function et_ClientSpawn(id, revived)
 	        end
 	    end
 	end
+	killing_sprees[id] = 0
 end
 
 function et_ClientDisconnect(id)
