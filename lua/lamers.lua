@@ -524,6 +524,7 @@ function et_ClientSpawn(id, revived)
 				if et.gentity_get(id,"sess.latchPlayerType") == 0 then
 					if et.gentity_get(id, "sess.latchPlayerWeapon") == 5 then
 						et.gentity_set(id,"sess.latchPlayerType", 1)
+						et.gentity_set(id, "ps.powerups", 1, 0)
 						et.G_Damage(id, 80, 1022, 1000, 8, 34)
 						et.trap_SendServerCommand(-1, "chat \"^3No panzerfaust when less than 12 players!\"")
 					end
