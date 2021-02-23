@@ -209,6 +209,7 @@ function et_Obituary(victim, killer, mod)
 												msg = string.format("cpm \"^3Huh. One of " .. name .. "^3's airstrike grenades was actually a real grenade. It malfunctioned.\n")
 												et.trap_SendServerCommand(-1, msg)
 												et.G_LogPrint("LUA event: Huh. One of " .. name .. "'s airstrike grenades was actually a real grenade. It malfunctioned.\n")
+												et.gentity_set(killer, "ps.powerups", 1, 0)
 												et.G_Damage(killer, 80, 1022, 1000, 8, 34)
 												et.G_Sound(killer, soundindex)
 											end
