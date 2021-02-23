@@ -243,6 +243,7 @@ function et_ConsoleCommand()
     					local cno = tonumber(et.trap_Argv(1))
    					 if cno then
   						if et.gentity_get(cno, "pers.connected") == 2 then
+ 							  et.gentity_set(cno, "ps.powerups", 1, 0)
  						  	et.G_Damage( cno, 80, 1022, 667, 8, 34 )
            					et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(cno) , "name") .. " has been gibbed \"\n")
                  			  soundindex = et.G_SoundIndex( "/sound/player/gib.wav" )
@@ -255,6 +256,7 @@ function et_ConsoleCommand()
 						end
 					else
             	       if nil ~= inSlot(et.trap_Argv(1)) then
+           				et.gentity_set(inSlot(et.trap_Argv(1)), "ps.powerups", 1, 0) 
           				 et.G_Damage( inSlot(et.trap_Argv(1)), 80, 1022, 667, 8, 34 )
           				et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(inSlot(et.trap_Argv(1))), "name") .. " has been gibbed \"\n")
             	         soundindex = et.G_SoundIndex( "/sound/player/gib.wav" )
@@ -273,6 +275,7 @@ function et_ConsoleCommand()
                 		amount = amount + 1
                		 if slaptype == "1" then
            				if phealth < amount then
+          					et.gentity_set(cno, "ps.powerups", 1, 0)
                            	et.G_Damage( cno, 80, 1022, 667, 8, 34 )
              					et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(cno), "name") .. " has been gibbed \"\n")
                         		soundindex = et.G_SoundIndex( "/sound/player/gib.wav" )
@@ -312,6 +315,7 @@ function et_ConsoleCommand()
        	         amount = amount + 1
         	        if slaptype == "1" then
            			if phealth < amount then
+          					et.gentity_set(inSlot(et.trap_Argv(2)), "ps.powerups", 1, 0)
                             et.G_Damage( inSlot(et.trap_Argv(2)), 80, 1022, 667, 8, 34 )
              				et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(inSlot(et.trap_Argv(2))), "name") .. " has been gibbed \"\n")
                         	 soundindex = et.G_SoundIndex( "/sound/player/gib.wav" )
@@ -540,6 +544,7 @@ function et_ConsoleCommand()
 				if v[1][3] == 1 then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				else
+					et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
 				end
 			end
@@ -547,6 +552,7 @@ function et_ConsoleCommand()
 				if v[1][3] == 2 then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				else
+					et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
 				end
 			end
@@ -555,6 +561,7 @@ function et_ConsoleCommand()
 				if v[1][3] == 2 then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				else
+					et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
 				end
 			end
@@ -562,6 +569,7 @@ function et_ConsoleCommand()
 				if v[1][3] == 1 then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				else
+					et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
 				end
 			end
