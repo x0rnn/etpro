@@ -434,6 +434,7 @@ function et_RunFrame(levelTime)
 						if et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][2] or et.gentity_get(idiots_id[x],"sess.PlayerType") == block_class[idiots_id[x]][3] then
 							local health = tonumber(et.gentity_get(idiots_id[x], "health"))
 							if health > 0 then
+								et.gentity_set(idiots_id[x], "ps.powerups", 1, 0)
 								et.G_Damage(idiots_id[x], 80, 1022, 1000, 8, 34)
 								et.G_Sound(idiots_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
 							end
@@ -476,6 +477,7 @@ function et_RunFrame(levelTime)
 					if et.gentity_get(crestrict_id[x],"sess.PlayerType") == block_class[crestrict_id[x]][2] or et.gentity_get(crestrict_id[x],"sess.PlayerType") == block_class[crestrict_id[x]][3] then
 						local health = tonumber(et.gentity_get(crestrict_id[x], "health"))
 						if health > 0 then
+							et.gentity_set(crestrict_id[x], "ps.powerups", 1, 0)
 							et.G_Damage(crestrict_id[x], 80, 1022, 1000, 8, 34)
 							et.G_Sound(crestrict_id[x], et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
 						end
@@ -547,6 +549,7 @@ function et_ClientCommand(id, cmd)
 						msg = string.format("cpm  \"" .. client.name .. "^3 got bummed for trying to unmute himself. What a peon.\n")
 						et.trap_SendServerCommand(-1, msg)
 						et.trap_SendServerCommand(id, "cpm \"^1If you learnt your lesson, come to the forum or www.hirntot.org/discord and ask in a nice way to get unmuted.\n\"")
+						et.gentity_set(id, "ps.powerups", 1, 0)
 						et.G_Damage(id, 80, 1022, 1000, 8, 34)
 						soundindex = et.G_SoundIndex("/sound/etpro/osp_goat.wav")
 						et.G_Sound(id, soundindex)
