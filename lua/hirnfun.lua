@@ -245,6 +245,7 @@ function et_ClientCommand(id, command)
 				sniperwar_flag = false
 				et.trap_SendServerCommand(-1, "chat \"^1Panzerwar enabled!\"\n")
 				for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+					et.gentity_set(j, "ps.powerups", 1, 0)
 					et.G_Damage(j, 80, 1022, 1000, 8, 34)
 				end
 			end
@@ -265,6 +266,7 @@ function et_ClientCommand(id, command)
 				pistolwar_flag = false
 				et.trap_SendServerCommand(-1, "chat \"^1Sniperwar enabled!\"\n")
 				for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+					et.gentity_set(j, "ps.powerups", 1, 0)
 					et.G_Damage(j, 80, 1022, 1000, 8, 34)
 				end
 			end
@@ -295,6 +297,7 @@ function et_ClientSpawn(clientNum,revived)
 		if et.gentity_get(clientNum,"sess.latchPlayerType") ~= 0 then
 			et.gentity_set(clientNum,"sess.latchPlayerType", 0)
 			et.gentity_set(clientNum, "sess.latchPlayerWeapon", 5)
+			et.gentity_set(clientNum, "ps.powerups", 1, 0)
 			et.G_Damage(clientNum, 80, 1022, 1000, 8, 34)
 		else
 			for i=1,(et.MAX_WEAPONS-1),1 do
@@ -324,6 +327,7 @@ function et_ClientSpawn(clientNum,revived)
 	if pistolwar_flag == true then
 		if et.gentity_get(clientNum,"sess.latchPlayerType") ~= 1 then
 			et.gentity_set(clientNum,"sess.latchPlayerType", 1)
+			et.gentity_set(clientNum, "ps.powerups", 1, 0)
 			et.G_Damage(clientNum, 80, 1022, 1000, 8, 34)
 		else
 			for i=1,(et.MAX_WEAPONS-1),1 do
@@ -345,6 +349,7 @@ function et_ClientSpawn(clientNum,revived)
 			elseif team == 2 then
 				et.gentity_set(clientNum, "sess.latchPlayerWeapon", 25)
 			end
+			et.gentity_set(clientNum, "ps.powerups", 1, 0)
 			et.G_Damage(clientNum, 80, 1022, 1000, 8, 34)
 		else
 			for i=1,(et.MAX_WEAPONS-1),1 do
