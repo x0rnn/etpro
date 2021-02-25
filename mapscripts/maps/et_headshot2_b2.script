@@ -11,6 +11,17 @@
 
 game_manager {
 	spawn {
+
+		create
+		{
+			scriptName "artyroof"
+			classname "func_fakebrush"
+			origin "-258 4 391"
+			contents 1  // SOLID
+			mins "-700 -365 -30"
+			maxs "700 365 30"
+		}
+
 		wait 350
 		
 		setstate clear_arena invisible
