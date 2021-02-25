@@ -1,0 +1,826 @@
+// Global accums:
+// Gaccum 0:	5 4 3 2 1 0 (bits)
+//		| | | | | |-	Match in progress
+//		| | | | |---	Allies in arena
+//		| | | |-----	Axis in arena
+//		| | |-------	Countdown started
+//		| |---------	Allies Ready
+//		|-----------	Axis ready
+// Gaccum 1:	Score difference, >0 -> Allies, <0 -> Axis
+// Gaccum 2:	3 seconds countdown before the game starts
+
+game_manager {
+	spawn {
+		wait 350
+		
+		setstate clear_arena invisible
+		
+		wm_allied_respawntime 1
+		
+		wm_axis_respawntime 1
+		
+		wm_set_round_timelimit 15
+		
+		// Check if the server admin enabled "first to 100" mode
+		trigger self check_notimelimit
+		
+		// By default no-one wins, but this gets changed once a team takes the lead
+		wm_setwinner -1
+		
+		globalaccum 0 set 0
+		globalaccum 1 set 0
+		globalaccum 2 set 3
+
+		remapshader textures/et_headshot2/al_pr_light textures/lights/light_tp_m06
+		remapshader textures/et_headshot2/ax_pr_light textures/lights/light_tp_m06
+		remapshaderflush
+		
+		//"You can't use these atm" can be hidden
+		setstate al_switch_locked invisible
+		setstate ax_switch_locked invisible
+
+
+		//disable "layout anti-spam system"
+		cvar "map_eth2_fairlayout" abort_if_not_equal 1
+		
+		// Losing team can use arena layout switches, the other can't
+		// In the beginning it's tied so no-one can use 'm
+		setstate al_switch_trigs invisible
+		setstate ax_switch_trigs invisible
+		setstate al_switch_locked default
+		setstate ax_switch_locked default
+	}
+	trigger check_notimelimit {
+		// If map_eth2_notimelim is set to 1 or higher, we're in "first to 100" mode
+		cvar "map_eth2_notimelim" abort_if_less_than 1
+		wm_set_round_timelimit 0
+	}
+	trigger check_arena {
+		trigger self check_allieswin
+		trigger self check_axiswin
+		trigger self check_nowin
+
+		// No game in progress or game still going
+		// Do intermediary stuff
+		trigger self lamps_off
+		trigger self check_allieslamps
+		trigger self check_axislamps
+		remapshaderflush
+
+		// Present-Bits to 0, trigger_multiple should set these to 1
+		globalaccum 0 bitreset 1
+		globalaccum 0 bitreset 2
+	}
+	trigger start_count {
+		// Can't start again when a duel going on, countdown allready started
+		// or teams not ready
+		globalaccum 0 abort_if_bitset 0
+		globalaccum 0 abort_if_bitset 3
+		globalaccum 0 abort_if_not_bitset 4
+		globalaccum 0 abort_if_not_bitset 5
+
+		//trigger allies_hatch close
+		//trigger axis_hatch close
+		
+		wm_announce "The duel will start in 3 seconds..."
+		globalaccum 2 set 3
+		globalaccum 0 bitset 3
+	}
+	trigger check_count {
+		// Check if counting down
+		globalaccum 0 abort_if_not_bitset 3
+
+		// Count down and check if zero
+		globalaccum 2 inc -1
+		globalaccum 2 abort_if_greater_than 0
+
+		// Counting finished, bring it on!
+		globalaccum 0 bitreset 3
+		
+		//trigger self start_duel
+		globalaccum 0 abort_if_bitset 0
+		globalaccum 0 bitset 0
+		alertentity startsound
+		wm_announce "^1FIGHT!"
+		trigger doors open
+
+	}
+	//Redundant, copied into trigger above
+	//trigger start_duel {
+	//	globalaccum 0 abort_if_bitset 0
+	//	globalaccum 0 bitset 0
+	//	alertentity startsound
+	//	wm_announce "^1FIGHT!"
+	//	trigger doors open
+	//}
+	trigger reset_duel {
+		// Check who has the lead:
+		trigger self score_tie
+		trigger self score_axis_lead
+		trigger self score_allies_lead
+		
+		setstate clear_arena default
+		// Wait till all players get killed
+		// 100 is too low for medics
+		wait 300
+		setstate clear_arena invisible
+		trigger doors close
+		trigger allies_hatch open
+		trigger axis_hatch open
+
+		//globalaccum 0 bitreset 1
+		//globalaccum 0 bitreset 2
+		//globalaccum 0 bitreset 0
+
+		//Erase all bits, instead of the above
+		globalaccum 0 set 0
+	}
+	trigger check_allieswin {
+		// If no duel in progress, no winning neither
+		globalaccum 0 abort_if_not_bitset 0
+		
+		// Check for allies, making sure there are no axis
+		globalaccum 0 abort_if_not_bitset 1
+		globalaccum 0 abort_if_bitset 2
+		wait 100
+		wm_announce "^3Allies win!"
+		trigger al_lscore inc
+		trigger self reset_duel
+	}
+	trigger check_axiswin {
+		// If no duel in progress, no winning neither
+		globalaccum 0 abort_if_not_bitset 0
+
+		// Check for axis, making sure there are no allies
+		globalaccum 0 abort_if_bitset 1
+		globalaccum 0 abort_if_not_bitset 2
+		wait 100
+		wm_announce "^3Axis win!"
+		trigger ax_lscore inc
+		trigger self reset_duel
+	}
+	trigger check_nowin {
+		// If no duel in progress, no winning neither
+		globalaccum 0 abort_if_not_bitset 0
+		// Check if arena is empty
+		globalaccum 0 abort_if_bitset 1
+		globalaccum 0 abort_if_bitset 2
+		wait 100
+		wm_announce "The arena is empty, ^3no winner"
+		trigger self reset_duel
+	}
+	trigger lamps_off {
+		remapshader textures/et_headshot2/al_pr_light textures/lights/light_tp_m07
+		remapshader textures/et_headshot2/ax_pr_light textures/lights/light_tp_m07
+	}
+	trigger check_allieslamps {
+		// If allies are not ready, abort and lights stay off
+		globalaccum 0 abort_if_not_bitset 4
+		remapshader textures/et_headshot2/al_pr_light textures/lights/light_tp_m06
+	}
+	trigger check_axislamps {
+		// If no axis in arena, abort and lights stay off
+		globalaccum 0 abort_if_not_bitset 5
+		remapshader textures/et_headshot2/ax_pr_light textures/lights/light_tp_m06
+	}
+	trigger allies_ready {
+		//Stop people from spamming ready buttons:
+		globalaccum 0 abort_if_bitset 4
+	
+		trigger allies_hatch close
+		globalaccum 0 bitset 4
+		wm_announce "The Allied team is ready"
+	
+		// Call start_count, which aborts if it's not the right time yet
+		trigger self start_count	
+	}
+	trigger axis_ready {
+		//Stop people from spamming ready buttons:
+		globalaccum 0 abort_if_bitset 5
+
+		trigger axis_hatch close
+		globalaccum 0 bitset 5
+		wm_announce "The Axis team is ready"
+	
+		// Call start_count, which aborts if it's not the right time yet
+		trigger self start_count	
+	}
+	trigger allies_present {
+		// Called by trig_mult
+		globalaccum 0 bitset 1
+	}
+	trigger axis_present {
+		// Called by trig mult
+		globalaccum 0 bitset 2
+	}
+	trigger grates {
+		// No more buddies changing map layout during match:
+		globalaccum 0 abort_if_bitset 0
+		
+		trigger grates toggle
+	}
+	trigger floors {
+		// No more buddies changing map layout during match:
+		globalaccum 0 abort_if_bitset 0
+	
+		trigger floors toggle
+	}
+	trigger walls {
+		// No more buddies changing map layout during match:
+		globalaccum 0 abort_if_bitset 0
+	
+		trigger walls toggle
+	}
+	trigger crates {
+		// No more buddies changing map layout during match:
+		globalaccum 0 abort_if_bitset 0
+
+		trigger crates toggle
+	}
+	trigger score_tie {
+		globalaccum 1 abort_if_not_equal 0
+
+		wm_announce "It's a tie!"
+		wm_setwinner -1
+		
+		//disable "layout anti-spam system"
+		cvar "map_eth2_fairlayout" abort_if_not_equal 1
+		
+		// Score tied, no-one can use layout switches
+		setstate al_switch_trigs invisible
+		setstate ax_switch_trigs invisible
+		setstate al_switch_locked default
+		setstate ax_switch_locked default
+	}
+	trigger score_axis_lead {
+		globalaccum 1 abort_if_not_equal -1
+
+		wm_announce "Axis take the lead!"
+		wm_setwinner 0
+		
+		//disable "layout anti-spam system"
+		cvar "map_eth2_fairlayout" abort_if_not_equal 1
+		
+		// Axis lead, only allies can use switches
+		setstate al_switch_trigs default
+		setstate ax_switch_trigs invisible
+		setstate al_switch_locked invisible
+		setstate ax_switch_locked default
+	}
+	trigger score_allies_lead {
+		globalaccum 1 abort_if_not_equal 1
+
+		wm_announce "Allies take the lead!"
+		wm_setwinner 1	
+		
+		//disable "layout anti-spam system"
+		cvar "map_eth2_fairlayout" abort_if_not_equal 1
+		
+		// Allies lead, only axis can use switches
+		setstate al_switch_trigs invisible
+		setstate ax_switch_trigs default
+		setstate al_switch_locked default
+		setstate ax_switch_locked invisible
+	}
+}
+
+motorsound {
+	spawn {
+		wait 100
+		accum 0 set 0
+		
+	}
+	trigger start {
+		accum 0 inc 1
+		accum 0 trigger_if_equal 1 motorsound loop_start
+	}
+	trigger loop_start {
+		togglespeaker motorsound_start
+		wait 1000
+		enablespeaker motorsound_loop
+	}
+	trigger loop_stop {
+		accum 0 set 0
+		disablespeaker motorsound_loop
+		togglespeaker motorsound_end
+	}
+	trigger stop {
+		accum 0 inc -1
+		accum 0 trigger_if_equal 0 motorsound loop_stop
+	}
+}
+
+doors {
+	spawn {
+		wait 100
+		accum 0 set 0 // Bit 0: 0=closed, Bit 1: currently moving
+		setposition closed
+	}
+	trigger open {
+		accum 0 abort_if_not_equal 0
+		accum 0 bitset 1
+		alertentity doorsound
+		gotomarker open 100
+		accum 0 bitreset 1
+		accum 0 bitset 0
+	}
+	trigger close {
+		accum 0 abort_if_not_equal 1
+		accum 0 bitset 1
+		alertentity doorsound
+		gotomarker closed 100
+		accum 0 bitreset 1
+		accum 0 bitreset 0
+	}
+}
+
+lever_grates {
+	spawn {
+		wait 100
+		setposition lever_down
+	}
+	trigger mid {
+		alertentity switchsound
+		gotomarker lever_mid 20
+	}
+	trigger up {
+		alertentity switchsound
+		gotomarker lever_up 20
+	}
+	trigger down {
+		alertentity switchsound
+		gotomarker lever_down 20
+	}
+}
+
+grates {
+	spawn {
+		wait 100
+		accum 0 set 0 // Bit 0: 0=lowered, Bit 1: currently moving
+		setposition down
+	}
+	trigger toggle {
+		trigger self up
+		trigger self down
+	}
+	trigger up {
+		accum 0 abort_if_not_equal 0
+		trigger lever_grates mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker up 50 wait deccel
+		trigger lever_grates up
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitset 0
+	}
+	trigger down {
+		accum 0 abort_if_not_equal 1
+		trigger lever_grates mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker down 60 wait accel
+		trigger lever_grates down
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitreset 0
+	}
+}
+
+lever_floors {
+	spawn {
+		wait 100
+		setposition lever_down
+	}
+	trigger mid {
+		alertentity switchsound
+		gotomarker lever_mid 20
+	}
+	trigger up {
+		alertentity switchsound
+		gotomarker lever_up 20
+	}
+	trigger down {
+		alertentity switchsound
+		gotomarker lever_down 20
+	}
+}
+
+floors {
+	spawn {
+		wait 100
+		accum 0 set 0 // Bit 0: 0=lowered, Bit 1: currently moving
+		setposition down
+	}
+	trigger toggle {
+		trigger self up
+		trigger self down
+	}
+	trigger up {
+		accum 0 abort_if_not_equal 0
+		trigger lever_floors mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker up 50 wait deccel
+		trigger lever_floors up
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitset 0
+	}
+	trigger down {
+		accum 0 abort_if_not_equal 1
+		trigger lever_floors mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker down 60 wait accel
+		trigger lever_floors down
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitreset 0
+	}
+}
+
+lever_walls {
+	spawn {
+		wait 100
+		setposition lever_down
+	}
+	trigger mid {
+		alertentity switchsound
+		gotomarker lever_mid 20
+	}
+	trigger up {
+		alertentity switchsound
+		gotomarker lever_up 20
+	}
+	trigger down {
+		alertentity switchsound
+		gotomarker lever_down 20
+	}
+}
+
+walls {
+	spawn {
+		wait 100
+		accum 0 set 0 // Bit 0: 0=lowered, Bit 1: currently moving
+		setposition down
+	}
+	trigger toggle {
+		trigger self up
+		trigger self down
+	}
+	trigger up {
+		accum 0 abort_if_not_equal 0
+		trigger lever_walls mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker up 50 wait deccel
+		trigger lever_walls up
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitset 0
+	}
+	trigger down {
+		accum 0 abort_if_not_equal 1
+		trigger lever_walls mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker down 60 wait accel
+		trigger lever_walls down
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitreset 0
+	}
+}
+
+lever_crates {
+	spawn {
+		wait 100
+		setposition lever_down
+	}
+	trigger mid {
+		alertentity switchsound
+		gotomarker lever_mid 20
+	}
+	trigger up {
+		alertentity switchsound
+		gotomarker lever_up 20
+	}
+	trigger down {
+		alertentity switchsound
+		gotomarker lever_down 20
+	}
+}
+
+crates {
+	spawn {
+		wait 100
+		accum 0 set 0 // Bit 0: 0=lowered, Bit 1: currently moving
+		setposition down
+	}
+	trigger toggle {
+		trigger self up
+		trigger self down
+	}
+	trigger up {
+		accum 0 abort_if_not_equal 0
+		trigger lever_crates mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker up 50 wait deccel
+		trigger lever_crates up
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitset 0
+	}
+	trigger down {
+		accum 0 abort_if_not_equal 1
+		trigger lever_crates mid
+		accum 0 bitset 1
+		trigger motorsound start
+		gotomarker down 60 wait accel
+		trigger lever_crates down
+		trigger motorsound stop
+		accum 0 bitreset 1
+		accum 0 bitreset 0
+	}
+}
+
+allies_hatch {
+	spawn {
+		wait 100
+		setposition al_hatch_open
+	}
+	trigger open {
+		gotomarker al_hatch_open 50
+	}
+	trigger close {
+		gotomarker al_hatch_closed 120
+	}
+}
+
+axis_hatch {
+	spawn {
+		wait 100
+		setposition ax_hatch_open
+	}
+	trigger open {
+		gotomarker ax_hatch_open 50
+	}
+	trigger close {
+		gotomarker ax_hatch_closed 120
+	}
+}
+
+// ###########################################################
+// Score system
+
+
+// lscore: Lower digit of score, uscore: Higher digit of score
+
+ax_lscore {
+	// Accum 0 is score
+	spawn {
+		wait 100
+		accum 0 set 0
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/zero
+	}
+	trigger inc {
+		accum 0 inc 1
+		globalaccum 1 inc -1
+		accum 0 trigger_if_equal 10 ax_lscore hinc
+		accum 0 trigger_if_equal 0 ax_lscore zero
+		accum 0 trigger_if_equal 1 ax_lscore one
+		accum 0 trigger_if_equal 2 ax_lscore two
+		accum 0 trigger_if_equal 3 ax_lscore three
+		accum 0 trigger_if_equal 4 ax_lscore four
+		accum 0 trigger_if_equal 5 ax_lscore five
+		accum 0 trigger_if_equal 6 ax_lscore six
+		accum 0 trigger_if_equal 7 ax_lscore seven
+		accum 0 trigger_if_equal 8 ax_lscore eight
+		accum 0 trigger_if_equal 9 ax_lscore nine
+		remapshaderflush
+	}
+	// Higher digit should be increased here
+	trigger hinc {
+		// Increase score difference
+		accum 0 set 0
+		trigger ax_uscore inc
+	}
+	trigger zero {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/zero
+	}
+	trigger one {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/one
+	}
+	trigger two {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/two
+	}
+	trigger three {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/three
+	}
+	trigger four {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/four
+	}
+	trigger five {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/five
+	}
+	trigger six {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/six
+	}
+	trigger seven {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/seven
+	}
+	trigger eight {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/eight
+	}
+	trigger nine {
+		remapshader textures/et_headshot2/ax_ldigit textures/et_headshot2/nine
+	}
+}
+
+ax_uscore {
+	// Accum 0 is score
+	spawn {
+		wait 100
+		accum 0 set 0
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/zero
+	}
+	trigger inc {
+		accum 0 inc 1
+		accum 0 trigger_if_equal 10 ax_uscore axis_win
+		accum 0 trigger_if_equal 0 ax_uscore zero
+		accum 0 trigger_if_equal 0 ax_uscore zero
+		accum 0 trigger_if_equal 1 ax_uscore one
+		accum 0 trigger_if_equal 2 ax_uscore two
+		accum 0 trigger_if_equal 3 ax_uscore three
+		accum 0 trigger_if_equal 4 ax_uscore four
+		accum 0 trigger_if_equal 5 ax_uscore five
+		accum 0 trigger_if_equal 6 ax_uscore six
+		accum 0 trigger_if_equal 7 ax_uscore seven
+		accum 0 trigger_if_equal 8 ax_uscore eight
+		accum 0 trigger_if_equal 9 ax_uscore nine
+		remapshaderflush
+	}
+	// Maximum score reached, axis win
+	trigger axis_win {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/ten
+		remapshaderflush
+		wm_setwinner 0
+		wm_endround
+	}
+	trigger zero {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/zero
+	}
+	trigger one {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/one
+	}
+	trigger two {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/two
+	}
+	trigger three {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/three
+	}
+	trigger four {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/four
+	}
+	trigger five {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/five
+	}
+	trigger six {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/six
+	}
+	trigger seven {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/seven
+	}
+	trigger eight {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/eight
+	}
+	trigger nine {
+		remapshader textures/et_headshot2/ax_udigit textures/et_headshot2/nine
+	}
+}
+
+al_lscore {
+	// Accum 0 is score
+	spawn {
+		wait 100
+		accum 0 set 0
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/zero
+	}
+	trigger inc {
+		accum 0 inc 1
+		globalaccum 1 inc 1
+		
+		accum 0 trigger_if_equal 10 al_lscore hinc
+		accum 0 trigger_if_equal 0 al_lscore zero
+		accum 0 trigger_if_equal 1 al_lscore one
+		accum 0 trigger_if_equal 2 al_lscore two
+		accum 0 trigger_if_equal 3 al_lscore three
+		accum 0 trigger_if_equal 4 al_lscore four
+		accum 0 trigger_if_equal 5 al_lscore five
+		accum 0 trigger_if_equal 6 al_lscore six
+		accum 0 trigger_if_equal 7 al_lscore seven
+		accum 0 trigger_if_equal 8 al_lscore eight
+		accum 0 trigger_if_equal 9 al_lscore nine
+		remapshaderflush
+	}
+	// Higher digit should be increased here
+	trigger hinc {
+		wm_announce "Allies scored (again) 10 points"
+		// Increase score difference
+		accum 0 set 0
+		trigger al_uscore inc
+	}
+	trigger zero {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/zero
+	}
+	trigger one {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/one
+	}
+	trigger two {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/two
+	}
+	trigger three {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/three
+	}
+	trigger four {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/four
+	}
+	trigger five {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/five
+	}
+	trigger six {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/six
+	}
+	trigger seven {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/seven
+	}
+	trigger eight {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/eight
+	}
+	trigger nine {
+		remapshader textures/et_headshot2/al_ldigit textures/et_headshot2/nine
+	}
+}
+
+al_uscore {
+	// Accum 0 is score
+	spawn {
+		wait 100
+		accum 0 set 0
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/zero
+	}
+	trigger inc {
+		accum 0 inc 1
+		accum 0 trigger_if_equal 10 al_uscore allies_win
+		accum 0 trigger_if_equal 0 al_uscore zero
+		accum 0 trigger_if_equal 1 al_uscore one
+		accum 0 trigger_if_equal 2 al_uscore two
+		accum 0 trigger_if_equal 3 al_uscore three
+		accum 0 trigger_if_equal 4 al_uscore four
+		accum 0 trigger_if_equal 5 al_uscore five
+		accum 0 trigger_if_equal 6 al_uscore six
+		accum 0 trigger_if_equal 7 al_uscore seven
+		accum 0 trigger_if_equal 8 al_uscore eight
+		accum 0 trigger_if_equal 9 al_uscore nine
+		remapshaderflush
+	}
+	// Higher digit should be increased here
+	trigger allies_win {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/ten
+		remapshaderflush
+		wm_setwinner 1
+		wm_endround
+	}
+	trigger zero {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/zero
+	}
+	trigger one {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/one
+	}
+	trigger two {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/two
+	}
+	trigger three {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/three
+	}
+	trigger four {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/four
+	}
+	trigger five {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/five
+	}
+	trigger six {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/six
+	}
+	trigger seven {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/seven
+	}
+	trigger eight {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/eight
+	}
+	trigger nine {
+		remapshader textures/et_headshot2/al_udigit textures/et_headshot2/nine
+	}
+}
