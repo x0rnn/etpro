@@ -530,7 +530,7 @@ function et_ClientCommand(id, cmd)
 		end
 	end
 	if goons[cl_guid] == true then
-		if string.lower(cmd) == "m" or string.lower(cmd) == "pm" then
+		if string.lower(cmd) == "m" or string.lower(cmd) == "pm" or string.lower(cmd) == "msg" then
 			et.trap_SendServerCommand(id, "cpm \"^1You are muted. This command is not available to you.\n\"")
 			return 1
 		elseif string.lower(cmd) == "callvote" then
