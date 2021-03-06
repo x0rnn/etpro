@@ -12,6 +12,53 @@ game_manager
 			origin "-857 -1225 1270" //remove documents room door
 		}
 
+		// additional allied villaspawns
+		create
+		{
+			scriptName "villaspawns"
+			classname "team_CTF_bluespawn"
+			targetname "villaspawns"
+			origin "2556 2884 1524"
+			angle "90"
+			spawnflags "3" 
+		}
+		create
+		{
+			scriptName "villaspawns"
+			classname "team_CTF_bluespawn"
+			targetname "villaspawns"
+			origin "2504 2884 1524"
+			angle "90"
+			spawnflags "3" 
+		}
+		create
+		{
+			scriptName "villaspawns"
+			classname "team_CTF_bluespawn"
+			targetname "villaspawns"
+			origin "2456 2884 1524"
+			angle "90"
+			spawnflags "3" 
+		}
+		create
+		{
+			scriptName "villaspawns"
+			classname "team_CTF_bluespawn"
+			targetname "villaspawns"
+			origin "2412 3176 1524"
+			angle "360"
+			spawnflags "3" 
+		}
+		create
+		{
+			scriptName "villaspawns"
+			classname "team_CTF_bluespawn"
+			targetname "villaspawns"
+			origin "2412 3224 1524"
+			angle "360"
+			spawnflags "3" 
+		}
+
 		// Harlekin - Roof over Abondoned Villa 
 		create
 		{
