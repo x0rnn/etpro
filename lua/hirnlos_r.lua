@@ -38,12 +38,12 @@ function et_RunFrame(levelTime)
 				end
 			else
 				if fullmsg == "et://et2.hirntot.org:27960" then
-					et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join_et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
+					et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
 				end
 			end
 		else
 			if fullmsg == "et://et2.hirntot.org:27960" then
-				et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join_et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
+				et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
 			end
 		end
 		if len ~= -1 then
@@ -51,7 +51,7 @@ function et_RunFrame(levelTime)
 		end
 	else
 		if fullmsg == "et://et2.hirntot.org:27960" then
-			et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join_et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
+			et.trap_Cvar_Set("sv_fullmsg", "^6Server is fucking full! Don`t wait... join et2.hirntot.org ^7[^1!!!^7]^1H^7irntot with 10 Maps ^1no ^7Heavy Weapons.       ^2You prefer to wait?    Then donate or join www.hirntot.org/discord :)")
 		end
 	end
 end
