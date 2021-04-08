@@ -1,22 +1,24 @@
-// bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
 // Ragnar_40k, 2005-04-30 added Axis Tower Spawn
+// bani - Mon Mar  1 00:38:32 PST 2004 - falling deaths fixed
 // mortis - Wed Aug 31 23:13:15 PST 2005 - depot tank exploit fixed
 // mortis - Sat Jan 28 15:30:00 PST 2006 - added trigger_hurt to oil tank to punish etpub exploiters
-// mortis - Mon Jan 30 12:57:46 PST 2006 - amalgamated ragnar's tower spawn script
-
-// x0rnn, 2018-09-09:
-// - fixed missing sound: "railgun_axis_capture_depot" -> "railgun_axis_depot_capture"
-// - MG at Depot Yard removed
-// - Flag at Depot Yard moved to where the MG was
-
+// Harlekin - Sat Feb 3 2007 Anti spawnkill roofs
+// Harlekin - Timebonus
 // globalaccum 0 = for train1 direction
 // globalaccum 1 = for train2 direction
+// x0rnn, 2018-09-09:
+// - fixed missing sounds: "railgun_axis_capture_depot" -> "railgun_axis_depot_capture", "axis_hq_construct_compost" - > "axis_hq_compost_construct"
+// - MG at Depot Yard removed
+// - Flag at Depot Yard moved to where the MG was
+// x0rnn, 2018-25-09:
+// - set Axis Tower Spawn default spawn: if Allies capture Depot Yard, Axis can attack quicker
+// x0rnn, 2018-27-10: allied spawntime is 25 instead of 20
+// x0rnn 2019-10-04: removed wait before wm_endround
 
 game_manager
 {
 	spawn
 	{
-
 		// x0rnn - new flag at MG
 		create
 		{
@@ -26,6 +28,28 @@ game_manager
 			classname "team_WOLF_checkpoint"
 			targetname "depotflag2"
 			target "depotspawn"
+		}
+
+		// Harlekin - Roof over Axis Hut
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "-706 5230 800"
+			contents 1  // SOLID
+			mins "-1200 -670 -88"
+			maxs "1200 670 88"
+		}
+
+		// Harlekin - Roof over Allied Camp
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "6300 3226 800"
+			contents 1  // SOLID
+			mins "-1240 -596 -88"
+			maxs "1240 596 88"
 		}
 
 		//bani - bug fixes
@@ -58,7 +82,7 @@ game_manager
 			mins "-10 -10 -28"
 			maxs "10 10 28"
 		}
-
+		
 		// mortis - depot yard oil tank exploit fix 
 		create
 		{
@@ -180,14 +204,11 @@ game_manager
 			angle "0"
 		}
 
-
-
-
 		// Game rules
 		wm_axis_respawntime	20
-		wm_allied_respawntime	20
+		wm_allied_respawntime	25 // x0rnn - changed to 25 from 20
 		wm_number_of_objectives 8
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	10
 
 		// Objectives
 		// 1: Load the ammo onto the tug engine
@@ -258,10 +279,13 @@ game_manager
 		wm_teamvoiceannounce 1 "railgun_allies_depot_capture"
 		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
-
+		
 		// Ragnar_40k		
-		wm_announce "^1Axis Tower Spawn enabled (6 positions available)!"
-
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3Initial Map time 10 min"
+		wm_announce "^3Timebonus: +8 min reaching the Depot Yard"
+		wm_announce "^3Allied respawn time is set to 25"
+		setautospawn	"Axis Construction Site"	0
 	}
 
 	trigger enable_gun
@@ -301,7 +325,7 @@ game_manager
 
 		wm_setwinner 0
 
-		wait 2400
+		//wait 2400
 
 		wm_endround
 
@@ -321,7 +345,6 @@ game_manager
 
 		// Ragnar_40k
 		trigger axistowermarker enable
-
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "railgun_axis_depot_capture"
@@ -350,7 +373,6 @@ game_manager
 		// Ragnar_40k
 		trigger axistowermarker disable
 
-
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 1 "railgun_allies_depot_capture"
 
@@ -370,14 +392,6 @@ game_manager
 	trigger timelimit_hit
 	{
 		alertentity end_alliedsmoke
-	}
-}
-
-depotflag
-{
-	spawn
-	{
-		remove
 	}
 }
 
@@ -426,8 +440,7 @@ axistowermarker
 	}
 }
 // End: Rangar_40k
-
-
+	
 // BIG NOTE BY GORDON: NEVER EVER PUT ANY WAIT COMMANDS IN ANYTHING BUT THE SPAWN FUNCTION OF THIS ENTITY
 train1
 {
@@ -1054,7 +1067,7 @@ train1
 		trigger train1 dispatch_axis
 
 		// axis -> base spawn here
-		trigger switch_invtrig1 axis_want_base
+		trigger switch_invtrig1 axis_want_tower
 	}
 
 	trigger run_stage34
@@ -1550,10 +1563,9 @@ train1
 		accum 4 set 0
 
 		wm_announce "Axis transported the Ammo to the North Crane!"
-
+		
 		// Ragnar_40k
 		trigger axistowermarker disable_permanent
-
 
 		wm_objective_status	2 1 2
 		wm_objective_status	2 0 1
@@ -2131,6 +2143,8 @@ train1
 
 		trigger train1 dispatch_allies
 		trigger train1 dispatch_axis
+
+		trigger switch_invtrig1 axis_want_tower
 	}
 
 	trigger run_Prestage34
@@ -2830,6 +2844,19 @@ train1
 		accum 4 set 0
 
 		trigger crane_controller startcrane
+		// ----- Harlekin Timebonus Depot Yard -----
+		wm_announce "^3Timebonus for reaching the Depot Yard +8 min!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Depot Yard -----
+
+
 	}
 
 	trigger train_enable_axis
@@ -6232,6 +6259,14 @@ train2_disabler
 	}
 }
 
+depotflag
+{
+	spawn
+	{
+		remove
+	}
+}
+
 depotflag2
 {
 	spawn
@@ -6595,7 +6630,7 @@ axis_compost_built_model
 		wm_announce	"Allied team has destroyed the Axis Command Post!"
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "axis_hq_construct_compost"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
 
 		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
 		// *----------------------------------- vo ------------------------------------------*
@@ -6909,6 +6944,7 @@ switch_invtrig1
 		wait 200
 		trigger self allies_want_depot
 		trigger self axis_want_base
+		trigger self axis_want_tower
 
 		wait 200
 		trigger train1 switch_closed
@@ -7037,6 +7073,13 @@ switch_invtrig1
 		trigger self spawn_update
 	}
 
+	trigger axis_want_tower
+	{
+		accum 5 set 2
+
+		trigger self spawn_update
+	}
+
 	trigger axis_have_depot
 	{
 		accum 6 set 1
@@ -7066,6 +7109,11 @@ switch_invtrig1
 		setautospawn	"Axis Construction Site"	0
 	}
 
+	trigger axis_set_tower
+	{
+		setautospawn	"Axis Tower Spawn"	0
+	}
+
 	trigger axis_set_depot
 	{
 		setautospawn	"Depot Yard"	0
@@ -7093,6 +7141,7 @@ switch_invtrig1
 	{
 		accum 5 trigger_if_equal 0 switch_invtrig1 spawn_update_axis_base
 		accum 5 trigger_if_equal 1 switch_invtrig1 spawn_update_axis_depot
+		accum 5 trigger_if_equal 2 switch_invtrig1 spawn_update_axis_tower
 	}
 
 	trigger spawn_update_axis_base
@@ -7100,11 +7149,16 @@ switch_invtrig1
 		trigger self axis_set_base
 	}
 
+	trigger spawn_update_axis_tower
+	{
+		trigger self axis_set_tower
+	}
+
 	trigger spawn_update_axis_depot
 	{
 		accum 6 trigger_if_equal 0 switch_invtrig1 axis_set_base
 		accum 6 trigger_if_equal 1 switch_invtrig1 axis_set_depot // we have the depot and want it, so set it
-		accum 6 trigger_if_equal 2 switch_invtrig1 axis_set_base
+		accum 6 trigger_if_equal 2 switch_invtrig1 axis_set_tower
 	}
 
 	trigger spawn_update

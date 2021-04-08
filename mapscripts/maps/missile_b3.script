@@ -18,7 +18,7 @@ game_manager
 		accum 7 set 0
 		wm_axis_respawntime 30
 		wm_allied_respawntime 20
-		wm_set_round_timelimit 15
+		wm_set_round_timelimit 17
 		wm_number_of_objectives 7
 		wm_setwinner 0
 
@@ -92,9 +92,9 @@ game_manager
 		//*---------------*
 
 		setstate powersupply_exit invisible
-		wm_announce "^3*Initial Map time 15 min"
+		wm_announce "^3*Initial Map time 17 min"
 		wm_announce "^3	  Timebonus"
-		wm_announce "^3	  *  +5 min Rocket Controls"
+		wm_announce "^3	  *  +3 min Magnetic Seal Deactivated"
 
 	}
 
@@ -241,14 +241,6 @@ setstate rocketcontrol default
 alertentity glotz_blub
 
 wm_announce "The Rocket Controls have been dismantled."
-
-wm_announce "^1+5 min Timebonus!"
-
-cvar timelimit inc "1"
-cvar timelimit inc "1"
-cvar timelimit inc "1"
-cvar timelimit inc "1"
-cvar timelimit inc "1"
 
 setstate drocketcontrols_toi default
 setstate t25 default
@@ -695,6 +687,12 @@ activate allies
 	wait 2500
 
 	wm_announce "Magnetic seal deactivated - Gates opening!"
+	
+	wm_announce "^1+3 min Timebonus!"
+
+	cvar timelimit inc "1"
+	cvar timelimit inc "1"
+	cvar timelimit inc "1"
 
 	wait 500
 
