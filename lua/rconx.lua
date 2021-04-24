@@ -494,13 +494,6 @@ function et_ConsoleCommand()
 		end
 		return 1
 	end
-	
-	if et.trap_Argv(0) == "rconx" then
-		if et.trap_Argc() == 2 then
-			et.trap_SendConsoleCommand(et.EXEC_APPEND, et.trap_Argv(1) .. "\n" )
-		end
-		return 1
-	end
 
 	if et.trap_Argv(0) == "shuffledamage" then
 		local axisdmg = 0
