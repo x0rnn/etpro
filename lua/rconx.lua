@@ -55,14 +55,18 @@ cadminVersion = "1.1"
 slot = 0
 ltimer = "0"
 mact = "0"
+mact2 = "0"
 miner = nil
+miner2 = nil
 slappee = nil
 mtimer = "0"
+mtimer2 = "0"
 shufflenr = "0"
 oldname = ""
 newname = ""
 --defaults
 minterval = "3000"  --a nice default interval for the beaconsounds to be played
+minterval2 = "5000"
 msound = "/sound/world/alarm_01.wav"       --a nice standard sound for nice standard servers
 ssound =  "/sound/player/land_hurt.wav"
 slaptype = "0"
@@ -190,6 +194,32 @@ function et_RunFrame( levelTime )
           end
     end
   end
+  
+    if miner2 ~= nil then
+	    if mact2 == "1" then
+            phealth = et.gentity_get(miner2, "health")
+ 	      if phealth > 0 then
+              minterval2 = minterval2 + 1  --sloppy but i m too lazy to learn and use the format function
+              minterval2 = minterval2 - 1
+              if math.mod( levelTime, minterval2 ) == 0 then
+      		     mtimer2 = mtimer2 - 1
+         		  mtimer2 = mtimer2 + 1
+           	    if mtimer2 >= 0 then
+        		       mtimer2 = mtimer2 - 3
+             		  soundindex = et.G_SoundIndex( ssound ) 
+						o=et.gentity_get(miner2, "origin")
+						o[3] = o[3] + 50
+						et.gentity_set(miner2, "origin", o)
+						et.G_Damage( miner2, 80, 1022, 0, 8, 32 )
+						et.G_Sound( miner2 , soundindex )
+          	     else
+            		   mact2 = "0"   --deactivate timer
+             		  miner2 = nil
+          	     end
+         	  end
+            end
+	    end
+	  end
 end
 
 -- react on new console command
@@ -233,6 +263,36 @@ function et_ConsoleCommand()
       end
           return 1
         end
+
+	if et.trap_Argv(0) == "autoslap" then
+		if et.trap_Argc() == 2 then
+			if string.len(et.trap_Argv(1)) < 3 then
+    		 	local cno = tonumber(et.trap_Argv(1))
+   			  if cno then
+  			  	if et.gentity_get(cno, "pers.connected") == 2 then
+ 						mact2 = "1" --activate the timer
+         			     miner2 = cno  --set cliendid
+      			        mtimer2 = 30 --set timer
+    			          minterval2 = 5000 --set interval
+  			            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner), "name") .. " has been punished \"\n")
+					  else
+						 et.G_Print("You had no matches to that id.\n") 
+					  end
+				else
+					et.G_Print("You had no matches to that id.\n")
+				end 
+			else
+				if nil ~= inSlot(et.trap_Argv(1)) then
+					mact2 = "1" --activate the timer
+         		    miner2 = inSlot(et.trap_Argv(1))  --set cliendid
+      		        mtimer2 = 30 --set timer
+    		          minterval2 = 5000 --set interval
+  		            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner), "name") .. " has been punished \"\n")
+				end
+			end
+		end
+		return 1
+	end
 
         if et.trap_Argv(0) == "slap" then
        	if et.trap_Argc() ~= 3 then
@@ -516,8 +576,6 @@ function et_ConsoleCommand()
 			end
 		end
 
-		et.G_LogPrint("shuffledamagedebug: axisdmg: " .. axisdmg .. " alliesdmg: " .. alliesdmg .. "\n")
-
 		table.sort(damages, function(a, b) return a[2] > b[2] end)
 
 		local weaker_team = {}
@@ -538,7 +596,7 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -546,7 +604,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -555,7 +613,7 @@ function et_ConsoleCommand()
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -563,7 +621,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -613,23 +671,23 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
 				end
 			end
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
 				end
 			end
 		end
