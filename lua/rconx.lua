@@ -494,6 +494,7 @@ function et_ConsoleCommand()
 		end
 		return 1
 	end
+	
 
 	if et.trap_Argv(0) == "shuffledamage" then
 		local axisdmg = 0
@@ -515,6 +516,8 @@ function et_ConsoleCommand()
 			end
 		end
 
+		et.G_LogPrint("shuffledamagedebug: axisdmg: " .. axisdmg .. " alliesdmg: " .. alliesdmg .. "\n")
+
 		table.sort(damages, function(a, b) return a[2] > b[2] end)
 
 		local weaker_team = {}
@@ -535,7 +538,7 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -543,7 +546,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -552,7 +555,7 @@ function et_ConsoleCommand()
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -560,7 +563,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -610,23 +613,23 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				end
 			end
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				end
 			end
 		end
