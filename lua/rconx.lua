@@ -1,5 +1,5 @@
 -- To be used with etadmin_mod rights.cfg
--- x0rnn: added megaslap, addtime
+-- x0rnn: added megaslap, addtime, autoslap, shuffledamage, shuffledamage_restart
 
 --  0.1 17/02/2006
 --  0.2 added slap and renameplayer
