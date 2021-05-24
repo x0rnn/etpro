@@ -266,7 +266,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- WÃ¼rzburg Radar
+-- Würzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
