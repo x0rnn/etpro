@@ -266,12 +266,12 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- Würzburg Radar
+-- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
         c.spawns[2] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {2504, 3422, 1333}, radius2 = 999}
-        c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 730}
+        c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 660}
         c.spawns[3] = {name = "Forward Bunker", state = NO_PROTECT, pos = {-581, 1661, 1364}, radius2 = 785}
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
@@ -280,7 +280,7 @@ function getConfig(map)
     elseif map == "radar_phx_b_3" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
         c.spawns[2] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {2504, 3422, 1333}, radius2 = 999}
-        c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 730}
+        c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 660}
         c.spawns[3] = {name = "Forward Bunker", state = NO_PROTECT, pos = {-581, 1661, 1364}, radius2 = 785}
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
@@ -371,6 +371,7 @@ function getConfig(map)
         c.spawns[1] = {name = "Tank Depot Main Exit", state = PROTECT_AXIS, pos = {-79, 3005, 320}, radius2 = 250}
         c.spawns[4] = {name = "Tank Depot Alternate Exit", state = PROTECT_AXIS, pos = {-664, 3541, 386}, radius2 = 420}
         c.spawns[5] = {name = "Tank Depot Room", state = PROTECT_AXIS, pos = {-48, 3649, 344}, radius2 = 550}
+        c.spawns[13] = {name = "Tank Depot Room Exit", state = PROTECT_AXIS, pos = {110, 3100, 320}, radius2 = 370}
         c.spawns[6] = {name = "Tank Depot", state = NO_PROTECT, pos = {-354, 2552, 344}, radius2 = 525}
         c.spawns[7] = {name = "Tank Depot", state = NO_PROTECT, pos = {-354, 2052, 344}, radius2 = 525}
         c.spawns[8] = {name = "Tank Depot", state = NO_PROTECT, pos = {-354, 1552, 344}, radius2 = 525}
@@ -380,16 +381,15 @@ function getConfig(map)
         c.spawns[11] = {name = "Axis Lower Spawn", state = PROTECT_AXIS, pos = {3010, -1555, -435}, radius2 = 250}
         c.spawns[12] = {name = "Axis", state = PROTECT_AXIS, pos = {2327, -868, -199}, radius2 = 200}
         c.spawns[3] = {name = "Allied Spawn", state = PROTECT_ALLIES, pos = {-3360, -218, -67}, radius2 = 720}
-        c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[2] = {spawn = 4, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[3] = {spawn = 5, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[4] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[5] = {spawn = 7, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[6] = {spawn = 8, newstate = PROTECT_ALLIES, trigger = "Activated"}
-        c.actions[7] = {spawn = 1, newstate = NO_PROTECT, trigger = "Allied team has stolen the Tank"}
-        c.actions[8] = {spawn = 4, newstate = NO_PROTECT, trigger = "Allied team has stolen the Tank"}
-        c.actions[9] = {spawn = 5, newstate = NO_PROTECT, trigger = "Allied team has stolen the Tank"}
-        c.actions[10] = {spawn = 3, newstate = NO_PROTECT, trigger = "spawnroof protection disabled"}
+        c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[2] = {spawn = 4, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[3] = {spawn = 5, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[4] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[5] = {spawn = 7, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[6] = {spawn = 8, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+        c.actions[7] = {spawn = 3, newstate = NO_PROTECT, trigger = "spawnroof protection disabled"}
+        c.actions[8] = {spawn = 13, newstate = PROTECT_ALLIES, trigger = "Allied team has stolen the Tank"}
+
 -- Dubrovnik
     elseif map == "dubrovnik_final" then
         c.spawns[1] = {name = "Convent Up", state = PROTECT_AXIS, pos = {60, 727, 252}, radius2 = 221}
