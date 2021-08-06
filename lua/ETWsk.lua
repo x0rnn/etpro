@@ -276,6 +276,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
         c.spawns[7] = {name = "Lower Warehouse II", state = PROTECT_AXIS, pos = {-1270, -3772, 1248}, radius2 = 230}
+        c.spawns[8] = {name = "Lower Warehouse III", state = PROTECT_AXIS, pos = {-1369, -3662, 1248}, radius2 = 151}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "secured the Forward Bunker"}
     elseif map == "radar_phx_b_3" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -285,6 +286,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Forward Hut", state = NO_PROTECT}
         c.spawns[5] = {name = "Lower Warehouse", state = PROTECT_AXIS, pos = {-1494, -4032, 1248}, radius2 = 330}
         c.spawns[7] = {name = "Lower Warehouse II", state = PROTECT_AXIS, pos = {-1270, -3772, 1248}, radius2 = 230}
+        c.spawns[8] = {name = "Lower Warehouse III", state = PROTECT_AXIS, pos = {-1369, -3662, 1248}, radius2 = 151}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "secured the Forward Bunker"}
         c.actions[2] = {spawn = 2, newstate = PROTECT_AXIS, trigger = "Axis Abandoned Villa spawn enabled"}
         c.actions[3] = {spawn = 6, newstate = PROTECT_AXIS, trigger = "Axis Abandoned Villa spawn enabled"}
