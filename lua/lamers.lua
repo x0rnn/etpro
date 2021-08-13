@@ -6,6 +6,7 @@
 -- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
 -- removed panzerfaust when less than 12 players
+-- removed riflenades when less than 6 players
 
 panzerlamers = {}
 mortarlamers = {}
@@ -531,6 +532,21 @@ function et_ClientSpawn(id, revived)
 							et.gentity_set(id, "ps.powerups", 1, 0)
 							et.G_Damage(id, 80, 1022, 1000, 8, 34)
 							et.trap_SendServerCommand(-1, "chat \"^3No panzerfaust when less than 12 players!\"")
+						end
+					end
+					if playerCount < 6 then
+						if et.gentity_get(id,"sess.latchPlayerType") == 2 then
+							if et.gentity_get(id,"ps.ammo",39) > 0 or et.gentity_get(id,"ps.ammo",40) > 0 then
+								local team = et.gentity_get(id, "sess.sessionTeam")
+								if team == 1 then
+									et.gentity_set(id,"sess.latchPlayerWeapon", 3)
+								elseif team == 2 then
+									et.gentity_set(id,"sess.latchPlayerWeapon", 8)
+								end
+								et.gentity_set(id, "ps.powerups", 1, 0)
+								et.G_Damage(id, 80, 1022, 1000, 8, 34)
+								et.trap_SendServerCommand(-1, "chat \"^3No riflenades when less than 6 players!\"")
+							end
 						end
 					end
 				end
