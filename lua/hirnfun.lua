@@ -39,8 +39,8 @@ panzerwar = {
 	nil,	--// 36
 	false,	--WP_AKIMBO_COLT,		// 37
 	false,	--WP_AKIMBO_LUGER,		// 38
-	nil,	--// 39
-	nil,	--// 40
+	nil,	--// 39					axis riflegrenade
+	nil,	--// 40					allies riflegrenade
 	false,	--WP_SILENCED_COLT,		// 41
 	false,	--WP_GARAND_SCOPE,		// 42
 	false,	--WP_K43_SCOPE,			// 43
@@ -90,8 +90,8 @@ pistolwar = {
 	nil,	--// 36
 	false,	--WP_AKIMBO_COLT,		// 37
 	false,	--WP_AKIMBO_LUGER,		// 38
-	nil,	--// 39
-	nil,	--// 40
+	nil,	--// 39					axis riflegrenade
+	nil,	--// 40					allies riflegrenade
 	true,	--WP_SILENCED_COLT,		// 41
 	false,	--WP_GARAND_SCOPE,		// 42
 	false,	--WP_K43_SCOPE,			// 43
@@ -141,8 +141,8 @@ riflewar = {
 	nil,	--// 36
 	false,	--WP_AKIMBO_COLT,		// 37
 	false,	--WP_AKIMBO_LUGER,		// 38
-	true,	--// 39
-	true,	--// 40
+	true,	--// 39					axis riflegrenade
+	true,	--// 40					allies riflegrenade
 	false,	--WP_SILENCED_COLT,		// 41
 	false,	--WP_GARAND_SCOPE,		// 42
 	false,	--WP_K43_SCOPE,			// 43
@@ -192,8 +192,8 @@ sniperwar = {
 	nil,	--// 36
 	false,	--WP_AKIMBO_COLT,		// 37
 	false,	--WP_AKIMBO_LUGER,		// 38
-	false,	--// 39
-	false,	--// 40
+	false,	--// 39					axis riflegrenade
+	false,	--// 40					allies riflegrenade
 	false,	--WP_SILENCED_COLT,		// 41
 	true,	--WP_GARAND_SCOPE,		// 42
 	true,	--WP_K43_SCOPE,			// 43
