@@ -2,6 +2,7 @@
 -- x% chance (default 10%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
 -- players who continuously push other players get a warning first and get put to spectators if they continue (default: single player 7x warn, 10x spec; multiple players 10x warn, 15x warn, 22x put spec). Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
 -- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
+-- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2 and 3, put spec at 4)
 -- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
@@ -36,6 +37,11 @@ artywalkers = {}
 artywalk_warn1 = 5
 artywalk_warn2 = 6
 artywalk_spec = 7
+
+minewalkers = {}
+minewalk_warn1 = 4
+minewalk_warn2 = 5
+minewalk_spec = 6
 
 ammolamers = {}
 ammo_given = {}
@@ -78,6 +84,9 @@ function et_ClientDisconnect(clientNum)
 	end
 	if artywalkers[clientNum] ~= nil then
 		artywalkers[clientNum] = nil
+	end
+	if minewalkers[clientNum] ~= nil then
+		minewalkers[clientNum] = nil
 	end
 	if tks[clientNum] ~= nil then
 		tks[clientNum] = nil
@@ -244,6 +253,30 @@ function et_Obituary(victim, killer, mod)
 								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
 								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally walking into " .. name .. "^3's arty too many times.\"\n")
 								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_spec .. " times. Moved to spec for intentionally walking into arty.\n")
+							end
+						end
+					elseif mod == 45 then
+						if minewalkers[victim] == nil then
+							minewalkers[victim] = { [killer] = 1 }
+						else
+							if minewalkers[victim][killer] == nil then
+								minewalkers[victim][killer] = 1
+							else
+								minewalkers[victim][killer] = minewalkers[victim][killer] + 1
+							end
+
+							if minewalkers[victim][killer] == minewalk_warn1 then
+								et.trap_SendServerCommand(victim, "chat \"^3You have stepped on " .. name .. "^3's mines a lot of times. This script thinks you're doing it intentionally.\"\n")
+								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn1 .. " times.\n")
+							end
+							if minewalkers[victim][killer] == minewalk_warn2 then
+								et.trap_SendServerCommand(victim, "chat \"^3If you continue stepping on " .. name .. "^3's mines, you will be put to spectators.\"\n")
+								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn2 .. " times.\n")
+							end
+							if minewalkers[victim][killer] == minewalk_spec then
+								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally stepping on " .. name .. "^3's mines too many times.\"\n")
+								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_spec .. " times. Moved to spec for intentionally stepping on mines.\n")
 							end
 						end
 					end
@@ -504,7 +537,9 @@ function et_RunFrame( levelTime )
 				playerCount = playerCount + 1
 			end
 		end
-		GSFlag = true
+		if playerCount ~= 0 then
+			GSFlag = true
+		end
 	end
 end
 
@@ -526,7 +561,7 @@ function et_ClientSpawn(id, revived)
 		if GS == 0 then
 			if GSFlag == true then
 				if playerCount < 12 then
-					if et.gentity_get(id,"sess.latchPlayerType") == 0 then
+					if et.gentity_get(id,"sess.PlayerType") == 0 then
 						if et.gentity_get(id, "sess.latchPlayerWeapon") == 5 then
 							et.gentity_set(id,"sess.latchPlayerType", 1)
 							et.gentity_set(id, "ps.powerups", 1, 0)
@@ -535,7 +570,7 @@ function et_ClientSpawn(id, revived)
 						end
 					end
 					if playerCount < 6 then
-						if et.gentity_get(id,"sess.latchPlayerType") == 2 then
+						if et.gentity_get(id,"sess.PlayerType") == 2 then
 							if et.gentity_get(id,"ps.ammo",39) > 0 or et.gentity_get(id,"ps.ammo",40) > 0 then
 								local team = et.gentity_get(id, "sess.sessionTeam")
 								if team == 1 then
