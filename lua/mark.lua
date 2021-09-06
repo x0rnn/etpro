@@ -4,6 +4,8 @@
 -- !unmark id
 -- !marked (lists all marked players on server)
 
+-- you have to symlink /etadmin_mod/etc/shrubbot.cfg to etpro folder
+
 shrubbot = "shrubbot.cfg"
 filename = "marked_players.txt"
 markedp = {}
