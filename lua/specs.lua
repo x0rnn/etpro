@@ -5,6 +5,8 @@
 -- g_inactivity needs to be enabled
 -- it is strongly recommended to set g_inactivity at least 11 seconds higher than max_player_inactivity
 
+-- you have to symlink /etadmin_mod/etc/shrubbot.cfg to etpro folder
+
 checkInterval = 15000 -- interval in milliseconds to check ping (15 sec)
 pings = {} -- pings[clientid][15 sec interval ping]; if 3 intervals (45 sec) are all 999, player is put to spec
 max_player_inactivity = 150000 -- time in milliseconds before a player gets moved to spectator for being inactive (2 min)
