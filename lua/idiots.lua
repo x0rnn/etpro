@@ -14,6 +14,7 @@
 
 -- modify etadmin_mod/bin/shrub_management.pl line 161 to:
 -- if ( !defined($level) || $level < -1000 || !$guid || ( !$name && $level != 0 ) || length($guid) != 32 )
+-- you have to symlink /etadmin_mod/etc/shrubbot.cfg to etpro folder
 
 filename = "shrubbot.cfg"
 unmute_tries = {}
