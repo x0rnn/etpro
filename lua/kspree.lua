@@ -2209,18 +2209,22 @@ function et_ClientCommand(id, command)
 				math.randomseed(et.trap_Milliseconds())
 				if TKer_team == 1 then
 					local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == TKer_team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
 				elseif TKer_team == 2 then
 					local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == TKer_team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
 				end
-                for t=0, sv_maxclients-1, 1 do
-                    if et.gentity_get(t, "sess.sessionTeam") == TKer_team then
-        	            et.trap_SendServerCommand(t, cmd)
-                    end
-                end
                 if not sorry_repeat then
                   last_tk[id] = nil
                 end
-
                 return(1)
             else
                 return(0)
@@ -2238,18 +2242,22 @@ function et_ClientCommand(id, command)
 				end
 				if zombie_team == 1 then
 					local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
 				elseif zombie_team == 2 then
 					local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,4), vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
 				end
-                for t=0, sv_maxclients-1, 1 do
-                    if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
-             	       et.trap_SendServerCommand(t, cmd)
-                    end
-                end
                 if not thanks_repeat then
                   last_revive[id] = nil
                 end
-
                 return(1)
             else
                 return(0)
