@@ -2182,6 +2182,7 @@ function et_ClientCommand(id, command)
         if string.lower(vsaystring[1]) == "greatshot" and last_killer[id] ~= nil and table.getn(vsaystring) < 2 then
             if (et.trap_Milliseconds() - tonumber(last_killer[id][2])) < great_shot_time then
                 local vsaymessage = "Great shot, ^7"..last_killer[id][1].."^r!"
+				math.randomseed(et.trap_Milliseconds())
                 et.trap_SendServerCommand(-1, "vchat 0 "..id.." 50 GreatShot "..math.random(1, 2).." \""..vsaymessage.."\"")
                 if not great_shot_repeat then
                   last_killer[id] = nil
@@ -2205,7 +2206,12 @@ function et_ClientCommand(id, command)
                 local vsaymessage = "^5Sorry, ^7"..last_tk[id][1].."^5!"
                 local ppos = et.gentity_get(id,"r.currentOrigin")
                 local TKer_team = et.gentity_get(id, "sess.sessionTeam")
-                local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+				math.randomseed(et.trap_Milliseconds())
+				if TKer_team == 1 then
+					local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
+				elseif TKer_team == 2 then
+					local cmd = string.format("vtchat 0 %d 50 Sorry %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+				end
                 for t=0, sv_maxclients-1, 1 do
                     if et.gentity_get(t, "sess.sessionTeam") == TKer_team then
         	            et.trap_SendServerCommand(t, cmd)
@@ -2224,12 +2230,17 @@ function et_ClientCommand(id, command)
                 local vsaymessage = ""
                 local ppos = et.gentity_get(id,"r.currentOrigin")
                 local zombie_team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+				math.randomseed(et.trap_Milliseconds())
 				if zombie_team == 1 then
 					vsaymessage = "^5Danke, ^7"..last_revive[id][1].."^5!"
 				elseif zombie_team == 2 then
 					vsaymessage = "^5Thanks, ^7"..last_revive[id][1].."^5!"
 				end
-                local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+				if zombie_team == 1 then
+					local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,3), vsaymessage)
+				elseif zombie_team == 2 then
+					local cmd = string.format("vtchat 0 %d 50 Thanks %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,4), vsaymessage)
+				end
                 for t=0, sv_maxclients-1, 1 do
                     if et.gentity_get(t, "sess.sessionTeam") == zombie_team then
              	       et.trap_SendServerCommand(t, cmd)
@@ -2286,10 +2297,44 @@ function et_ClientCommand(id, command)
 			else
 				return(0)
 			end
+        elseif string.lower(vsaystring[1]) == "medic" and table.getn(vsaystring) < 2 then
+            local vsaymessage = ""
+            local ppos = et.gentity_get(id,"r.currentOrigin")
+            local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			math.randomseed(et.trap_Milliseconds())
+			if team ~= 3 then
+				local health = tonumber(et.gentity_get(id, "health"))
+				if health < 1 then
+					local gen = math.random(1, 2)
+					if gen == 1 then
+						vsaymessage = "^5Need a Medic!"
+						local cmd = string.format("vtchat 0 %d 50 Medic %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1, 2), vsaymessage)
+						for t=0, sv_maxclients-1, 1 do
+							if et.gentity_get(t, "sess.sessionTeam") == team then
+								et.trap_SendServerCommand(t, cmd)
+							end
+						end
+					elseif gen == 2 then
+						vsaymessage = "^5Revive me!"
+						local cmd = string.format("vtchat 0 %d 50 FTReviveMe %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1, 2), vsaymessage)
+						for t=0, sv_maxclients-1, 1 do
+							if et.gentity_get(t, "sess.sessionTeam") == team then
+								et.trap_SendServerCommand(t, cmd)
+							end
+						end
+					end
+				else
+					return(0)
+				end
+				return(1)
+			else
+				return(0)
+			end
 		elseif string.lower(vsaystring[1]) == "enemydisguised" and table.getn(vsaystring) < 2 then
 			local vsaymessage = ""
 			local ppos = et.gentity_get(id,"r.currentOrigin")
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			math.randomseed(et.trap_Milliseconds())
 			if team ~= 3 then
 				local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
 				vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
