@@ -274,7 +274,7 @@ function et_ConsoleCommand()
          			     miner2 = cno  --set cliendid
       			        mtimer2 = 30 --set timer
     			          minterval2 = 5000 --set interval
-  			            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner), "name") .. " has been punished \"\n")
+  			            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner2), "name") .. " has been punished \"\n")
 					  else
 						 et.G_Print("You had no matches to that id.\n") 
 					  end
@@ -287,7 +287,7 @@ function et_ConsoleCommand()
          		    miner2 = inSlot(et.trap_Argv(1))  --set cliendid
       		        mtimer2 = 30 --set timer
     		          minterval2 = 5000 --set interval
-  		            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner), "name") .. " has been punished \"\n")
+  		            et.trap_SendServerCommand(-1, "cpm \"^6Server^7: " .. et.Info_ValueForKey(et.trap_GetUserinfo(miner2), "name") .. " has been punished \"\n")
 				end
 			end
 		end
