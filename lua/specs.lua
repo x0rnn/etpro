@@ -35,6 +35,20 @@ function et_ClientDisconnect(clientNum)
 	end
 end
 
+function et_ConsoleCommand()
+	if et.trap_Argv(0) == "pb_sv_kick" then
+		if et.trap_Argc() >= 2 then
+			local cno = tonumber(et.trap_Argv(1))
+			if cno then
+				cno = cno - 1
+				et_ClientDisconnect(cno)
+			end
+		end
+		return 1
+	end
+    return(0)
+end
+
 function et_ClientUserinfoChanged(clientNum)
 	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
 	if speclock[clientNum] == true then
