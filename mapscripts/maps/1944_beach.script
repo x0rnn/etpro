@@ -2,11 +2,339 @@ game_manager
 {
 	spawn
 	{
+
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "-2221 660 4892"
+			contents 1  // SOLID
+			mins "-400 -400 -44"
+			maxs "400 400 44"
+		}
+
+		create
+		{
+			scriptName "spawnroof2"
+			classname "func_fakebrush"
+			origin "355 1723 5079"
+			contents 1  // SOLID
+			mins "-400 -400 -44"
+			maxs "400 400 44"
+		}
+
+		create
+		{
+			scriptName "spawnroof3"
+			classname "func_fakebrush"
+			origin "3276 -4914 5915"
+			contents 1  // SOLID
+			mins "-400 -400 -44"
+			maxs "400 400 44"
+		}
+
+		//add 8 new boat spawns
+		create
+		{
+			scriptName "allies_spawn"
+			targetname "allies_spawn"
+			classname "team_CTF_bluespawn"
+			origin "352 1932 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn"
+			targetname "allies_spawn"
+			classname "team_CTF_bluespawn"
+			origin "304 1932 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn"
+			targetname "allies_spawn"
+			classname "team_CTF_bluespawn"
+			origin "256 1996 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn"
+			targetname "allies_spawn"
+			classname "team_CTF_bluespawn"
+			origin "392 1996 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn_2"
+			targetname "allies_spawn_2"
+			classname "team_CTF_bluespawn"
+			origin "-2160 892 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn_2"
+			targetname "allies_spawn_2"
+			classname "team_CTF_bluespawn"
+			origin "-2296 892 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn_2"
+			targetname "allies_spawn_2"
+			classname "team_CTF_bluespawn"
+			origin "-2232 892 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn_2"
+			targetname "allies_spawn_2"
+			classname "team_CTF_bluespawn"
+			origin "-2144 1092 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "allies_spawn_2"
+			targetname "allies_spawn_2"
+			classname "team_CTF_bluespawn"
+			origin "-2208 1020 4476"
+			angle 270
+			spawnflags 3
+		}
+
+		//add forward axis spawns
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_redspawn"
+			origin "2140 -2584 5348"
+			angle 90
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_redspawn"
+			origin "2188 -2584 5348"
+			angle 90
+			spawnflags 3
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_redspawn"
+			origin "2188 -2528 5348"
+			angle 90
+			spawnflags 3
+		}
+
+		//add forward allied spawns
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2092 -2364 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2092 -2412 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2092 -2460 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2092 -2516 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2036 -2512 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "1940 -2512 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2140 -2516 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2148 -2460 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		create
+		{
+			scriptName "forward_spawn"
+			targetname "forward_spawn"
+			classname "team_CTF_bluespawn"
+			origin "2148 -2364 5360"
+			angle 90
+			spawnflags 1
+		}
+
+		//add 1 more allied transmitter spawn
+		create
+		{
+			scriptName "transmitter_spawn"
+			targetname "transmitter_spawn"
+			classname "team_CTF_bluespawn"
+			origin "-1912 -4792 5234"
+			angle 90
+			spawnflags 1
+		}
+
+		//add axis spawns
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3180 -4956 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3180 -4828 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3180 -4748 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3236 -4892 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3348 -4828 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3348 -4748 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3348 -4892 5352"
+			angle 180
+		}
+
+		create
+		{
+			scriptName "axis_spawn"
+			targetname "axis_spawn"
+			classname "team_CTF_redspawn"
+			origin "3348 -4956 5352"
+			angle 180
+		}
+
 	// Game rules
 	wm_axis_respawntime	20
 	wm_allied_respawntime	16
 	wm_number_of_objectives 7
-	wm_set_round_timelimit	30
+	wm_set_round_timelimit	20
 
 	// Objectives
 	// 1: Documents Transmission
@@ -49,10 +377,29 @@ game_manager
 	// wait for everything to settle
 	wait 2000
 
-		setautospawn	"Axis Spawn"	0
-		setautospawn	"Allies Spawn"	1
-		setautospawn	"Allies Spawn 2"	1
+		//setautospawn	"Axis Spawn"	0
+		//setautospawn	"Allies Spawn"	1
+		//setautospawn	"Allies Spawn 2"	1
 		setautospawn	"Forward Spawn"	0
+		setautospawn	"Forward Spawn"	1
+
+	wm_addteamvoiceannounce 1 "phis_allies_destroy_entrances"
+	wm_addteamvoiceannounce 1 "phis_allies_bunker_capture"
+	wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+	wm_addteamvoiceannounce 0 "phis_axis_defend_entrances"
+	wm_addteamvoiceannounce 0 "phis_axis_bunker_stop"
+	wm_addteamvoiceannounce 0 "phis_axis_construct_depotdef"
+	wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+	
+	wm_teamvoiceannounce 1 "phis_allies_destroy_entrances"
+	wm_teamvoiceannounce 1 "phis_allies_bunker_capture"
+	wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+
+	wm_teamvoiceannounce 0 "phis_axis_defend_entrances"
+	wm_teamvoiceannounce 0 "phis_axis_bunker_stop"
+	wm_teamvoiceannounce 0 "phis_axis_construct_depotdef"
+	wm_teamvoiceannounce 0 "axis_hq_compost_construct"
 	}
 
 	trigger allies_flag
@@ -87,9 +434,43 @@ game_manager
 		wm_endround
 	}
 
+	trigger main_down
+	{
+		accum 2 inc 1
+		trigger game_manager entrances_down
+		accum 2 abort_if_not_equal 1
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_entrances"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_entrances"
+		wm_addteamvoiceannounce 1 "phis_allies_destroy_side_entrance"
+		wm_addteamvoiceannounce 0 "phis_axis_defend_side_entrance"
+	}
+
+	trigger side_down
+	{
+		accum 2 inc 2
+		trigger game_manager entrances_down
+		accum 2 abort_if_not_equal 2
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_entrances"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_entrances"
+		wm_addteamvoiceannounce 1 "phis_allies_destroy_main_entrance"
+		wm_addteamvoiceannounce 0 "phis_axis_defend_main_entrance"
+	}
+
+	trigger entrances_down
+	{
+		accum 2 abort_if_not_equal 3
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_entrances"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_entrances"
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_side_entrance"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_side_entrance"
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_main_entrance"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_main_entrance"
+		wm_announce "The Allies have destroyed both Entrances!"
+	}
+
 	trigger transmitter_spawn_two_show
 	{
-		setautospawn	"Transmitter Spawn"	1
+		//setautospawn	"Transmitter Spawn"	1
 		setstate transmitter_spawn_two default
 		setstate transmitter_spawn default
 		alertentity transmitter_spawn
@@ -109,6 +490,11 @@ transmitter_tower
 {
 	spawn
 	{
+		set
+		{
+			shortname "Allied Transmitter Tower"
+		}
+
 		wait 400
 		setstate transmitter_tower invisible
 		setstate transmitter_tower_cm invisible
@@ -152,6 +538,11 @@ transmitter
 {
 	spawn
 	{
+		set
+		{
+			shortname "Allied Transmitter"
+		}
+
 		wait 400
 		constructible_class 3
 		trigger transmitter setup
@@ -221,6 +612,8 @@ transmitter
 
 	trigger enable_allied_features
 	{
+		trigger forward_spawn alliedcp_built
+
 		setchargetimefactor 1 soldier 0.75
 		setchargetimefactor 1 lieutenant 0.75
 		setchargetimefactor 1 medic 0.75
@@ -249,6 +642,7 @@ transmitter
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 1 "allies_hqt_compost_construc"
 
+		wm_teamvoiceannounce 0 "axis_hq_const_destroyed"
 		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
 		// *----------------------------------- vo ------------------------------------------*
 		setchargetimefactor 1 soldier 1
@@ -269,11 +663,15 @@ documents
 {
 	spawn
 	{
+		set
+		{
+			shortname "The Axis Documents"
+		}
 	}
 
 	trigger stolen
 	{
-		wm_announce "Allies have stolen the documents!"
+		//wm_announce "Allies have stolen the documents!"
 		wm_objective_status 7 0 0
 		wm_objective_status 7 1 1
 
@@ -281,7 +679,7 @@ documents
 
 	trigger returned
 	{
-	wm_announce "Documents returned!"
+	//wm_announce "Documents returned!"
 
 		wm_objective_status 7 0 1
 		wm_objective_status 7 1 0
@@ -290,6 +688,10 @@ documents
 	trigger captured
 	{
 	wm_announce "Allies have transmitted the documents!"
+
+	wm_teamvoiceannounce 1 "allies_hq_objective_secure"
+	wm_teamvoiceannounce 0 "axis_hq_objective_lost"
+
 	trigger game_manager allies_win
 	}
 	
@@ -315,6 +717,11 @@ roadhousewall
 {
 	spawn
 	{
+		set
+		{
+			shortname "Roadhouse Wall"
+		}
+
 		wait 200
 		constructible_class 3
 		setstate roadhousewall_destroyed invisible
@@ -326,8 +733,16 @@ roadhousewall
 		setstate roadhousewall_destroyed default
 		setstate roadhousewall_toi invisible
 
+		trigger game_manager main_down
+
 		wm_objective_status 5 0 2
 		wm_objective_status 5 1 1
+
+		wm_teamvoiceannounce 1 "phis_allies_main_entrance_destroyed"
+		wm_teamvoiceannounce 0 "phis_axis_main_entrance_destroyed"
+
+		wm_removeteamvoiceannounce 0 "phis_allies_destroy_entrances"
+		wm_removeteamvoiceannounce 0 "phis_axis_defend_entrances"
 	}
 }
 
@@ -335,6 +750,10 @@ beach_tunnel
 {
 	spawn
 	{
+		set
+		{
+			shortname "Beach Tunnel Wall"
+		}
 		wait 200
 		constructible_class 1
 		constructible_health 600
@@ -355,6 +774,10 @@ axisgate
 {
 	spawn
 	{
+		set
+		{
+			shortname "Axis Gate"
+		}
 		wait 200
 		constructible_class 3
 		setstate axisgate_destroyed invisible
@@ -362,9 +785,13 @@ axisgate
 
 	death
 	{		
-		wm_announce "the Axis Gate has been destroyed."
+		wm_announce "The Side Entrance has been destroyed!"
 		setstate axisgate_destroyed default
 		setstate axisgate_toi invisible
+
+		wm_teamvoiceannounce 1 "phis_allies_side_entrance_destroyed"
+		wm_teamvoiceannounce 0 "phis_axis_side_entrance_destroyed"
+		trigger game_manager side_down
 
 		wm_objective_status 6 0 2
 		wm_objective_status 6 1 1
@@ -376,6 +803,10 @@ tower
 {
 	spawn
 	{
+		set
+		{
+			shortname "Forward Bunker Watchtower"
+		}
 		wait 400
 		trigger tower setup
 		constructible_class 3
@@ -448,6 +879,11 @@ eastblock
 {
 	spawn
 	{
+		set
+		{
+			shortname "Eastern Blockade"
+		}
+
 		wait 400
 		trigger eastblock setup
 		constructible_class 1
@@ -528,6 +964,11 @@ westblock
 {
 	spawn
 	{
+		set
+		{
+			shortname "Western Blockade"
+		}
+
 		wait 400
 		trigger westblock setup
 		constructible_class 1
@@ -608,6 +1049,11 @@ bunkerdoors
 {
 	spawn
 	{
+		set
+		{
+			shortname "Forward Bunker Doors"
+		}
+
 		wait 400
 		trigger bunkerdoors setup
 		constructible_class 2
@@ -641,6 +1087,12 @@ bunkerdoors
 
 		wm_announce "the Forward Bunker Doors have been constructed."
 
+		wm_addteamvoiceannounce 1 "phis_allies_destroy_depotdef"
+		
+		wm_teamvoiceannounce 1 "phis_allies_destroy_depotdef"
+		wm_teamvoiceannounce 0 "phis_axis_depotdef_constructed"
+
+		wm_removeteamvoiceannounce 0 "phis_axis_construct_depotdef"
 	}
 
 	decayed final
@@ -662,6 +1114,12 @@ bunkerdoors
 
 		wm_announce "the Forward Bunker Doors have been destroyed."
 
+		wm_addteamvoiceannounce 0 "phis_axis_construct_depotdef"
+		
+		wm_teamvoiceannounce 1 "phis_allies_depotdef_destroyed"
+		wm_teamvoiceannounce 0 "phis_axis_depotdef_destroyed"
+
+		wm_removeteamvoiceannounce 1 "phis_allies_destroy_depotdef"
 	}
 
 	trigger remove
@@ -684,7 +1142,8 @@ forward_spawn
 {
 	spawn
 	{
-	accum 3 set 0	// 0-Axis, 1-Allied
+		//wait 200
+		accum 3 set 0	// 0-Axis, 1-Allied
 	}
 
 
@@ -731,70 +1190,35 @@ forward_spawn
 		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
 		// *---------------------------------------------------------------------------------*
 	}
+
+	trigger alliedcp_built
+	{
+		accum 3 abort_if_equal 1
+		setautospawn "Transmitter Spawn" 1
+	}
 }
 
 // ================================================
 // ============== COMMAND POST AXIS ===============
 // ================================================
 
-axis_compost_damaged
-{
-	spawn
-	{
-		wait 400
-		setstate axis_compost_damaged invisible
-		setstate axis_compost_damaged_model invisible
-	}
-
-	trigger hide
-	{
-		setstate axis_compost_damaged invisible
-		setstate axis_compost_damaged_model invisible
-	}
-
-	trigger show
-	{
-		accum 0 abort_if_equal 0
-		setstate axis_compost_damaged default
-		setstate axis_compost_damaged_model default
-	}
-
-	trigger enable
-	{
-		accum 0 set 1
-	}
-}
-
-axis_compost_closed
-{
-	trigger hide
-	{
-		setstate axis_compost_closed invisible
-		setstate axis_compost_closed_model invisible
-	}
-
-	trigger show
-	{
-		accum 0 abort_if_equal 1
-		setstate axis_compost_closed default
-		setstate axis_compost_closed_model default
-	}
-
-	trigger disable
-	{
-		accum 0 set 1
-	}
-}
-
 axis_compost_built
 {
 	spawn
 	{
-		wait 400
 
+		set
+		{
+			origin "870 -5456 5456"
+		}
+
+		wait 200
 		constructible_class 2
 
 		trigger axis_compost_built setup
+
+		setstate axis_compost_built_model	invisible
+		setstate axis_compost_built		invisible
 	}
 
 	trigger setup
@@ -809,73 +1233,36 @@ axis_compost_built
 
 	buildstart final
 	{
-		trigger axis_compost_built_model trans
-
-		trigger axis_compost_damaged hide
-		trigger axis_compost_closed 	hide
-	}
-
-	built final
-	{
-		trigger axis_compost_built_model show
-
-		trigger axis_compost_damaged enable
-		trigger axis_compost_closed 	disable
-
-		trigger axis_compost_built_model enable_axis_features
-
+		setstate axis_compost_built_model	underconstruction
+		setstate axis_compost_built		invisible
+		setstate axis_compost_closed		default
+		setstate axis_compost_closed_model	invisible
 	}
 
 	decayed final
 	{
-		trigger axis_compost_built_model hide
-
-		trigger axis_compost_damaged show
-		trigger axis_compost_closed 	show
+		setstate axis_compost_built_model	invisible
+		setstate axis_compost_built		invisible
+		setstate axis_compost_closed		default
+		setstate axis_compost_closed_model	default
 	}
 
-	death
+	built final
 	{
-		trigger axis_compost_built_model hide
+		setstate axis_compost_built_model	default
+		setstate axis_compost_built		default
+		setstate axis_compost_closed		invisible
+		setstate axis_compost_closed_model	invisible
 
-		trigger axis_compost_damaged show
-
-		trigger axis_compost_built_model disable_axis_features
-
-	}
-}
-
-axis_compost_built_model
-{
-	spawn
-	{
-		wait 400
-		setstate axis_compost_built_model invisible
-	}
-
-	trigger show
-	{
-		setstate axis_compost_built_model default
-	}
-
-	trigger hide
-	{
-		setstate axis_compost_built_model invisible
-	}
-
-	trigger trans
-	{
-		setstate axis_compost_built_model underconstruction
-	}
-
-	trigger enable_axis_features
-	{
 		setchargetimefactor 0 soldier 0.75
 		setchargetimefactor 0 lieutenant 0.75
 		setchargetimefactor 0 medic 0.75
 		setchargetimefactor 0 engineer 0.75
 		setchargetimefactor 0 covertops 0.75
 		sethqstatus 0 1
+
+		wm_objective_status 8 1 2
+		wm_objective_status 8 0 1
 
 		wm_announce	"Axis Command Post constructed. Charge speed increased!"
 		// *----------------------------------- vo ------------------------------------------*
@@ -886,21 +1273,15 @@ axis_compost_built_model
 		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
 		// *----------------------------------- vo ------------------------------------------*
 
-		wm_objective_status 8 1 2
-		wm_objective_status 8 0 1
 
 	}
 
-	trigger disable_axis_features
+	death
 	{
-		// Some kind of UI pop-up to alert players
-		wm_announce	"Allied team has destroyed the Axis Command Post!"
-
-		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
-
-		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
-		// *----------------------------------- vo ------------------------------------------*
+		setstate axis_compost_built_model	invisible
+		setstate axis_compost_built		invisible
+		setstate axis_compost_closed		default
+		setstate axis_compost_closed_model	default
 
 		setchargetimefactor 0 soldier 1
 		setchargetimefactor 0 lieutenant 1
@@ -911,5 +1292,87 @@ axis_compost_built_model
 
 		wm_objective_status 8 1 0
 		wm_objective_status 8 0 0
+
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		wm_teamvoiceannounce 1 "allies_hq_const_destroyed"
+		// *----------------------------------- vo ------------------------------------------*
+
+	}
+}
+
+axis_compost_toi
+{
+	spawn
+	{
+		set
+		{
+			shortname "Axis Command Post"
+		}
+	}
+}
+
+axis_compost_closed_model
+{
+	spawn
+	{
+		set
+		{
+			origin "920 -5426 5328"
+		}
+	}
+}
+
+axis_compost_built_model
+{
+	spawn
+	{
+		set
+		{
+			origin "920 -5426 5328"
+		}
+	}
+}
+
+axis_compost_closed
+{
+	spawn
+	{
+		set
+		{
+			origin "902 -5446 5456"
+		}
+	}
+}
+
+axis_compost_damaged_model
+{
+	spawn
+	{
+		wait 200
+		remove
+	}
+}
+
+axis_compost_damaged
+{
+	spawn
+	{
+		wait 200
+		remove
+	}
+}
+
+axis_compost_built_clip
+{
+	spawn
+	{
+		wait 200
+		remove
 	}
 }
