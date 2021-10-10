@@ -900,6 +900,28 @@ function et_Print(text)
 		end
 	end -- end et_village
 
+if mapname == "1944_beach" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				doccarriers[id] = true
+				table.insert(doccarriers_id, id)
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Axis Documents!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Axis Documents!\"\n")
+			end
+		end
+		if(string.find(text, "Allies have transmitted the documents")) then
+			local name = et.gentity_get(doccarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Axis Documents!\"\n")
+			doccarriers[doccarriers_id[1]] = nil
+			table.remove(doccarriers_id, 1)
+		end
+	end -- end 1944_beach
+
 	if mapname == "et_ice" then
 		if(string.find(text, "team_CTF_blueflag")) then
 			local i, j = string.find(text, "%d+")   
@@ -1103,6 +1125,12 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
+	if mapname == "1944_beach" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
 end
 
 function et_ClientDisconnect(i)
@@ -1280,6 +1308,12 @@ function et_ClientDisconnect(i)
 		end
 	end
 	if mapname == "et_ice" then
+		doccarriers[i] = nil
+		if doccarriers_id[1] == i then
+			table.remove(doccarriers_id, 1)
+		end
+	end
+	if mapname == "1944_beach" then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
