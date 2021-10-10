@@ -501,6 +501,21 @@ function getConfig(map)
     elseif map == "transmitter" then
 		        c.spawns[3] = {name = "Allied Base", state = PROTECT_ALLIES, radius2 = 1000}
 		        c.spawns[2] = {name = "Castle", state = PROTECT_AXIS, radius2 = 400}
+-- 1944_beach
+    elseif map == "1944_beach" then
+        c.spawns[1] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {3254, -4882, 5384}, radius2 = 500}
+        c.spawns[2] = {name = "Forward Spawn", state = NO_PROTECT}
+        c.spawns[3] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {310, 1984, 4512}, radius2 = 180}
+        c.spawns[4] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {310, 1884, 4512}, radius2 = 200}
+        c.spawns[5] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {310, 1684, 4512}, radius2 = 200}
+        c.spawns[6] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {310, 1584, 4512}, radius2 = 200}
+        c.spawns[7] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {333, 1457, 4512}, radius2 = 200}
+        c.spawns[8] = {name = "Allies Spawn", state = PROTECT_ALLIES, pos = {328, 1211, 4512}, radius2 = 300}
+        c.spawns[9] = {name = "Transmitter Spawn", state = NO_PROTECT}
+        c.spawns[10] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2193, 1014, 4472}, radius2 = 100}
+        c.spawns[11] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2202, 689, 4512}, radius2 = 200}
+        c.spawns[12] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2197, 513, 4512}, radius2 = 200}
+        c.spawns[13] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2209, 193, 4516}, radius2 = 300}
 
 -- ET Ice
     elseif map == "et_ice" then
