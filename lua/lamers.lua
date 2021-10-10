@@ -8,6 +8,7 @@
 -- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
 -- removed panzerfaust when less than 12 players
 -- removed riflenades when less than 6 players
+-- removed mortar when less than 16 players
 
 panzerlamers = {}
 mortarlamers = {}
