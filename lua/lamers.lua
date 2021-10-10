@@ -574,27 +574,40 @@ function et_ClientSpawn(id, revived)
 		end
 		if GS == 0 then
 			if GSFlag == true then
-				if playerCount < 12 then
+				if playerCount < 16 then
 					if et.gentity_get(id,"sess.PlayerType") == 0 then
-						if et.gentity_get(id, "sess.latchPlayerWeapon") == 5 then
+						if et.gentity_get(id, "sess.latchPlayerWeapon") == 35 then
 							et.gentity_set(id,"sess.latchPlayerType", 1)
 							et.gentity_set(id, "ps.powerups", 1, 0)
 							et.G_Damage(id, 80, 1022, 1000, 8, 34)
-							et.trap_SendServerCommand(-1, "chat \"^3No panzerfaust when less than 12 players!\"")
+							et.trap_SendServerCommand(-1, "chat \"^3No mortar when less than 16 players!\"")
+							et.G_LogPrint("LUA event: No mortar when less than 16 players: " .. playerCount .. " players.\n")
 						end
 					end
-					if playerCount < 6 then
-						if et.gentity_get(id,"sess.PlayerType") == 2 then
-							if et.gentity_get(id,"ps.ammo",39) > 0 or et.gentity_get(id,"ps.ammo",40) > 0 then
-								local team = et.gentity_get(id, "sess.sessionTeam")
-								if team == 1 then
-									et.gentity_set(id,"sess.latchPlayerWeapon", 3)
-								elseif team == 2 then
-									et.gentity_set(id,"sess.latchPlayerWeapon", 8)
-								end
+					if playerCount < 12 then
+						if et.gentity_get(id,"sess.PlayerType") == 0 then
+							if et.gentity_get(id, "sess.latchPlayerWeapon") == 5 then
+								et.gentity_set(id,"sess.latchPlayerType", 1)
 								et.gentity_set(id, "ps.powerups", 1, 0)
 								et.G_Damage(id, 80, 1022, 1000, 8, 34)
-								et.trap_SendServerCommand(-1, "chat \"^3No riflenades when less than 6 players!\"")
+								et.trap_SendServerCommand(-1, "chat \"^3No panzerfaust when less than 12 players!\"")
+								et.G_LogPrint("LUA event: No panzerfaust when less than 12 players: " .. playerCount .. " players.\n")
+							end
+						end
+						if playerCount < 6 then
+							if et.gentity_get(id,"sess.PlayerType") == 2 then
+								if et.gentity_get(id,"ps.ammo",39) > 0 or et.gentity_get(id,"ps.ammo",40) > 0 then
+									local team = et.gentity_get(id, "sess.sessionTeam")
+									if team == 1 then
+										et.gentity_set(id,"sess.latchPlayerWeapon", 3)
+									elseif team == 2 then
+										et.gentity_set(id,"sess.latchPlayerWeapon", 8)
+									end
+									et.gentity_set(id, "ps.powerups", 1, 0)
+									et.G_Damage(id, 80, 1022, 1000, 8, 34)
+									et.trap_SendServerCommand(-1, "chat \"^3No riflenades when less than 6 players!\"")
+									et.G_LogPrint("LUA event: No riflenades when less than 6 players: " .. playerCount .. " players.\n")
+								end
 							end
 						end
 					end
