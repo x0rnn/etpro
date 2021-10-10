@@ -1,0 +1,915 @@
+game_manager
+{
+	spawn
+	{
+	// Game rules
+	wm_axis_respawntime	20
+	wm_allied_respawntime	16
+	wm_number_of_objectives 7
+	wm_set_round_timelimit	30
+
+	// Objectives
+	// 1: Documents Transmission
+	// 2: Beach Tunnel
+	// 3: Transmitter	
+	// 4: Forward Bunker	
+	// 5: Roadhouse Wall
+	// 6: Axis Gate
+	// 7: Axis Documents
+	// 8: Axis Command Post
+
+	accum 3 set 0
+
+	// Objective overview status indicators
+	//wm_objective_status <objective> <team (0=Axis, 1=Allies)> <status (0=neutral 1=complete 2=failed)>
+	wm_objective_status 1 1 0
+	wm_objective_status 1 0 0
+	wm_objective_status 2 1 0
+	wm_objective_status 2 0 0
+	wm_objective_status 3 1 0
+	wm_objective_status 3 0 0
+	wm_objective_status 4 1 0
+	wm_objective_status 4 0 0
+	wm_objective_status 5 1 0
+	wm_objective_status 5 0 0
+	wm_objective_status 6 1 0
+	wm_objective_status 6 0 0	
+	wm_objective_status 7 1 0
+	wm_objective_status 7 0 0
+	wm_objective_status 8 1 0
+	wm_objective_status 8 0 0
+
+	// Stopwatch mode defending team (0=Axis, 1=Allies)
+	wm_set_defending_team	0
+
+	// Winner on expiration of round timer (0=Axis, 1=Allies)
+	wm_setwinner	0
+
+	
+	// wait for everything to settle
+	wait 2000
+
+		setautospawn	"Axis Spawn"	0
+		setautospawn	"Allies Spawn"	1
+		setautospawn	"Allies Spawn 2"	1
+		setautospawn	"Forward Spawn"	0
+	}
+
+	trigger allies_flag
+	{		
+		wm_announce	"Allies capture the forward bunker!"
+		setautospawn	"Forward Spawn"	1
+		alertentity forwardspawn_two
+		alertentity forward_spawn
+
+		wm_objective_status 4 0 0
+		wm_objective_status 4 1 1
+
+	}
+	
+	trigger axis_flag
+	{
+		wm_announce	"Axis capture the forward bunker!"
+		setautospawn	"Forward Spawn"	0
+		alertentity forwardspawn_two
+		alertentity forward_spawn
+
+		wm_objective_status 4 0 1
+		wm_objective_status 4 1 0
+
+	}
+
+	trigger allies_win
+	{ 
+		wm_setwinner 	1
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1	
+		wm_endround
+	}
+
+	trigger transmitter_spawn_two_show
+	{
+		setautospawn	"Transmitter Spawn"	1
+		setstate transmitter_spawn_two default
+		setstate transmitter_spawn default
+		alertentity transmitter_spawn
+	}
+	trigger transmitter_spawn_two_hide
+	{
+		setstate transmitter_spawn_two invisible
+		setstate transmitter_spawn invisible
+	}
+}
+
+// ================================================
+// ================ TRANSMITTER ===================
+// ================================================
+
+transmitter_tower
+{
+	spawn
+	{
+		wait 400
+		setstate transmitter_tower invisible
+		setstate transmitter_tower_cm invisible
+	}
+
+	trigger transmitter_tower_hide
+	{
+		setstate transmitter_tower invisible
+		setstate transmitter_tower_cm invisible
+	}
+
+	trigger transmitter_tower_show
+	{
+		setstate transmitter_tower default
+		setstate transmitter_tower_cm default
+	}
+}
+
+
+transmitter_destroyed
+{
+	spawn
+	{
+		wait 400
+		setstate transmitter_destroyed invisible
+	}
+
+	trigger hide
+	{
+		setstate transmitter_destroyed invisible
+	}
+
+	trigger show
+	{
+		setstate transmitter_destroyed default
+	}
+}
+
+
+transmitter
+{
+	spawn
+	{
+		wait 400
+		constructible_class 3
+		trigger transmitter setup
+	}
+
+	trigger setup
+	{		
+		setstate transmitter_materials default
+		setstate transmitter_materials_clip default
+		setstate transmitter_toi default
+		setstate transmitter invisible
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 1 0
+
+		trigger game_manager transmitter_spawn_two_hide
+		trigger documents documents_transmitter_hide
+	}
+
+	buildstart final
+	{
+		setstate transmitter_materials underconstruction
+		setstate transmitter underconstruction
+	}
+
+	built final
+	{
+		setstate transmitter default
+		setstate transmitter_materials invisible
+		setstate transmitter_materials_clip invisible
+		setstate transmitter_toi invisible
+
+		trigger transmitter_destroyed hide
+		trigger transmitter enable_allied_features
+		trigger transmitter_tower transmitter_tower_show
+		trigger game_manager transmitter_spawn_two_show
+		trigger documents documents_transmitter_show
+	}
+
+	decayed final
+	{
+		setstate transmitter invisible
+		setstate transmitter_materials default
+		setstate transmitter_materials_clip default
+		setstate transmitter_toi default
+
+		trigger transmitter_destroyed show
+	}
+
+	death
+	{
+		setstate transmitter invisible
+		setstate transmitter_materials default
+		setstate transmitter_materials_clip default
+		setstate transmitter_toi default
+
+		trigger transmitter_destroyed show	
+		trigger transmitter disable_allied_features
+		trigger documents documents_transmitter_hide
+		trigger transmitter_tower transmitter_tower_hide
+		trigger game_manager transmitter_spawn_two_hide
+	}
+
+	trigger enable_allied_features
+	{
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+
+		wm_announce	"Allied Transmitter constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 3 0 0
+		wm_objective_status 3 1 1
+	
+	}
+
+	trigger disable_allied_features
+	{
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Axis team has destroyed the Allied Transmitter!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 1 "allies_hqt_compost_construc"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *----------------------------------- vo ------------------------------------------*
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+
+		wm_objective_status 3 0 1
+		wm_objective_status 3 1 0
+
+	}
+}
+
+
+documents
+{
+	spawn
+	{
+	}
+
+	trigger stolen
+	{
+		wm_announce "Allies have stolen the documents!"
+		wm_objective_status 7 0 0
+		wm_objective_status 7 1 1
+
+	}
+
+	trigger returned
+	{
+	wm_announce "Documents returned!"
+
+		wm_objective_status 7 0 1
+		wm_objective_status 7 1 0
+	}
+
+	trigger captured
+	{
+	wm_announce "Allies have transmitted the documents!"
+	trigger game_manager allies_win
+	}
+	
+	trigger documents_transmitter_show
+	{
+	setstate documents_transmitter default	
+	}
+
+	trigger documents_transmitter_hide
+	{
+	setstate documents_transmitter invisible	
+	}
+
+}
+
+// ================================================
+// ======== CONSTRUCTABLES&DESTRUCTABLES ==========
+// ================================================
+
+
+
+roadhousewall
+{
+	spawn
+	{
+		wait 200
+		constructible_class 3
+		setstate roadhousewall_destroyed invisible
+	}
+
+	death
+	{		
+		wm_announce "Roadhouse Wall has been destroyed."
+		setstate roadhousewall_destroyed default
+		setstate roadhousewall_toi invisible
+
+		wm_objective_status 5 0 2
+		wm_objective_status 5 1 1
+	}
+}
+
+beach_tunnel
+{
+	spawn
+	{
+		wait 200
+		constructible_class 1
+		constructible_health 600
+	}
+
+	death
+	{		
+		wm_announce "the Beach Tunnel Wall has been destroyed."
+
+		setstate beach_tunnel_toi invisible
+
+		wm_objective_status 2 0 2
+		wm_objective_status 2 1 1
+	}
+}
+
+axisgate
+{
+	spawn
+	{
+		wait 200
+		constructible_class 3
+		setstate axisgate_destroyed invisible
+	}
+
+	death
+	{		
+		wm_announce "the Axis Gate has been destroyed."
+		setstate axisgate_destroyed default
+		setstate axisgate_toi invisible
+
+		wm_objective_status 6 0 2
+		wm_objective_status 6 1 1
+
+	}
+}
+
+tower
+{
+	spawn
+	{
+		wait 400
+		trigger tower setup
+		constructible_class 3
+	}
+
+	trigger setup
+	{
+		setstate tower_materials default
+		setstate tower_materials_clip default
+		setstate tower_destroyed invisible
+		setstate towermg42 invisible
+		setstate tower invisible
+	}
+
+	buildstart final
+	{
+		setstate tower_materials default
+		setstate tower_materials_clip default
+		setstate tower_destroyed invisible
+		setstate towermg42 underconstruction
+		setstate tower underconstruction
+	}
+
+	built final
+	{
+		setstate tower_materials invisible
+		setstate tower_materials_clip invisible
+		setstate tower_destroyed invisible
+		setstate towermg42 default
+		setstate tower default
+
+
+		wm_announce "tower has been constructed."
+
+	}
+
+	decayed final
+	{
+		setstate tower_materials default
+		setstate tower_materials_clip default
+		setstate tower_destroyed invisible
+		setstate towermg42 invisible
+		setstate tower invisible
+	}
+
+	death
+	{
+		setstate tower_materials default
+		setstate tower_materials_clip default
+		setstate tower_destroyed default
+		setstate tower invisible
+		setstate towermg42 invisible
+
+		wm_announce "the Axis Tower has been destroyed."
+
+	}
+
+	trigger remove
+	{
+		setstate tower_toi invisible
+		setstate tower_materials invisible
+		setstate tower_materials_clip invisible
+		setstate tower_destroyed invisible
+		setstate towermg42 invisible
+		setstate tower invisible
+	}
+}
+
+eastblock
+{
+	spawn
+	{
+		wait 400
+		trigger eastblock setup
+		constructible_class 1
+		constructible_health 400
+	}
+
+	trigger setup
+	{
+		setstate eastblock_materials default
+		setstate eastblock_materials_clip default
+		setstate eastblock_toi default
+
+		setstate eastblock_exp invisible
+		setstate eastblock invisible
+		setstate eastblock_hurt invisible
+		setstate eastblock_wire invisible
+	}
+
+	buildstart final
+	{
+		setstate eastblock_materials default
+		setstate eastblock_materials_clip default
+
+		setstate eastblock underconstruction
+		setstate eastblock_hurt underconstruction
+		setstate eastblock_wire underconstruction
+	}
+
+	built final
+	{
+		setstate eastblock_materials invisible
+		setstate eastblock_materials_clip invisible
+		setstate eastblock_toi invisible
+		setstate eastblock invisible
+
+		setstate eastblock_exp default
+		setstate eastblock_hurt default
+		setstate eastblock_wire default
+
+		wm_announce "the Axis East Blockade has been constructed."
+	}
+
+	decayed final
+	{
+		setstate eastblock_materials default
+		setstate eastblock_materials_clip default
+		setstate eastblock_toi default
+
+		setstate eastblock_exp invisible
+		setstate eastblock invisible
+		setstate eastblock_hurt invisible
+		setstate eastblock_wire invisible
+	}
+
+	death
+	{
+		trigger eastblock remove
+
+		wm_announce "the Axis East Blockade has been destroyed."
+	}
+
+	trigger remove
+	{
+		setstate eastblock_exp invisible
+		setstate eastblock_materials invisible
+		setstate eastblock_materials_clip invisible
+		setstate eastblock invisible
+		setstate eastblock_toi invisible
+		setstate eastblock_hurt invisible
+		setstate eastblock_wire invisible
+
+		remove
+	}
+}
+
+
+westblock
+{
+	spawn
+	{
+		wait 400
+		trigger westblock setup
+		constructible_class 1
+		constructible_health 400
+	}
+
+	trigger setup
+	{
+		setstate westblock_materials default
+		setstate westblock_materials_clip default
+		setstate westblock_toi default
+
+		setstate westblock_exp invisible
+		setstate westblock invisible
+		setstate westblock_hurt invisible
+		setstate westblock_wire invisible
+	}
+
+	buildstart final
+	{
+		setstate westblock_materials default
+		setstate westblock_materials_clip default
+
+		setstate westblock underconstruction
+		setstate westblock_hurt underconstruction
+		setstate westblock_wire underconstruction
+	}
+
+	built final
+	{
+		setstate westblock_materials invisible
+		setstate westblock_materials_clip invisible
+		setstate westblock_toi invisible
+		setstate westblock invisible
+
+		setstate westblock_exp default
+		setstate westblock_hurt default
+		setstate westblock_wire default
+
+		wm_announce "the Axis West Blockade has been constructed."
+	}
+
+	decayed final
+	{
+		setstate westblock_materials default
+		setstate westblock_materials_clip default
+		setstate westblock_toi default
+
+		setstate westblock_exp invisible
+		setstate westblock invisible
+		setstate westblock_hurt invisible
+		setstate westblock_wire invisible
+	}
+
+	death
+	{
+		trigger westblock remove
+
+		wm_announce "the Axis West Blockade has been destroyed."
+	}
+
+	trigger remove
+	{
+		setstate westblock_exp invisible
+		setstate westblock_materials invisible
+		setstate westblock_materials_clip invisible
+		setstate westblock_toi invisible
+		setstate westblock invisible
+		setstate westblock_hurt invisible
+		setstate westblock_wire invisible
+
+		remove
+	}
+
+}
+
+bunkerdoors
+{
+	spawn
+	{
+		wait 400
+		trigger bunkerdoors setup
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setstate bunkerdoors_materials default
+		setstate bunkerdoors_materials_clip default
+		setstate bunkerdoors_destroyed invisible
+		setstate bunkerdoors_doors invisible
+		setstate bunkerdoors invisible
+	}
+
+	buildstart final
+	{
+		setstate bunkerdoors_materials default
+		setstate bunkerdoors_materials_clip default
+		setstate bunkerdoors_destroyed invisible
+		setstate bunkerdoors_doors underconstruction
+		setstate bunkerdoors underconstruction
+	}
+
+	built final
+	{
+		setstate bunkerdoors_materials invisible
+		setstate bunkerdoors_materials_clip invisible
+		setstate bunkerdoors_destroyed invisible
+		setstate bunkerdoors_doors default
+		setstate bunkerdoors default
+
+		wm_announce "the Forward Bunker Doors have been constructed."
+
+	}
+
+	decayed final
+	{
+		setstate bunkerdoors_materials default
+		setstate bunkerdoors_materials_clip default
+		setstate bunkerdoors_destroyed invisible
+		setstate bunkerdoors_doors invisible
+		setstate bunkerdoors invisible
+	}
+
+	death
+	{
+		setstate bunkerdoors_materials default
+		setstate bunkerdoors_materials_clip default
+		setstate bunkerdoors_destroyed default
+		setstate bunkerdoors_doors invisible
+		setstate bunkerdoors invisible 
+
+		wm_announce "the Forward Bunker Doors have been destroyed."
+
+	}
+
+	trigger remove
+	{
+		setstate bunkerdoors_toi invisible
+		setstate bunkerdoors_materials invisible
+		setstate bunkerdoors_materials_clip invisible
+		setstate bunkerdoors_destroyed invisible
+		setstate bunkerdoors_doors invisible
+		setstate bunkerdoors invisible
+	}
+}
+
+
+// ================================================
+// ============    FORWARD SPAWN     ==============
+// ================================================
+
+forward_spawn
+{
+	spawn
+	{
+	accum 3 set 0	// 0-Axis, 1-Allied
+	}
+
+
+	trigger axis_capture
+	{
+
+		accum 3 abort_if_not_equal 1
+
+		accum 3 set 0
+
+		trigger game_manager axis_flag
+
+
+		wait 1000
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+
+		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+
+		wm_teamvoiceannounce 0 "radar_axis_bunker_reclaimed"
+
+		wm_teamvoiceannounce 1 "radar_allies_bunker_reclaimed"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_capture
+	{
+
+		accum 3 abort_if_not_equal 0
+
+		accum 3 set 1
+
+		trigger game_manager allies_flag
+
+
+		wait 1000
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
+
+		wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
+
+		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+
+		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+// ================================================
+// ============== COMMAND POST AXIS ===============
+// ================================================
+
+axis_compost_damaged
+{
+	spawn
+	{
+		wait 400
+		setstate axis_compost_damaged invisible
+		setstate axis_compost_damaged_model invisible
+	}
+
+	trigger hide
+	{
+		setstate axis_compost_damaged invisible
+		setstate axis_compost_damaged_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 0
+		setstate axis_compost_damaged default
+		setstate axis_compost_damaged_model default
+	}
+
+	trigger enable
+	{
+		accum 0 set 1
+	}
+}
+
+axis_compost_closed
+{
+	trigger hide
+	{
+		setstate axis_compost_closed invisible
+		setstate axis_compost_closed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 1
+		setstate axis_compost_closed default
+		setstate axis_compost_closed_model default
+	}
+
+	trigger disable
+	{
+		accum 0 set 1
+	}
+}
+
+axis_compost_built
+{
+	spawn
+	{
+		wait 400
+
+		constructible_class 2
+
+		trigger axis_compost_built setup
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+	}
+
+	buildstart final
+	{
+		trigger axis_compost_built_model trans
+
+		trigger axis_compost_damaged hide
+		trigger axis_compost_closed 	hide
+	}
+
+	built final
+	{
+		trigger axis_compost_built_model show
+
+		trigger axis_compost_damaged enable
+		trigger axis_compost_closed 	disable
+
+		trigger axis_compost_built_model enable_axis_features
+
+	}
+
+	decayed final
+	{
+		trigger axis_compost_built_model hide
+
+		trigger axis_compost_damaged show
+		trigger axis_compost_closed 	show
+	}
+
+	death
+	{
+		trigger axis_compost_built_model hide
+
+		trigger axis_compost_damaged show
+
+		trigger axis_compost_built_model disable_axis_features
+
+	}
+}
+
+axis_compost_built_model
+{
+	spawn
+	{
+		wait 400
+		setstate axis_compost_built_model invisible
+	}
+
+	trigger show
+	{
+		setstate axis_compost_built_model default
+	}
+
+	trigger hide
+	{
+		setstate axis_compost_built_model invisible
+	}
+
+	trigger trans
+	{
+		setstate axis_compost_built_model underconstruction
+	}
+
+	trigger enable_axis_features
+	{
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+
+		wm_objective_status 8 1 2
+		wm_objective_status 8 0 1
+
+	}
+
+	trigger disable_axis_features
+	{
+		// Some kind of UI pop-up to alert players
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		// *----------------------------------- vo ------------------------------------------*
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+
+		wm_objective_status 8 1 0
+		wm_objective_status 8 0 0
+	}
+}
