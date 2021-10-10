@@ -1159,13 +1159,13 @@ forward_spawn
 
 		wait 1000
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_addteamvoiceannounce 0 "phis_axis_bunker_stop"
 
-		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_addteamvoiceannounce 1 "phis_allies_bunker_capture"
 
-		wm_teamvoiceannounce 0 "radar_axis_bunker_reclaimed"
+		wm_teamvoiceannounce 0 "phis_axis_bunker_reclaimed"
 
-		wm_teamvoiceannounce 1 "radar_allies_bunker_reclaimed"
+		wm_teamvoiceannounce 1 "phis_allies_bunker_reclaimed"
 		// *---------------------------------------------------------------------------------*
 	}
 
@@ -1181,13 +1181,13 @@ forward_spawn
 
 		wait 1000
 		// *----------------------------------- vo ------------------------------------------*
-		wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
+		wm_teamvoiceannounce 0 "phis_axis_bunker_captured"
 
-		wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
+		wm_teamvoiceannounce 1 "phis_allies_bunker_captured"
 
-		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_removeteamvoiceannounce 0 "phis_axis_bunker_stop"
 
-		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_removeteamvoiceannounce 1 "phis_allies_bunker_capture"
 		// *---------------------------------------------------------------------------------*
 	}
 
