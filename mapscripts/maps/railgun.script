@@ -52,6 +52,17 @@ game_manager
 			maxs "1240 596 88"
 		}
 
+		// roof over axis tower
+		create
+		{
+			scriptName "spawnroof3"
+			classname "func_fakebrush"
+			origin "2055 5153 886"
+			contents 1  // SOLID
+			mins "-250 -250 -88"
+			maxs "250 250 88"
+		}
+
 		//bani - bug fixes
 		create
 		{
