@@ -11,13 +11,22 @@ game_manager
 {
 	spawn
 	{
-		
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "3434 -96 443"
+			contents 1  // SOLID
+			mins "-900 -1600 -44"
+			maxs "600 1600 44"
+		}
+
 		accum 1 set 0
       		
 // Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
-		wm_set_round_timelimit	15
+		wm_set_round_timelimit	20
 		wm_number_of_objectives 8
 
 
