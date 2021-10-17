@@ -517,6 +517,18 @@ function getConfig(map)
         c.spawns[12] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2197, 513, 4512}, radius2 = 200}
         c.spawns[13] = {name = "Allies Spawn 2", state = PROTECT_ALLIES, pos = {-2209, 193, 4516}, radius2 = 300}
 
+-- decay_b7
+    elseif map == "decay_b7" then
+        c.spawns[1] = {name = "Forward Flag", state = NO_PROTECT, pos = {-415, 800, 348}, radius2 = 290}
+        c.spawns[2] = {name = "Axis Garrison", state = PROTECT_AXIS, pos = {2956, 3997, 319}, radius2 = 500}
+        c.spawns[3] = {name = "Side Entrance", state = NO_PROTECT}
+        c.spawns[4] = {name = "Allied Camp", state = PROTECT_ALLIES, pos = {3590, -19, 64}, radius2 = 700}
+        c.spawns[5] = {name = "Allied Camp", state = PROTECT_ALLIES, pos = {3722, -709, 64}, radius2 = 700}
+        c.spawns[6] = {name = "Allied Camp", state = PROTECT_ALLIES, pos = {3613, 562, 64}, radius2 = 800}
+        c.spawns[7] = {name = "Locker Room", state = NO_PROTECT, pos = {-383, 2282, 327}, radius2 = 240}
+        c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Allies have permanently secured the"}
+        c.actions[2] = {spawn = 7, newstate = PROTECT_ALLIES, trigger = "The Allies have destroyed the generator, the vault"}
+
 -- ET Ice
     elseif map == "et_ice" then
         c.spawns[1] = {name = "Axis North Barracks", state = PROTECT_AXIS, radius2 = 360}
