@@ -844,7 +844,7 @@ axis_gold1
 
 	trigger stolen
 	{
-		setstate axis_gold_cm_marker invisible
+		//setstate axis_gold_cm_marker invisible
 
 		wm_objective_status 7 0 2
 		wm_objective_status 7 1 1
@@ -877,7 +877,7 @@ axis_gold1
 
 	trigger captured
 	{
-		setstate axis_gold_cm_marker default
+		//setstate axis_gold_cm_marker default
 
 		//trigger golddoor1 auf				
 
