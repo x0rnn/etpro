@@ -13,12 +13,32 @@ game_manager
 	{
 		create
 		{
-			scriptName "spawnroof1"
+			scriptName "alliedspawnroof1"
 			classname "func_fakebrush"
 			origin "3434 -96 443"
 			contents 1  // SOLID
-			mins "-900 -1600 -44"
-			maxs "600 1600 44"
+			mins "-1000 -300 -44"
+			maxs "700 200 44"
+		}
+
+		create
+		{
+			scriptName "alliedspawnroof2"
+			classname "func_fakebrush"
+			origin "3129 1149 443"
+			contents 1  // SOLID
+			mins "-500 -200 -44"
+			maxs "250 300 44"
+		}
+
+		create
+		{
+			scriptName "alliedspawnroof3"
+			classname "func_fakebrush"
+			origin "3065 -909 443"
+			contents 1  // SOLID
+			mins "-700 -200 -44"
+			maxs "700 200 44"
 		}
 
 		accum 1 set 0
