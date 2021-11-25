@@ -1,0 +1,1805 @@
+//	¬ Info:		www.Team-AoW.de - Kontakt: aowblacky@hotmail.com - IRC: #Library   @Quakenet
+
+//	¬ Map name:	Library (library_b3.bsp)
+//	¬ Map by:		BlAcky
+//	¬ Script by:	BlAcky
+//	¬ Release:		21 Feb. 2012
+//	¬ Version:		beta3
+
+
+//	¬ GlobalAccums
+//		1: Flag		 (0=axis captured, 1=allies captured)
+//		2: Maingate  (0=not destroyed, 1=destroyed)
+//		3: Generator (0=not destroyed, 1=destroyed)
+//		4: Documents (0=not transmitted, 1=transmitted)
+//		5: CP		 (0=not built, 1=allies built)
+//		6: Barrier	 (0=not built, 1=built)
+
+
+
+//  ==========================================================================================================================================================================================
+// ¬ GAME MANAGER
+//  ==========================================================================================================================================================================================
+
+game_manager
+{
+	spawn
+	{
+		wm_axis_respawntime	30		//Axis Respawntime
+		wm_allied_respawntime 20	//Allies Respawntime
+		wm_set_round_timelimit 15	//Round Timelimit
+		wm_setwinner 0				//Default Winner
+		
+		wm_number_of_objectives 6	//Number of Objectives (Limbo-Cameras)
+				
+//		setautospawn "Allied First Spawn" 1		// Set Allies to forward spawn
+//		setautospawn "Axis Flag Spawn" 0		// Set Axis to forward spawn		
+		
+		wait 500
+		trigger self startvos
+		trigger self sidedoor
+		trigger self library_entrance
+	}
+	
+	trigger startvos
+	{
+		wm_addteamvoiceannounce 0 "axis_entrances_defend"
+		wm_addteamvoiceannounce 0 "axis_bunker_stop"
+		
+		wm_teamvoiceannounce 0 "axis_entrances_defend"
+		wm_teamvoiceannounce 0 "axis_bunker_stop"
+
+		wm_addteamvoiceannounce 1 "allies_entrances_destroy"
+		wm_addteamvoiceannounce 1 "allies_bunker_capture"
+		
+		wm_teamvoiceannounce 1 "allies_entrances_destroy"
+		wm_teamvoiceannounce 1 "allies_bunker_capture"
+	}
+	
+	trigger sidedoor
+	{
+		setstate sidedoor_close default		//Show the closed Sidedoor
+		setstate sidedoor_open invisible	//Hide the open Sidedoor
+	}
+	
+	trigger library_entrance
+	{
+		setstate library_axisdoor_close default		//Show the closed Axis Library Door
+		setstate library_axisdoor_open invisible	//Hide the open Axis Library Door
+		
+		setstate library_doors default				//Show the Library Doors
+	}
+		
+	trigger allies_steal_tank
+	{
+		accum 4 abort_if_not_equal 0
+
+		wm_announce "Allied team has stolen the Tank!"
+
+		accum 4 set 1
+
+		trigger game_manager allies_steal_tank_allied_msg
+		trigger game_manager allies_steal_tank_axis_msg
+	}
+	
+	trigger allies_steal_tank_allied_msg
+	{
+		wm_addteamvoiceannounce 1 "allies_tank_stolen"
+
+		wm_teamvoiceannounce 1 "allies_tank_stolen"
+		
+		wm_removeteamvoiceannounce 1 "allies_tank_steal"
+	}
+
+	trigger allies_steal_tank_axis_msg
+	{
+		wm_addteamvoiceannounce 0 "axis_tank_stolen"
+		wm_addteamvoiceannounce 0 "axis_tankbarrier_construct"
+
+		wm_teamvoiceannounce 0 "axis_tank_stolen"
+		wm_teamvoiceannounce 0 "axis_tankbarrier_construct"
+
+		wm_removeteamvoiceannounce 0 "axis_tank_steal"
+	}
+}
+
+
+//  ==========================================================================================================================================================================================
+// ¬ WINDOW BARRIER
+//  ==========================================================================================================================================================================================
+
+window-barrier
+{
+	spawn
+	{
+		wait 200
+		trigger self setup
+		constructible_class 2   // Stachel + Dynamite
+	}
+
+	trigger setup
+	{
+		setstate window-barrier invisible
+		setstate window-barrier_material default
+	}
+
+	buildstart final
+	{
+		setstate window-barrier underconstruction
+		setstate window-barrier_material default
+	}
+
+	built final
+	{
+		setstate window-barrier default
+		setstate window-barrier_material invisible
+		wm_announce "Axis built the Window Barrier!"
+		wm_teamvoiceannounce 0 "both_constr_completed"
+		wm_teamvoiceannounce 1 "both_constr_completed"
+	}
+
+	decayed final
+	{
+		setstate window-barrier invisible
+		setstate window-barrier_material default
+	}
+
+	death
+	{
+		setstate window-barrier invisible
+		setstate window-barrier_material default		
+		wm_announce "Allies destroyed the Axis Window Barrier!"
+		wm_teamvoiceannounce 0 "both_constr_destroyed"
+		wm_teamvoiceannounce 1 "both_constr_destroyed"
+	}
+}
+
+
+//  ==========================================================================================================================================================================================
+// ¬ COMMANDPOST + SPAWNS
+//  ==========================================================================================================================================================================================
+
+neutral_cp_toi
+{
+	trigger show_neutral_cabinet			// Show Neutral Closed CP
+	{
+		setstate neutral_cp_closed default
+		setstate neutral_cp_closed_model default
+	}
+
+	trigger hide_neutral_cabinet			// Hide Neutral Closed CP
+	{
+		setstate neutral_cp_closed invisible
+		setstate neutral_cp_closed_model invisible
+	}
+}
+
+// ================================================
+allied_cp_open
+{
+	spawn
+	{
+		wait 100
+		constructible_class 2			// Dyno+Satchel
+
+		trigger self disable_cp_features		// Default charge bar times
+	}
+
+	trigger disable_cp_features
+	{
+		setstate allied_cp_open_model invisible	// Hide Open CP model
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+
+		sethqstatus 1 0			// Landmines team warning message
+		disablespeaker allied_cp_sound		// Disable morse code sound
+	}
+
+	trigger enable_cp_features
+	{
+		setstate allied_cp_open_model default	// Show open CP model
+
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		
+		globalaccum 5 set 1
+		
+		wm_objective_status 4 0 2
+        wm_objective_status 4 1 1
+        
+        // ENABLE NEW SPAWN
+        trigger allied2spawn_wobj on
+
+		sethqstatus 1 1			// Landmines team warning message
+		enablespeaker allied_cp_sound		// Enable morse code sound
+		      	
+      // If first time, then set new spawn as default
+      accum 3 abort_if_equal 1
+      accum 3 set 1      
+      
+      setautospawn "CP Spawn"	1	// Set Allies to forward spawn
+	}
+
+	buildstart final
+	{
+		trigger neutral_cp_toi hide_neutral_cabinet	// Hide Neutral CP model+clip brush
+	}
+
+	built final
+	{
+		trigger self enable_cp_features		// Increase charge bar times
+
+		wm_announce "Allied Command Post constructed. Allied CP spawn enabled!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_commandpost_theyconstructed"
+		wm_teamvoiceannounce 1 "allies_commandpost_constructed"
+		wm_removeteamvoiceannounce 1 "allies_commandpost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate allied_cp_open_model invisible	// Hide Open CP model
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+	}
+
+	death
+	{
+	  globalaccum 5 set 0
+		
+	  wm_objective_status 4 0 0
+      wm_objective_status 4 1 0
+		
+	  //DISABLE NEW SPAWN
+      trigger allied2spawn_wobj off
+      
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+		trigger self disable_cp_features		// Default charge bar times
+
+		wm_announce "Axis team has destroyed the Allied Command Post!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_commandpost_construct"
+		wm_addteamvoiceannounce 1 "allies_commandpost_construct"
+		wm_teamvoiceannounce 0 "axis_commandpost_construct"
+		wm_teamvoiceannounce 1 "allies_commandpost_damaged"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+}
+
+// ================================================
+axis_cp_open
+{
+	spawn
+	{
+		wait 100
+		constructible_class 2			// Dyno+Satchel
+
+		trigger self disable_cp_features		// Default charge bar times
+	}
+
+	trigger disable_cp_features
+	{
+		setstate axis_cp_open_model invisible	// Hide Open CP model
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+
+		sethqstatus 0 0			// Landmines team warning message
+		disablespeaker axis_cp_sound		// Disable morse code sound
+	}
+
+	trigger enable_cp_features
+	{
+		setstate axis_cp_open_model default	// Show open CP model
+
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+
+		sethqstatus 0 1			// Landmines team warning message
+		enablespeaker axis_cp_sound		// Enable morse code sound
+	}
+
+	buildstart final
+	{
+		trigger neutral_cp_toi hide_neutral_cabinet	// Hide Neutral CP model+clip brush
+	}
+
+	built final
+	{
+		trigger self enable_cp_features		// Increase charge bar times
+
+		wm_announce "Axis Command Post constructed. Charge speed increased!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_commandpost_constructed"
+		wm_teamvoiceannounce 1 "allies_commandpost_theyconstructed"
+		wm_removeteamvoiceannounce 0 "axis_commandpost_construct"
+		// *----------------------------------- vo ------------------------------------------*
+	}
+
+	decayed final
+	{
+		setstate axis_cp_open_model invisible	// Hide Open CP model
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+	}
+
+	death
+	{
+		trigger neutral_cp_toi show_neutral_cabinet	// Show Neutral CP model+clip brush
+		trigger self disable_cp_features		// Default charge bar times
+
+		wm_announce "Allied team has destroyed the Axis Command Post!"
+
+		wm_addteamvoiceannounce 0 "axis_commandpost_construct"
+		wm_teamvoiceannounce 0 "axis_commandpost_damaged"
+		
+		wm_addteamvoiceannounce 1 "allies_commandpost_construct"
+		wm_teamvoiceannounce 1 "allies_commandpost_construct"
+
+	}
+}
+
+//=============================== spawns
+
+allied1spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	}
+} 
+
+allied1spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	}
+	trigger off
+    {
+      setstate allied1spawn_wobj invisible
+      alertentity allied1spawn_spawns
+      setstate allied1spawn_spawns invisible
+    }
+    trigger on
+    {
+      setstate allied1spawn_wobj default
+      alertentity allied1spawn_spawns
+      setstate allied1spawn_spawns default
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+allied2spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	  setstate allied2spawn_spawns invisible
+	}
+} 
+
+allied2spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	  setstate allied2spawn_wobj invisible
+	}
+	trigger off
+    {
+      setstate allied2spawn_wobj invisible
+      setstate allied2spawn_spawns invisible
+	  alertentity allied2spawn_spawns
+    }
+    trigger on
+    {
+      setstate allied2spawn_wobj default
+      setstate allied2spawn_spawns default
+	  alertentity allied2spawn_spawns
+      
+      setautospawn "CP Spawn"	1
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+
+allied3spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	  setstate allied3spawn_spawns invisible
+	}
+} 
+
+allied3spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	  setstate allied3spawn_wobj invisible
+	}
+	trigger off
+    {
+      setstate allied3spawn_wobj invisible
+      setstate allied3spawn_spawns invisible
+	  alertentity allied3spawn_spawns
+    }
+    trigger on
+    {
+      setstate allied3spawn_wobj default
+      setstate allied3spawn_spawns default
+	  alertentity allied3spawn_spawns
+      
+	  // abort if cp already been done.
+      globalaccum 5 abort_if_equal 1
+      
+      setautospawn "Allied Flag Spawn"	1
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+axis1spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	}
+} 
+
+axis1spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	}
+	trigger off
+    {
+      setstate axis1spawn_wobj invisible
+      setstate axis1spawn_spawns invisible
+	  alertentity axis1spawn_spawns
+    }
+    trigger on
+    {
+      setstate axis1spawn_wobj default
+      setstate axis1spawn_spawns default
+	  alertentity axis1spawn_spawns
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+axis2spawn_spawns
+{
+   	spawn
+	{
+	  wait 50
+	}
+}
+
+
+axis2spawn_wobj
+{
+   	spawn
+	{
+	  wait 200
+	}
+	trigger off
+    {
+      setstate axis2spawn_wobj invisible
+      setstate axis2spawn_spawns invisible
+	  alertentity axis2spawn_spawns
+    }
+    trigger on
+    {
+      setstate axis2spawn_wobj default
+      setstate axis2spawn_spawns default
+	  alertentity axis2spawn_spawns
+    }
+	trigger allied_capture 
+	{
+		//
+	}
+    trigger axis_capture
+    {
+	    //
+    }
+} 
+
+flag1_flag
+{
+	spawn
+	{
+		wait 50
+		globalaccum 1 set 0
+	}
+	
+	trigger allied_capture
+	{
+		globalaccum 1 abort_if_equal 1
+		globalaccum 1 set 1
+		trigger axis1spawn_wobj off
+		trigger allied3spawn_wobj on
+		
+		wm_announce "The Allies have captured the forward bunker!"
+								
+		wm_objective_status 3 1 1		
+		wm_objective_status 3 0 0
+						
+						
+		wm_teamvoiceannounce 0 "axis_bunker_captured"
+		wm_removeteamvoiceannounce 0 "axis_bunker_stop"		
+		
+		wm_teamvoiceannounce 1 "allies_bunker_captured"
+		wm_teamvoiceannounce 1 "allies_entrance1_dyn"
+		wm_removeteamvoiceannounce 1 "allies_bunker_capture"
+		
+		// abort if CP is done
+		globalaccum 5 abort_if_equal 1
+		
+		setautospawn "Allied Flag Spawn"	1
+		
+	}
+	
+	trigger axis_capture
+	{
+		globalaccum 1 abort_if_equal 0
+		globalaccum 1 set 0
+		trigger axis1spawn_wobj on
+		trigger allied3spawn_wobj off
+		
+		wm_announce "The Axis have reclaimed the forward bunker!"
+								
+		wm_objective_status 3 1 0		
+		wm_objective_status 3 0 1
+        
+
+		wm_addteamvoiceannounce 0 "axis_bunker_stop"
+		wm_teamvoiceannounce 0 "axis_bunker_reclaimed"
+
+		wm_addteamvoiceannounce 1 "allies_bunker_capture"
+		wm_teamvoiceannounce 1 "allies_bunker_reclaimed"
+
+	}
+	
+	trigger force_allied
+	{
+		setstate flag1_flag invisible
+		globalaccum 1 abort_if_equal 1
+		globalaccum 1 set 1
+		trigger axis1spawn_wobj off
+		trigger allied3spawn_wobj on
+								
+		wm_objective_status 3 1 1		
+		wm_objective_status 3 0 2
+			
+						
+		wm_teamvoiceannounce 0 "axis_bunker_captured"
+		wm_removeteamvoiceannounce 0 "axis_bunker_stop"
+		
+		wm_teamvoiceannounce 1 "allies_bunker_captured"
+		wm_removeteamvoiceannounce 1 "allies_bunker_capture"
+		
+
+		globalaccum 5 abort_if_equal 1			// abort if CP is done
+		
+		setautospawn "Allied Flag Spawn"	1
+		
+	}
+}
+
+
+//  ==========================================================================================================================================================================================
+// ¬ MAIN GATE
+//  ==========================================================================================================================================================================================
+
+maingate
+{
+	spawn
+	{
+		wait 50
+		constructible_class 3
+	}
+	
+	death
+	{
+		wm_announce "The main gate has been destroyed!"
+		wm_announce "Allies permanently capture the forward flag!"
+		
+		wm_addteamvoiceannounce 0 "axis_tankbarrier_construct"
+		wm_addteamvoiceannounce 0 "axis_commandpost_construct"		
+		wm_teamvoiceannounce 0 "axis_entrance1_destroyed"
+		wm_teamvoiceannounce 0 "axis_tankbarrier_construct"	
+		wm_removeteamvoiceannounce 0 "axis_entrances_defend"		
+        		
+		wm_addteamvoiceannounce 1 "allies_tank_steal"						
+		wm_teamvoiceannounce 1 "allies_entrance1_destroyed"
+		wm_teamvoiceannounce 1 "allies_tank_steal"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"		
+		wm_removeteamvoiceannounce 1 "allies_entrances_destroy"
+																	
+		wm_objective_status 2 1 1		
+		wm_objective_status 2 0 2
+		
+		globalaccum 2 set 1
+		
+		trigger flag1_flag force_allied
+		trigger mtd_sm do_open
+		
+		setstate sidedoor_close invisible	//Hide the closed Sidedoor
+		setstate sidedoor_open default		//Show the open Sidedoor
+		
+
+
+	}
+}
+
+//  ==========================================================================================================================================================================================
+// ¬ DOCUMENTS
+//  ==========================================================================================================================================================================================
+
+documents
+{
+    spawn
+    {
+	    wait 200
+    }
+    trigger stolen 
+    {
+    	setstate documents_CMM invisible 
+	}
+	trigger dropped
+	{
+		wm_teamvoiceannounce 1 "allies_hq_objective_lost"
+	}
+	trigger returned
+	{
+		setstate documents_CMM default
+	} 
+	trigger captured
+	{
+		wm_teamvoiceannounce 0 "axis_hq_objective_lost"
+		wm_teamvoiceannounce 1 "allies_hq_objective_captured"
+	}
+}
+
+
+//  ==========================================================================================================================================================================================
+// ¬ TRANSMITTER
+//  ==========================================================================================================================================================================================
+
+transmitter
+{
+	spawn
+	{
+	}
+	
+	death
+	{
+		wm_announce "The Allies have sent the secret docs!"
+		wm_setwinner 1
+		wait 100
+		wm_endround
+	}
+}
+
+
+
+//  ==========================================================================================================================================================================================
+// ¬ TANK + BARRIER
+//  ==========================================================================================================================================================================================
+
+//	accum 0, script lock
+//	accum 1, current movement path position
+//	accum 2, track state
+//	accum 3, bit 0	death status		(0=dead, 1=alive)
+//		 bit 1	stuck status		(0=not stuck, 1=stuck)
+//		 bit 2	players nearby		(0=no players, 1=players)
+//		 bit 3	moving status		(0=not moving, 1=moving)
+//		 bit 4	temp register
+//		 bit 5	message-flag		(0=no message, 1=message)
+//		 bit 6	visible state		(0=alive, 1=dead)
+//		 bit 7	tank-finished		(0=not finished, 1=finished)
+//		 bit 8	barricade #2		(0=not built, 1=built)
+//		 bit 9	barricade #3		(0=not built, 1=built)
+//		 bit 10	barricade #4		(0=not built, 1=built)
+//	accum 4, stop counter
+//
+
+//info_notnull
+tank_sound
+{
+	trigger start
+	{
+		trigger tank sound_start
+		wait 3400
+		trigger tank sound_move
+	}
+	trigger stop
+	{
+		trigger tank sound_stop
+		wait 1400
+		trigger tank sound_idle
+	}
+	trigger death
+	{
+		trigger tank sound_death
+		wait 3400
+		trigger tank sound_idle
+	}
+	trigger rebirth
+	{
+		trigger tank sound_rebirth
+		wait 3400
+		trigger tank sound_idle
+	}
+}
+
+//script_mover
+tank
+{
+	// ===========================================================================================
+	spawn
+	{
+		wait 50
+
+		constructible_chargebarreq 1.0
+		constructible_constructxpbonus 10
+		constructible_destructxpbonus 10
+
+		followspline 0 path_spawn 10000 wait length -64
+
+		trigger self sound_idle		
+		trigger self tracks_stop
+		trigger self barricade1_destroyed	
+	}
+
+	// ===========================================================================================
+	// script lockouts
+	trigger script_lock
+	{
+		accum 0 inc 1
+	}
+
+	trigger script_unlock
+	{
+		accum 0 inc -1
+	}
+
+
+	// ===========================================================================================
+	// tracks
+	trigger tracks_forward
+	{
+		accum 2 abort_if_equal 1
+		accum 2 set 1
+		remapshader models/mapobjects/tanks_sd/bits_r models/mapobjects/tanks_sd/bits_forward
+		remapshader models/mapobjects/tanks_sd/wheel_r models/mapobjects/tanks_sd/wheel_forward
+		remapshader models/mapobjects/tanks_sd/bits_l models/mapobjects/tanks_sd/bits_forward
+		remapshader models/mapobjects/tanks_sd/wheel_l models/mapobjects/tanks_sd/wheel_forward
+		remapshaderflush
+	}
+
+	trigger tracks_stop
+	{
+		accum 2 abort_if_equal 0
+		accum 2 set 0
+		remapshader models/mapobjects/tanks_sd/bits_r models/mapobjects/tanks_sd/bits_r
+		remapshader models/mapobjects/tanks_sd/wheel_r models/mapobjects/tanks_sd/wheel_r
+		remapshader models/mapobjects/tanks_sd/bits_l models/mapobjects/tanks_sd/bits_l
+		remapshader models/mapobjects/tanks_sd/wheel_l models/mapobjects/tanks_sd/wheel_l
+		remapshaderflush
+	}
+
+	trigger tracks_turn_left
+	{
+		accum 2 abort_if_equal 2
+		accum 2 set 2
+		remapshader models/mapobjects/tanks_sd/bits_r models/mapobjects/tanks_sd/bits_forward
+		remapshader models/mapobjects/tanks_sd/wheel_r models/mapobjects/tanks_sd/wheel_forward
+		remapshader models/mapobjects/tanks_sd/bits_l models/mapobjects/tanks_sd/bits_backward
+		remapshader models/mapobjects/tanks_sd/wheel_l models/mapobjects/tanks_sd/wheel_backward
+		remapshaderflush
+	}
+
+	trigger tracks_turn_right
+	{
+		accum 2 abort_if_equal 3
+		accum 2 set 3
+		remapshader models/mapobjects/tanks_sd/bits_r models/mapobjects/tanks_sd/bits_backward
+		remapshader models/mapobjects/tanks_sd/wheel_r models/mapobjects/tanks_sd/wheel_backward
+		remapshader models/mapobjects/tanks_sd/bits_l models/mapobjects/tanks_sd/bits_forward
+		remapshader models/mapobjects/tanks_sd/wheel_l models/mapobjects/tanks_sd/wheel_forward
+		remapshaderflush
+	}
+
+
+	// ========================================
+	// sound stuff
+	trigger sound_idle
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_idle.wav looping volume 512
+	}
+	trigger sound_start
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_revup.wav volume 196
+	}
+	trigger sound_move
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_move.wav looping volume 512
+	}
+	trigger sound_stop
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_revdown.wav volume 196
+	}
+	trigger sound_death
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_stop.wav volume 256
+	}
+	trigger sound_rebirth
+	{
+		stopsound
+		playsound sound/vehicles/tank/tank_start.wav volume 196
+	}
+
+
+	// ===========================================================================================
+	// enable/disable
+	trigger tank_enable
+	{
+		trigger self stuck_check
+		accum 3 abort_if_bitset 1 		// stuck check
+		accum 4 set 0				// reset stop counter
+		accum 3 bitreset 2			// reset player check
+		accum 3 abort_if_bitset 3 		// already following spline
+		accum 0 abort_if_not_equal 0		// are we not in a script lockout?
+		accum 3 abort_if_bitset 0 		// death check
+
+		trigger self script_lock
+		trigger tank_sound start
+		startanimation 55 10 15 nolerp norandom
+		wait 666
+		startanimation 5 40 15 nolerp norandom
+		wait 500
+		trigger self tracks_forward
+		trigger self script_unlock
+
+		trigger self move
+	}
+
+	trigger tank_disable
+	{
+		accum 4 inc 1				// up the stop counter
+		accum 4 abort_if_less_than 2		// 2 second ride
+		accum 3 bitset 2			// set player check
+		trigger self deathcheck
+	}
+
+
+	// ===========================================================================================
+	// stuck checking
+	trigger stuck_check
+	{
+		accum 3 bitreset 1			// accum 3, bit 1	stuck status	(0=not stuck, 1=stuck)
+		trigger self stuck_check_scriptlockout
+		trigger self stuck_check_finished
+		trigger self stuck_check_barrier1_built
+	}
+
+	trigger stuck_check_barrier1_built
+	{
+		accum 1 abort_if_not_equal 9
+		accum 3 abort_if_not_bitset 7
+		accum 3 bitset 1	// stuck
+	}
+
+	trigger stuck_check_finished
+	{
+		accum 1 abort_if_less_than 34 // never triggering here!
+		accum 3 bitset 1
+		
+		trigger self tank_finished
+	}
+
+
+	trigger stuck_check_scriptlockout
+	{
+		accum 0 abort_if_equal 0
+		accum 3 bitset 1
+	}
+
+	// ===========================================================================================
+	// stop check
+	trigger stopcheck_setup
+	{
+		accum 3 bitset 4			// stop if we're stuck/no-one's pushing :)
+		accum 3 abort_if_bitset 2		// no one in the trigger, abort
+		trigger self stuck_check		// call the stop check function
+		accum 3 abort_if_bitset 1		// we're stuck so break out
+		accum 3 bitreset 4			// we're free to move
+	}
+
+	trigger stopcheck
+	{
+		trigger self stopcheck_setup
+		accum 3 abort_if_not_bitset 4
+
+		trigger self script_lock
+		// Any just stopped moving stuff goes here
+		trigger tank_sound stop
+		trigger self tracks_stop
+		startanimation 45 10 15 nolerp norandom
+		wait 666
+		startanimation 0 1 15 nolerp norandom
+		wait 900
+		trigger self script_unlock
+
+		resetscript
+	}
+
+
+	// ===========================================================================================
+	// death / rebirth
+	trigger deathcheck
+	{
+		accum 3 abort_if_not_bitset 0		// are we dead?
+		accum 3 abort_if_bitset 6		// are we not already visibly dead?
+		accum 3 abort_if_bitset 3		// are we not following a spline?
+		accum 0 abort_if_not_equal 0		// are we not in a script lockout?
+		accum 3 bitset 6			// we're now visibly dead
+		
+		trigger self deathcheck_message
+		
+		accum 3 bitset 5
+
+		changemodel models/mapobjects/tanks_sd/churchhill_broken.md3
+		setstate tank_smoke default
+		kill tank_construct
+		trigger self sound_death
+		trigger self tracks_stop
+
+		trigger self script_lock
+		trigger self tracks_stop
+		startanimation 45 10 15 nolerp norandom
+		wait 666
+		startanimation 0 1 15 nolerp norandom
+		trigger self script_unlock
+
+		resetscript
+	}
+	
+	trigger deathcheck_message
+	{
+		accum 3 abort_if_not_bitset 5
+		
+		wm_announce "The tank has been damaged!"
+		wm_teamvoiceannounce 1 "allies_tank_damaged"
+		wm_teamvoiceannounce 0 "axis_tank_damaged"
+	}
+	
+	trigger destroyfix_sound
+	{
+		accum 3 abort_if_bitset 0 trigger self sound_death
+	}
+
+	rebirth
+	{
+		accum 3 bitreset 6 			// we're visibly alive
+		accum 3 bitreset 0 			// we're alive again
+
+		trigger self script_lock
+		changemodel models/mapobjects/tanks_sd/churchhill.md3
+		setstate tank_smoke invisible
+		
+		wm_announce "The tank has been repaired!"
+		wm_teamvoiceannounce 1 "allies_tank_repaired"
+		wm_teamvoiceannounce 0 "axis_tank_repaired"
+		
+		trigger tank_sound rebirth
+		wait 500
+		trigger self script_unlock
+	}
+
+	death
+	{
+		accum 3 bitset 0
+	}
+
+
+	// ===========================================================================================
+	// movement
+	trigger run_continue
+	{
+		accum 1 inc 1
+		trigger self deathcheck
+		trigger self stopcheck
+		trigger self move
+	}
+
+	trigger move
+	{
+		trigger self move_check
+		wait 500
+		accum 1 abort_if_equal 33
+		trigger self move
+	}
+
+	trigger move_check
+	{
+		trigger self stuck_check
+		accum 3 abort_if_bitset 1
+		accum 1 trigger_if_equal 0 tank move_to_0
+		accum 1 trigger_if_equal 1 tank move_to_1
+		accum 1 trigger_if_equal 2 tank move_to_2
+		accum 1 trigger_if_equal 3 tank move_to_3
+		accum 1 trigger_if_equal 4 tank move_to_4
+		accum 1 trigger_if_equal 5 tank move_to_5
+		accum 1 trigger_if_equal 6 tank move_to_6
+		accum 1 trigger_if_equal 7 tank move_to_7
+		accum 1 trigger_if_equal 8 tank move_to_8
+		accum 1 trigger_if_equal 9 tank move_to_9
+		accum 1 trigger_if_equal 10 tank move_to_10
+		accum 1 trigger_if_equal 11 tank move_to_11
+		accum 1 trigger_if_equal 12 tank move_to_12
+		accum 1 trigger_if_equal 13 tank move_to_13
+		accum 1 trigger_if_equal 14 tank move_to_14
+		accum 1 trigger_if_equal 15 tank move_to_15
+		accum 1 trigger_if_equal 16 tank move_to_16
+		accum 1 trigger_if_equal 17 tank move_to_17
+		accum 1 trigger_if_equal 18 tank move_to_18
+		accum 1 trigger_if_equal 19 tank move_to_19
+		accum 1 trigger_if_equal 20 tank move_to_20
+		accum 1 trigger_if_equal 21 tank move_to_21
+		accum 1 trigger_if_equal 22 tank move_to_22
+		accum 1 trigger_if_equal 23 tank move_to_23
+		accum 1 trigger_if_equal 24 tank move_to_24
+		accum 1 trigger_if_equal 25 tank move_to_25
+		accum 1 trigger_if_equal 26 tank move_to_26
+		accum 1 trigger_if_equal 27 tank move_to_27
+		accum 1 trigger_if_equal 28 tank move_to_28
+		accum 1 trigger_if_equal 29 tank move_to_29
+		accum 1 trigger_if_equal 30 tank move_to_30
+		accum 1 trigger_if_equal 31 tank move_to_31
+		accum 1 trigger_if_equal 32 tank move_to_32
+	}
+
+	trigger move_to_0
+	{
+		accum 1 set 1
+		trigger self move_to_1
+		//trigger self run_continue
+	}
+
+	trigger move_to_1
+	{
+		trigger self tracks_forward
+		
+		wm_teamvoiceannounce 0 "axis_tank_stolen"
+		wm_teamvoiceannounce 0 "axis_generator_defend"
+		wm_teamvoiceannounce 1 "allies_tank_stolen"
+		wm_teamvoiceannounce 1 "allies_generator_destroy"
+		
+		wm_removeteamvoiceannounce 1 "allies_tank_steal"
+		
+		accum 3 bitset 3
+		followspline 0 path_0 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_2
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_1 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_3
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_2 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_4
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_3 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_5
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_4 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_6
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_5 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_7
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_6 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_8
+	{
+		trigger self tracks_forward	
+		accum 3 bitset 3
+		followspline 0 path_7 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_9
+	{
+		trigger self tracks_forward
+		// **********************************
+		trigger defense1 remove	
+		wm_announce "The tank has passed the Tank Barrier!"		
+		wm_teamvoiceannounce 0 "axis_tankbarrier_passed"
+		wm_teamvoiceannounce 1 "allies_tankbarrier_passed"
+		wm_removeteamvoiceannounce 0 "axis_tankbarrier_construct"
+		// **********************************
+		accum 3 bitset 3
+		followspline 0 path_8 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_10
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_9 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_11
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_10 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_12
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_11 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_13
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_12 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_14
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_13 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_15
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_14 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_16
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_15 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_17
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_16 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_18
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_17 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_19
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_18 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_20
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_19 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_21
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_20 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_22
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_21 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_23
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_22 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_24
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_23 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_25
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_24 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_26
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_25 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+
+	trigger move_to_27
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_26 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_28
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_27 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_29
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_28 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_30
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_29 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_31
+	{
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_30 65 wait length -64
+		accum 3 bitreset 3
+		trigger self run_continue
+	}
+	
+	trigger move_to_32
+	{	
+		trigger self tracks_forward
+		accum 3 bitset 3
+		followspline 0 path_31 65 wait length -64
+		accum 3 bitreset 3
+
+		accum 1 inc 1
+		trigger tank_turret destroyfix
+	}
+
+	
+	trigger tank_finished
+	{		
+		accum 7 abort_if_equal 1
+		accum 7 set 1
+		
+		startanimation 0 1 15 nolerp norandom
+		
+		trigger tank_turret fire
+	}
+
+	trigger barricade1_constructed
+	{
+		accum 3 bitset 7
+	}
+	trigger barricade1_destroyed
+	{
+		accum 3 bitreset 7
+	}
+
+	//-----------------------------------
+	// Turret
+	//-----------------------------------
+	trigger startfire
+	{
+		startanimation 67 8 10 nolerp norandom noloop
+	}
+
+	trigger stopfire
+	{
+		startanimation 0 1 15 nolerp norandom
+	}
+}
+
+//target_script_trigger
+tank_disabler
+{
+	trigger run
+	{
+		trigger tank tank_disable
+	}
+}
+
+//target_script_trigger
+tank_enabler
+{
+	trigger run
+	{
+		trigger tank tank_enable
+	}
+}
+
+//trigger_multiple
+tank_trigger
+{
+	spawn
+	{
+		wait 100
+		attachtotag tank tag_turret
+	}
+}
+
+//trigger_objective_info
+tank_build
+{
+	spawn
+	{
+		wait 100
+		attachtotag tank tag_turret
+	}
+}
+
+//func_constructible
+tank_construct
+{
+	spawn
+	{
+		wait 400
+
+		kill tank
+
+		constructible_class 2
+		constructible_health 1200
+		constructible_constructxpbonus 10
+		constructible_destructxpbonus 10
+	}
+
+	built final
+	{
+		alertentity tank
+	}
+
+	trigger final_pos
+	{
+		constructible_constructxpbonus 2
+		constructible_destructxpbonus 5
+	}
+}
+
+//misc_gamemodel
+tank_turret
+{
+	spawn
+	{
+		wait 500
+		attachtotag tank tag_turret
+	}
+
+	trigger destroyfix
+	{
+		setstate tank_enabler invisible
+		setstate tank_build invisible
+		setstate tank_trigger invisible
+		setstate tank_construct invisible
+		trigger tank sound_stop
+		trigger tank tracks_stop
+		wait 1000
+		trigger tank sound_idle
+
+		trigger tank tank_finished
+		setstate tank_enabler invisible
+		setstate tank_build invisible
+		setstate tank_trigger invisible
+		setstate tank_construct invisible
+
+		trigger tank destroyfix_sound
+	}
+
+	trigger fire
+	{
+		wait 100
+		
+		playsound sound/vehicles/tank/turret_spin.wav looping
+		faceangles 0 6 0 2000
+		stopsound
+		playsound sound/vehicles/tank/turret_end.wav
+
+		wait 1000
+		
+		trigger tank startfire
+		playsound sound/vehicles/tank/tank_fire.wav
+		trigger hurt_boom boom
+		trigger tank_flash run
+	}
+
+	trigger blow_generator
+	{
+		setstate tank_flash invisible
+
+		wait 200
+		trigger tank stopfire
+
+		setstate generator_lamp invisible
+		setstate generator_lamp_model invisible
+		setstate generator_lamp_damaged default
+		
+		wait 10
+		
+		setstate generator invisible
+		alertentity generator_explosion
+		setstate generator_damaged default
+		setstate generator_smoke default
+		
+		wm_announce "Allied team has destroyed the Security Doors System!"
+		wm_announce "The Allied Spawn near the Maingate is activated!"
+		
+		wm_teamvoiceannounce 0 "axis_generator_destroyed"
+		wm_teamvoiceannounce 1 "allies_generator_destroyed"
+		
+		setstate library_doors invisible
+		setstate library_axisdoor_close invisible		
+		setstate library_axisdoor_open default
+		
+		wm_announce "Library Doors are open!"
+	}
+}
+
+tank_smoke
+{
+	spawn
+	{
+		wait 300
+		attachtotag tank tag_turret
+		setstate tank_smoke invisible
+	}
+}
+
+tank_flash
+{
+	spawn
+	{
+		setstate tank_flash invisible
+	}
+
+	trigger run
+	{
+		setstate tank_flash default
+ 		attachtotag tank_turret tag_flash
+		faceangles 0 90 0 50
+		
+		wait 50
+		
+		trigger tank_turret blow_generator
+	}
+}
+
+//BARRIER #1
+//*************************************
+defense1
+{
+	spawn
+	{
+		wait 400
+		setstate defense1_materials default
+		setstate defense1_materials_clip default
+		setstate defense1_flag default
+		constructible_class 3
+		constructible_constructxpbonus 10
+		constructible_destructxpbonus 10
+	}
+	
+	buildstart final
+	{
+		setstate defense1_materials default
+		setstate defense1_materials_clip default
+		setstate defense1_flag default
+	}
+	
+	built final
+	{
+		setstate defense1_materials invisible
+		setstate defense1_materials_clip invisible
+		setstate defense1_flag invisible
+		//inform the tank that this barricade has been built
+		trigger tank barricade1_constructed
+		wm_announce "The Axis built the Tank Barrier!"
+		
+		wm_teamvoiceannounce 0 "axis_tankbarrier_constructed"
+		wm_teamvoiceannounce 1 "allies_tankbarrier_destroy"
+	}
+	
+	decayed final
+	{
+		setstate defense1_materials default
+		setstate defense1_materials_clip default
+		setstate defense1_flag default
+	}
+	
+	death
+	{
+		setstate defense1_materials default
+		setstate defense1_materials_clip default
+		setstate defense1_flag default
+		trigger tank barricade1_destroyed
+		
+		wm_announce "The Allies destroyed the Tank Barrier!"
+		
+		wm_teamvoiceannounce 0 "axis_tankbarrier_destroyed"
+		wm_teamvoiceannounce 1 "allies_tankbarrier_destroyed"
+	}
+	
+	trigger remove
+	{
+		setstate defense1_toi invisible
+		setstate defense1_materials invisible
+		setstate defense1_materials_clip invisible
+		setstate defense1_flag invisible
+		
+		remove
+	}
+}
+
+hurt_boom
+{
+	spawn
+	{
+		wait 200
+		setstate hurt_boom invisible
+	}
+
+	trigger boom
+	{
+		setstate hurt_boom default
+		wait 100
+		remove
+	}
+}
+
+generator_damaged
+{
+	spawn
+	{
+		wait 200
+		setstate generator_damaged invisible
+	}
+}
+
+generator_lamp_damaged
+{
+	spawn
+	{
+		wait 200
+		setstate generator_lamp_damaged invisible
+	}
+}
+
+generator_smoke
+{
+	spawn
+	{
+		wait 200
+		setstate generator_smoke invisible
+	}
+}
+
+
+//  ==========================================================================================================================================================================================
+// ¬ BANNER SCRIPTS
+//  ==========================================================================================================================================================================================
+
+banner1
+{
+	trigger disable
+	{
+		disablespeaker banner1_sound
+	}
+}
+
+banner2
+{
+	trigger disable
+	{
+		disablespeaker banner2_sound
+	}
+}
+
+banner3
+{
+	trigger disable
+	{
+		disablespeaker banner3_sound
+	}
+}
+
+banner4
+{
+	trigger disable
+	{
+		disablespeaker banner4_sound
+	}
+}
+
+banner5
+{
+	trigger disable
+	{
+		disablespeaker banner5_sound
+	}
+}
+
+banner6
+{
+	trigger disable
+	{
+		disablespeaker banner6_sound
+	}
+}
+
+banner7
+{
+	trigger disable
+	{
+		disablespeaker banner7_sound
+	}
+}
+
+banner8
+{
+	trigger disable
+	{
+		disablespeaker banner8_sound
+	}
+}
