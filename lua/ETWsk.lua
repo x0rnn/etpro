@@ -403,7 +403,7 @@ function getConfig(map)
         c.spawns[7] = {name = "East Courtyard", state = PROTECT_ALLIES, pos = {1338, -2334, 40}, radius2 = 450}
         c.spawns[8] = {name = "East Courtyard", state = PROTECT_ALLIES, pos = {1933, -2477, 40}, radius2 = 590}
 -- Frostbite
-    elseif map == "Frostbite" or map == "frostbite" then
+    elseif map == "frostbite" then
         c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
         c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 450}
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
@@ -411,12 +411,12 @@ function getConfig(map)
         c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
         
 -- ETL Frostbite V5 23.10.2018
-    elseif map == "etl_frostbite_v5" then
-        c.spawns[1] = {name = "Allied Barracks 1", state = PROTECT_ALLIES, pos = {-4748, 213, -167}, radius2 = 120}
-        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 270}
-        c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 200}
+    elseif map == "etl_frostbite_v15" then
+        c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
+        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 450}
+        c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
         c.spawns[4] = {state = NO_PROTECT} -- Upper Complex (Command Post)
-        c.spawns[5] = {name = "Allied Barracks 2", state = PROTECT_ALLIES, pos = {-4495, -439, -167}, radius2 = 108}
+        c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
         
 -- ETL Bergen V3 23.10.2018
     elseif map == "etl_bergen_v3" then
@@ -528,6 +528,10 @@ function getConfig(map)
         c.spawns[7] = {name = "Locker Room", state = NO_PROTECT, pos = {-383, 2282, 327}, radius2 = 240}
         c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "Allies have permanently secured the"}
         c.actions[2] = {spawn = 7, newstate = PROTECT_ALLIES, trigger = "The Allies have destroyed the generator, the vault"}
+-- library_b3
+    elseif map == "library_b3" then
+        c.spawns[1] = {name = "Allied First Spawn", state = PROTECT_ALLIES, pos = {-2202, -3267, -15}, radius2 = 500}
+        c.spawns[2] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {-582, 3303, -115}, radius2 = 400}
 
 -- ET Ice
     elseif map == "et_ice" then
