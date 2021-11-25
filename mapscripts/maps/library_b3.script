@@ -1,13 +1,13 @@
-//	¬ Info:		www.Team-AoW.de - Kontakt: aowblacky@hotmail.com - IRC: #Library   @Quakenet
+//	Â¬ Info:		www.Team-AoW.de - Kontakt: aowblacky@hotmail.com - IRC: #Library   @Quakenet
 
-//	¬ Map name:	Library (library_b3.bsp)
-//	¬ Map by:		BlAcky
-//	¬ Script by:	BlAcky
-//	¬ Release:		21 Feb. 2012
-//	¬ Version:		beta3
+//	Â¬ Map name:	Library (library_b3.bsp)
+//	Â¬ Map by:		BlAcky
+//	Â¬ Script by:	BlAcky
+//	Â¬ Release:		21 Feb. 2012
+//	Â¬ Version:		beta3
 
 
-//	¬ GlobalAccums
+//	Â¬ GlobalAccums
 //		1: Flag		 (0=axis captured, 1=allies captured)
 //		2: Maingate  (0=not destroyed, 1=destroyed)
 //		3: Generator (0=not destroyed, 1=destroyed)
@@ -18,16 +18,27 @@
 
 
 //  ==========================================================================================================================================================================================
-// ¬ GAME MANAGER
+// Â¬ GAME MANAGER
 //  ==========================================================================================================================================================================================
 
 game_manager
 {
 	spawn
 	{
+
+		create
+		{
+			scriptName "spawnroof"
+			classname "func_fakebrush"
+			origin "-1727 -3098 329"
+			contents 1  // SOLID
+			mins "-150 -200 -16"
+			maxs "150 200 16"
+		}
+
 		wm_axis_respawntime	30		//Axis Respawntime
 		wm_allied_respawntime 20	//Allies Respawntime
-		wm_set_round_timelimit 15	//Round Timelimit
+		wm_set_round_timelimit 12	//Round Timelimit
 		wm_setwinner 0				//Default Winner
 		
 		wm_number_of_objectives 6	//Number of Objectives (Limbo-Cameras)
@@ -39,6 +50,13 @@ game_manager
 		trigger self startvos
 		trigger self sidedoor
 		trigger self library_entrance
+		
+		// -----  Timebonus Announce -----
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +5 min Main"
+		wm_announce "^3	  *  +3 min Generator"
+		// ----- Timebonus Announce -----
 	}
 	
 	trigger startvos
@@ -105,7 +123,7 @@ game_manager
 
 
 //  ==========================================================================================================================================================================================
-// ¬ WINDOW BARRIER
+// Â¬ WINDOW BARRIER
 //  ==========================================================================================================================================================================================
 
 window-barrier
@@ -156,7 +174,7 @@ window-barrier
 
 
 //  ==========================================================================================================================================================================================
-// ¬ COMMANDPOST + SPAWNS
+// Â¬ COMMANDPOST + SPAWNS
 //  ==========================================================================================================================================================================================
 
 neutral_cp_toi
@@ -630,7 +648,7 @@ flag1_flag
 
 
 //  ==========================================================================================================================================================================================
-// ¬ MAIN GATE
+// Â¬ MAIN GATE
 //  ==========================================================================================================================================================================================
 
 maingate
@@ -645,6 +663,15 @@ maingate
 	{
 		wm_announce "The main gate has been destroyed!"
 		wm_announce "Allies permanently capture the forward flag!"
+
+		// ----- Timebonus Main -----
+		 wm_announce "^1+5 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		 cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Timebonus Main -----
 		
 		wm_addteamvoiceannounce 0 "axis_tankbarrier_construct"
 		wm_addteamvoiceannounce 0 "axis_commandpost_construct"		
@@ -675,7 +702,7 @@ maingate
 }
 
 //  ==========================================================================================================================================================================================
-// ¬ DOCUMENTS
+// Â¬ DOCUMENTS
 //  ==========================================================================================================================================================================================
 
 documents
@@ -705,7 +732,7 @@ documents
 
 
 //  ==========================================================================================================================================================================================
-// ¬ TRANSMITTER
+// Â¬ TRANSMITTER
 //  ==========================================================================================================================================================================================
 
 transmitter
@@ -726,7 +753,7 @@ transmitter
 
 
 //  ==========================================================================================================================================================================================
-// ¬ TANK + BARRIER
+// Â¬ TANK + BARRIER
 //  ==========================================================================================================================================================================================
 
 //	accum 0, script lock
@@ -1585,6 +1612,13 @@ tank_turret
 		
 		wm_announce "Allied team has destroyed the Security Doors System!"
 		wm_announce "The Allied Spawn near the Maingate is activated!"
+
+		// ----- Timebonus Generator -----
+		 wm_announce "^1+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Timebonus Generator -----
 		
 		wm_teamvoiceannounce 0 "axis_generator_destroyed"
 		wm_teamvoiceannounce 1 "allies_generator_destroyed"
@@ -1737,7 +1771,7 @@ generator_smoke
 
 
 //  ==========================================================================================================================================================================================
-// ¬ BANNER SCRIPTS
+// Â¬ BANNER SCRIPTS
 //  ==========================================================================================================================================================================================
 
 banner1
