@@ -24,7 +24,7 @@ version = "1.0.7"
 -- x0rnn: added class message to vsay_team EnemyDisguised
 -- x0rnn: added !multikillstats, !vsstats for current map
 -- x0rnn: made kills and deaths preserve after switching teams
--- x0rnn: fixed medic/needammo spam
+-- x0rnn: fixed medic/needammo/enemydisguised spam
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -174,6 +174,7 @@ last_tk = {}
 last_revive = {}
 last_vsaymedic = {}
 last_vsayammo = {}
+last_vsaydisguised = {}
 client_msg = {}
 topshot_cmd = "!topshots"
 topshots = {}
@@ -1932,6 +1933,7 @@ function et_ClientDisconnect(id)
     end
     last_vsaymedic[id] = nil
     last_vsayammo[id] = nil
+	last_vsaydisguised = nil
     if wait_table[id] ~= nil then
         wait_table[id] = nil
     end
@@ -2409,15 +2411,29 @@ function et_ClientCommand(id, command)
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 			math.randomseed(et.trap_Milliseconds())
 			if team ~= 3 then
-				local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
-				vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
-				local cmd = string.format("vtchat 0 %d 50 EnemyDisguised %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
-				for t=0, sv_maxclients-1, 1 do
-					if et.gentity_get(t, "sess.sessionTeam") == team then
-						et.trap_SendServerCommand(t, cmd)
+				local vsayflag = false
+				if last_vsaydisguised[id] == nil then
+					last_vsaydisguised[id] = et.trap_Milliseconds()
+					vsayflag = true
+				else
+					if (et.trap_Milliseconds() - tonumber(last_vsaydisguised[id])) >= 1000 then
+						vsayflag = true
+						last_vsaydisguised[id] = et.trap_Milliseconds()
 					end
 				end
-				return(1)
+				if vsayflag == true then
+					local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
+					vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
+					local cmd = string.format("vtchat 0 %d 50 EnemyDisguised %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
+					return(1)
+				else
+					return(0)
+				end
 			else
 				return(0)
 			end
