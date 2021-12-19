@@ -38,6 +38,9 @@ for filename in logs:
 	line_n = 0
 	for line in open(r'' + filename + ''):
 		line_n += 1
+		mapname = re.search(r'InitGame:.*mapname\\(.+?)\\', line)
+		if mapname:
+			nameofmap = mapname.group(1)
 		if prev_line:
 			comb_lines = prev_line + line
 			match_id = re.search(r'ClientConnect:\s*(\d{1,2})\n.*Userinfo:.*cl_guid\\([0-9a-fA-F]{32}).*name\\(.+?)\\', comb_lines)
@@ -235,7 +238,7 @@ for filename in logs:
 						hs_acc = round((int(weaponstats[id][3]) / int(weaponstats[id][0])) * 100, 2)
 						if hs_acc > hs_threshold:
 							f = open("suspicious.txt", "a+")
-							f.write("Name: " + players[id][1] + "\nGUID: " + players[id][0] + "\n")
+							f.write("Name: " + players[id][1] + "\nGUID: " + players[id][0] + "\nMapname: " + str(nameofmap) + "\n")
 							f.write("Filename: " + filename + " Line: " + str(line_n) + "\n")
 							f.write("Kills: " + str(weaponstats[id][2]) + " Acc: " + str(acc) + "% HS acc: " + str(hs_acc) + "% HS: " + str(weaponstats[id][3]) + "\n\n")
 							f.close()
