@@ -38,7 +38,7 @@ guid = guid.upper()
 
 for filename in logs:
 	line_n = 0
-	for line in open(r'' + filename + '', encoding="ISO-8859-1"):
+	for line in open(r'' + filename + ''):
 		line_n += 1
 		mapname = re.search(r'InitGame:.*mapname\\(.+?)\\', line)
 		if mapname:
