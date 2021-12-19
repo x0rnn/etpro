@@ -1,16 +1,73 @@
 /////__BRIDGES__/////
-// x0rnn increased truck/train speed by 50 units
+// x0rnn - increased truck/train speed by 50 units
+// x0rnn - added 3 sandbags as cover on boathouse bridge
+// x0rnn - decreased boathouse bridge engi chargebar required to 1
 
 game_manager
 {
 	spawn
 	{
+		//add sandbags
+		create
+		{
+			scriptname "sandbags1"
+			targetname "sandbags1"
+			classname "misc_gamemodel"
+			spawnflags "2"
+			origin "-510 -210 800"
+			angle "90"
+			modelscale "1.4"
+			contents 1
+			clipmask 1
+			frames "190"
+			mins "-25 0 0"
+			maxs "50 0 30"
+			model "models/mapobjects/cmarker/cmarker_sandbags.md3"
+			skin "models/mapobjects/cmarker/axis_sandbags.skin"
+		}
+
+		create
+		{
+			scriptname "sandbags2"
+			targetname "sandbags2"
+			classname "misc_gamemodel"
+			spawnflags "2"
+			origin "452 -210 800"
+			angle "90"
+			modelscale "1.4"
+			contents 1
+			clipmask 1
+			frames "190"
+			mins "-25 0 0"
+			maxs "50 0 30"
+			model "models/mapobjects/cmarker/cmarker_sandbags.md3"
+			skin "models/mapobjects/cmarker/axis_sandbags.skin"
+		}
+
+		create
+		{
+			scriptname "sandbags3"
+			targetname "sandbags3"
+			classname "misc_gamemodel"
+			spawnflags "2"
+			origin "727 -210 800"
+			angle "90"
+			modelscale "1.4"
+			contents 1
+			clipmask 1
+			frames "190"
+			mins "-25 0 0"
+			maxs "50 0 30"
+			model "models/mapobjects/cmarker/cmarker_sandbags.md3"
+			skin "models/mapobjects/cmarker/axis_sandbags.skin"
+		}
+
 		
 		// Game rules
 		wm_axis_respawntime	20
 		wm_allied_respawntime	30
 		wm_number_of_objectives 7
-		wm_set_round_timelimit	30
+		wm_set_round_timelimit	25
 
 		
 
@@ -3212,6 +3269,7 @@ boathouse_bridge
 		wait 400
 		trigger boathouse_bridge setup
 		constructible_class 3
+		constructible_chargebarreq 1 //x0rnn - decreased chargebar required
 	}
 
 	trigger setup
