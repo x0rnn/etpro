@@ -2,6 +2,7 @@
 // x0rnn - increased truck/train speed by 50 units
 // x0rnn - added 3 sandbags as cover on boathouse bridge
 // x0rnn - decreased boathouse bridge engi chargebar required to 1
+// x0rnn - added 3 axis spawns in the mill service tunnel in last map stage
 
 game_manager
 {
@@ -61,6 +62,49 @@ game_manager
 			model "models/mapobjects/cmarker/cmarker_sandbags.md3"
 			skin "models/mapobjects/cmarker/axis_sandbags.skin"
 		}
+
+		create
+		{
+			scriptName "servicetunnelspawn_obj"
+			classname "team_WOLF_objective"
+			targetname "servicetunnelspawn_obj"
+			origin "-5096 -2432 456"
+			spawnflags 1        // TEAM_AXIS(2)
+			description "Mill Service Tunnel Spawns"
+		}
+		setstate servicetunnelspawn_obj invisible
+
+		// spawn 1
+		create
+		{
+			scriptName "servicetunnelspawn1"
+			classname "team_CTF_redspawn"
+			targetname "servicetunnelspawns"
+			origin "-5144 -2376 456"
+			spawnflags 3        // TEAM_AXIS
+			angle "270"
+		}
+		// spawn 2
+		create
+		{
+			scriptName "servicetunnelspawn2"
+			classname "team_CTF_redspawn"
+			targetname "servicetunnelspawns"
+			origin "-5104 -2376 456"
+			spawnflags 3        // TEAM_AXIS
+			angle "270"
+		} 
+		// spawn 3
+		create
+		{
+			scriptName "servicetunnelspawn3"
+			classname "team_CTF_redspawn"
+			targetname "servicetunnelspawns"
+			origin "-5064 -2376 456"
+			spawnflags 3        // TEAM_AXIS
+			angle "270"
+		} 
+		setstate servicetunnelspawns invisible
 
 		
 		// Game rules
@@ -2961,7 +3005,9 @@ forwardspawn0
 		accum 0 abort_if_equal 0 // do Axis own flag?
 
 		accum 0 set 0 // Axis own the pole
-		wm_announce	"Axis gained spawn positions at The Mill Tunnel!"
+		wm_announce	"Axis gained spawn positions at The Mill Tunnel & The Mill Service Tunnel!"
+		setstate servicetunnelspawn_obj default
+		setstate servicetunnelspawns default
 
 
 		
