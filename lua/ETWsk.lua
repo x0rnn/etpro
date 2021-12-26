@@ -186,20 +186,23 @@ function getConfig(map)
         c.spawns[3] = {name = "Old City", state = NO_PROTECT, pos = {4300, 7000, -450}, radius2 = 870}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Old City wall"}
 -- __BRIDGES__ 28.03.2010
-    elseif map == "__BRIDGES__" then
+    elseif map == "__bridges__" then
         c.spawns[1] = {name = "The Sawmill Spawns", state = PROTECT_ALLIES, pos = {-4850, -7620, 820}, radius2 = 500}
         c.spawns[2] = {name = "The Mill Tunnel Spawns", state = PROTECT_ALLIES, pos = {-1470, -2230, 630}, radius2 = 460}
         c.spawns[3] = {name = "The Reservoir Spawns", state = PROTECT_AXIS, pos = {9440, 3680, 680}, radius2 = 500}
         c.spawns[4] = {name = "North Tunnel2", state = PROTECT_AXIS, pos = {4020, 1200, 820}, radius2 = 300}
         c.spawns[5] = {name = "The Boathouse Spawns", state = NO_PROTECT, pos = {180, 2100, 310}, radius2 = 500}
+        c.spawns[6] = {name = "The Mill Service Tunnel Spawns", state = NO_PROTECT, pos = {-5094, -2452, 480}, radius2 = 300}
         c.actions[1] = {spawn = 5, newstate = PROTECT_AXIS, trigger = "Axis gained spawn positions at The Boathouse!"}
         c.actions[2] = {spawn = 4, newstate = PROTECT_ALLIES, trigger = "Allies gained positions in the North Tunnel!"}
         c.actions[3] = {spawn = 2, newstate = NO_PROTECT, trigger = "Allies gained positions in the North Tunnel!"}
         c.actions[4] = {spawn = 5, newstate = NO_PROTECT, trigger = "Axis are regrouping at the reservoir!"}
         c.actions[5] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "allies have gained spawn positions in the Mill Tunnel"}
         c.actions[6] = {spawn = 4, newstate = PROTECT_AXIS, trigger = "allies have gained spawn positions in the Mill Tunnel"}
-        c.actions[7] = {spawn = 2, newstate = PROTECT_AXIS, trigger = "Axis gained spawn positions at The Mill Tunnel!"}
-        c.actions[8] = {spawn = 4, newstate = NO_PROTECT, trigger = "Axis gained spawn positions at The Mill Tunnel!"}
+        c.actions[7] = {spawn = 2, newstate = PROTECT_AXIS, trigger = "Axis gained spawn positions at The Mill Tunnel"}
+        c.actions[8] = {spawn = 4, newstate = NO_PROTECT, trigger = "Axis gained spawn positions at The Mill Tunnel"}
+        c.actions[9] = {spawn = 6, newstate = PROTECT_AXIS, trigger = "Axis gained spawn positions at The Mill Tunnel"}
+
 -- Axislab 28.03.2010
     elseif map == "axislab_final" then
         c.spawns[1] = {name = "Hill Top", state = NO_PROTECT, pos = {-162, 2540, 1130}, radius2 = 600}
@@ -409,14 +412,16 @@ function getConfig(map)
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
         c.spawns[4] = {state = NO_PROTECT} -- Upper Complex (Command Post)
         c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
+        c.actions[1] = {spawn = 3, newstate = NO_PROTECT, trigger = "Allies have transmitted the Supply Documents"}
         
--- ETL Frostbite V5 23.10.2018
+-- ETL Frostbite
     elseif map == "etl_frostbite_v15" then
         c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
         c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 450}
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
         c.spawns[4] = {state = NO_PROTECT} -- Upper Complex (Command Post)
         c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
+        c.actions[1] = {spawn = 3, newstate = NO_PROTECT, trigger = "Allies have transmitted the Supply Documents"}
         
 -- ETL Bergen V3 23.10.2018
     elseif map == "etl_bergen_v3" then
