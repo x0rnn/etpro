@@ -24,7 +24,7 @@ version = "1.0.7"
 -- x0rnn: added class message to vsay_team EnemyDisguised
 -- x0rnn: added !multikillstats, !vsstats for current map
 -- x0rnn: made kills and deaths preserve after switching teams
--- x0rnn: fixed medic/needammo/enemydisguised spam
+-- x0rnn: fixed vsay medic spam
 
 -- If you run etadmin_mod, change the following lines in "etadmin.cfg"
 --      spree_detector          = 0
@@ -173,8 +173,6 @@ last_killer = {}
 last_tk = {}
 last_revive = {}
 last_vsaymedic = {}
-last_vsayammo = {}
-last_vsaydisguised = {}
 client_msg = {}
 topshot_cmd = "!topshots"
 topshots = {}
@@ -1932,8 +1930,6 @@ function et_ClientDisconnect(id)
         last_revive[id] = nil
     end
     last_vsaymedic[id] = nil
-    last_vsayammo[id] = nil
-	last_vsaydisguised = nil
     if wait_table[id] ~= nil then
         wait_table[id] = nil
     end
@@ -2309,49 +2305,35 @@ function et_ClientCommand(id, command)
 				local weaponcode = et.gentity_get(id, "s.weapon")
 				local weaponname = weapontable[weaponcode]
 				if weaponname ~= nil then
-					local vsayflag = false
-					if last_vsayammo[id] == nil then
-						last_vsayammo[id] = et.trap_Milliseconds()
-						vsayflag = true
-					else
-						if (et.trap_Milliseconds() - tonumber(last_vsayammo[id])) >= 2000 then
-							vsayflag = true
-							last_vsayammo[id] = et.trap_Milliseconds()
-						end
-					end
-					if vsayflag == true then
-						if weaponcode == 5 or weaponcode == 6 then --in case it's: Panzerfaust or Flamethrower
-							ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
-						elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 or weaponcode == 35 or weaponcode == 45 then
-							if weaponcode == 45 then -- set mortar
-								ammo = et.gentity_get(id, "ps.ammo", 35) + et.gentity_get(id, "ps.ammoclip", 35)
-							else
-								ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
-							end
-						elseif weaponcode == 42 or weaponcode == 43 or weaponcode == 44 then
-							if weaponcode == 42 then -- scoped garand
-								ammo = et.gentity_get(id, "ps.ammo", 25) + et.gentity_get(id, "ps.ammoclip", 25)
-							elseif weaponcode == 43 then -- scoped k43
-								ammo = et.gentity_get(id, "ps.ammo", 32) + et.gentity_get(id, "ps.ammoclip", 32)
-							else -- scoped fg42
-								ammo = et.gentity_get(id, "ps.ammo", 33) + et.gentity_get(id, "ps.ammoclip", 33)
-							end
-						elseif weaponcode == 49 then -- proned mg42
-							ammo = et.gentity_get(id, "ps.ammo", 31) + et.gentity_get(id, "ps.ammoclip", 31)
+					if weaponcode == 5 or weaponcode == 6 then --in case it's: Panzerfaust or Flamethrower
+						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
+					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 or weaponcode == 35 or weaponcode == 45 then
+						if weaponcode == 45 then -- set mortar
+							ammo = et.gentity_get(id, "ps.ammo", 35) + et.gentity_get(id, "ps.ammoclip", 35)
 						else
-							return(0)
+							ammo = et.gentity_get(id, "ps.ammo", weaponcode) + et.gentity_get(id, "ps.ammoclip", weaponcode)
 						end
-						vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left / ^2" .. weaponname .. "^5)"
-						local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
-						for t=0, sv_maxclients-1, 1 do
-							if et.gentity_get(t, "sess.sessionTeam") == team then
-								et.trap_SendServerCommand(t, cmd)
-							end
+					elseif weaponcode == 42 or weaponcode == 43 or weaponcode == 44 then
+						if weaponcode == 42 then -- scoped garand
+							ammo = et.gentity_get(id, "ps.ammo", 25) + et.gentity_get(id, "ps.ammoclip", 25)
+						elseif weaponcode == 43 then -- scoped k43
+							ammo = et.gentity_get(id, "ps.ammo", 32) + et.gentity_get(id, "ps.ammoclip", 32)
+						else -- scoped fg42
+							ammo = et.gentity_get(id, "ps.ammo", 33) + et.gentity_get(id, "ps.ammoclip", 33)
 						end
-						return(1)
+					elseif weaponcode == 49 then -- proned mg42
+						ammo = et.gentity_get(id, "ps.ammo", 31) + et.gentity_get(id, "ps.ammoclip", 31)
 					else
 						return(0)
 					end
+					vsaymessage = "^5I need ammo! (^2" .. ammo .. " ^5ammo left / ^2" .. weaponname .. "^5)"
+					local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
+					for t=0, sv_maxclients-1, 1 do
+						if et.gentity_get(t, "sess.sessionTeam") == team then
+							et.trap_SendServerCommand(t, cmd)
+						end
+					end
+					return(1)
 				else
 					return(0)
 				end
@@ -2411,29 +2393,15 @@ function et_ClientCommand(id, command)
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 			math.randomseed(et.trap_Milliseconds())
 			if team ~= 3 then
-				local vsayflag = false
-				if last_vsaydisguised[id] == nil then
-					last_vsaydisguised[id] = et.trap_Milliseconds()
-					vsayflag = true
-				else
-					if (et.trap_Milliseconds() - tonumber(last_vsaydisguised[id])) >= 1000 then
-						vsayflag = true
-						last_vsaydisguised[id] = et.trap_Milliseconds()
+				local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
+				vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
+				local cmd = string.format("vtchat 0 %d 50 EnemyDisguised %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
+				for t=0, sv_maxclients-1, 1 do
+					if et.gentity_get(t, "sess.sessionTeam") == team then
+						et.trap_SendServerCommand(t, cmd)
 					end
 				end
-				if vsayflag == true then
-					local c = tonumber(et.Info_ValueForKey(et.trap_GetConfigstring(et.CS_PLAYERS + id), "c"))
-					vsaymessage = "^5Enemy in disguise! (^2" .. classtable[c] .. "^5)"
-					local cmd = string.format("vtchat 0 %d 50 EnemyDisguised %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], math.random(1,2), vsaymessage)
-					for t=0, sv_maxclients-1, 1 do
-						if et.gentity_get(t, "sess.sessionTeam") == team then
-							et.trap_SendServerCommand(t, cmd)
-						end
-					end
-					return(1)
-				else
-					return(0)
-				end
+				return(1)
 			else
 				return(0)
 			end
