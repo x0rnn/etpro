@@ -211,16 +211,29 @@ weapontable = {
 [10]=	"Sten", 
 [23]=	"K43 Rifle",
 [24]=	"M1 Rifle",
-[25]=	"M1 Garand", 
-[31]=	"MG42", 
+[25]=	"M1 Garand",
+[31]=	"MG42",
 [32]=	"K43",
-[33]=	"FG42", 
-[35]=	"Mortar", 
+[33]=	"FG42",
+[35]=	"Mortar",
+[39]=	"K43 Riflegrenade",
+[40]=	"M1 Riflegrenade",
 [42]=	"M1 Garand",
 [43]=	"K43",
 [44]=	"FG42",
 [45]=	"Mortar",
 [49]=	"MG42",
+}
+
+pistols = {
+[2]=	"Luger",
+[7]=	"Colt",
+[14]=	"Silenced Luger",
+[37]=	"Akimbo Colt",
+[38]=	"Akimbo Luger", 
+[41]=	"Silenced Colt",
+[47]=	"Silenced Akimbo Colt",
+[48]=	"Silenced Akimbo Luger", 
 }
 
 classtable = {
@@ -2307,7 +2320,7 @@ function et_ClientCommand(id, command)
 				if weaponname ~= nil then
 					if weaponcode == 5 or weaponcode == 6 then --in case it's: Panzerfaust or Flamethrower
 						ammo = et.gentity_get(id, "ps.ammoclip", weaponcode)
-					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 or weaponcode == 35 or weaponcode == 45 then
+					elseif weaponcode == 3 or weaponcode == 8 or weaponcode == 10 or weaponcode == 23 or weaponcode == 24 or weaponcode == 25 or weaponcode == 31 or weaponcode == 32 or weaponcode == 32 or weaponcode == 35 or weaponcode == 39 or weaponcode == 40 or weaponcode == 45 then
 						if weaponcode == 45 then -- set mortar
 							ammo = et.gentity_get(id, "ps.ammo", 35) + et.gentity_get(id, "ps.ammoclip", 35)
 						else
@@ -2335,7 +2348,19 @@ function et_ClientCommand(id, command)
 					end
 					return(1)
 				else
-					return(0)
+					local weaponname2 = pistols[weaponcode]
+					if weaponname2 ~= nil then
+						vsaymessage = "^5I need ammo! (^2" .. weaponname2 .. "^5)"
+						local cmd = string.format("vtchat 0 %d 50 NeedAmmo %d %d %d %d \"%s\"", id, ppos[1], ppos[2], ppos[3], 1, vsaymessage)
+						for t=0, sv_maxclients-1, 1 do
+							if et.gentity_get(t, "sess.sessionTeam") == team then
+								et.trap_SendServerCommand(t, cmd)
+							end
+						end
+						return(1)
+					else
+						return(0)
+					end
 				end
 			else
 				return(0)
