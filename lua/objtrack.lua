@@ -794,7 +794,7 @@ function et_Print(text)
 		end
 	end -- end et_village
 
-if mapname == "1944_beach" then
+	if mapname == "1944_beach" then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -815,6 +815,28 @@ if mapname == "1944_beach" then
 			table.remove(doccarriers_id, 1)
 		end
 	end -- end 1944_beach
+
+	if mapname == "et_brewdog_b3" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				doccarriers[id] = true
+				table.insert(doccarriers_id, id)
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Quiz Answers!\"\n")
+			elseif team == 1 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Quiz Answers!\"\n")
+			end
+		end
+		if(string.find(text, "Allies have transmitted the Quiz Answers!")) then
+			local name = et.gentity_get(doccarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Quiz Answers!\"\n")
+			doccarriers[doccarriers_id[1]] = nil
+			table.remove(doccarriers_id, 1)
+		end
+	end -- end et_brewdog_b3
 
 	if (string.find(mapname, "_ice")) then
 		if(string.find(text, "team_CTF_blueflag")) then
@@ -1015,6 +1037,12 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
+	if mapname == "et_brewdog_b3" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
 end
 
 function et_ClientDisconnect(i)
@@ -1188,6 +1216,12 @@ function et_ClientDisconnect(i)
 		end
 	end
 	if mapname == "1944_beach" then
+		doccarriers[i] = nil
+		if doccarriers_id[1] == i then
+			table.remove(doccarriers_id, 1)
+		end
+	end
+	if mapname == "et_brewdog_b3" then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
