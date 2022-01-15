@@ -417,7 +417,7 @@ function getConfig(map)
 -- ETL Frostbite
     elseif map == "etl_frostbite_v15" then
         c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
-        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 450}
+        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, pos = {-140, 1286, 280}, radius2 = 400}
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
         c.spawns[4] = {state = NO_PROTECT} -- Upper Complex (Command Post)
         c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
