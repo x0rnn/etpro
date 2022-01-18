@@ -4,7 +4,7 @@
 ---- weapons taken from them, their skill stays 0, their kills don't count, they end with 69 deaths, health halved, ammo halved
 ---- they emit a beacon sound to the enemy team, they can't selfkill, they get randomly (10% chance) gibbed or teleported into their death on respawn
 ---- block them from joining a specific team (axis or allies) (!putaxis by admins still works for example) (can also be set for non -3 level players)
----- block them from playing a specific class
+---- block them from playing a specific class (can also be set for non -3 level players)
 ---- they don't have spawn protection, etc. (can be set unique for each player by guid)
 ---- invisible mute: their chat will only be visible to them, not knowing other players can't see anything they write (can also be set for non -3 level players) (doesn't seem to work for /m or /pm)
 -- also added a !teleport id X Y Z command for level 6+ players to teleport players to input coordinates (/viewpos to see your location)
