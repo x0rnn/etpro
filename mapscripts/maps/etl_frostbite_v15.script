@@ -1,0 +1,622 @@
+// GLOBALACCUM 0
+//	BIT 0 = MAIN ENTRANCE DESTROYED
+//	BIT 1 = SIDE_ENTRANCE_DESTROYED
+//	BIT 2 = ALARM_ALREADY_SOUNDED
+game_manager
+{
+	spawn
+	{	
+		// Game rules
+		wm_axis_respawntime	30
+		wm_allied_respawntime	30
+		wm_number_of_objectives 6
+		wm_set_round_timelimit	15
+		wm_set_defending_team 0
+
+		// Objectives
+		// 1: Transmit the Supply Documents
+		// 2: Destroy the Main Door
+		// 3: Destroy the Storage Wall
+		// 4: Destroy the Service Door
+		// 5: Axis Field Command
+		// 6: Allies Base of Operations
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies)
+		wm_setwinner 0
+
+		wait 500
+
+		setautospawn "Axis Barracks" 0
+		setautospawn "Command Post" 1
+		alertentity axis_garage_spawns
+		
+		//====OPTIONAL SETTINGS==============================================================
+		// Toggle the line of the respective setting you want to change by (un-)commenting.
+		//
+		setstate TJ_clip invisible				// clip preventing TJ over storage wall
+		//===================================================================================
+
+		setstate cabinet_toi invisible
+		setstate cabinet_marker invisible
+		setstate cabinet_health invisible
+		setstate cabinet_ammo invisible
+		setstate cabinet_health_model invisible
+		setstate cabinet_ammo_model invisible
+		setstate health_dest default
+		setstate ammo_dest default
+		
+		disablespeaker record_music
+		disablespeaker record_music_broken
+
+		// wait for everything to settle
+		wait 1500
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allies_transmit
+	{
+	    wm_announce "The Allies have transmitted the Supply Documents!" 
+		wm_setwinner 1
+		wait 1500
+		wm_endround
+	}
+	
+	trigger sound_alarm
+	{
+		globalaccum 0 abort_if_bitset 2
+		globalaccum 0 bitset 2
+		wait 3000
+		alertentity sound_alarm
+	}
+}
+
+/////////////////////////////////////////////////
+// Doors
+/////////////////////////////////////////////////
+
+main_door
+{
+	spawn
+	{
+		wait 320
+		constructible_class 3
+	}
+	death
+	{
+		wm_announce "The Main Door has been breached!" 
+		trigger game_manager sound_alarm
+		
+		wm_objective_status 2 1 1
+		wm_objective_status 2 0 2
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrance1_destroyed"
+		wm_teamvoiceannounce 1 "frostbite_allies_entrance1_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 0 bitset 0				// MAIN GATE IS DESTROYED
+		globalaccum 0 abort_if_bitset 1		// ABORT_IF_SIDE_GATE_DESTROYED
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+	}
+}
+
+service_door
+{
+	spawn
+	{
+		wait 240
+		constructible_class 3
+	}
+	
+	death
+	{
+		wm_announce "The Service Door has been breached!"
+		
+		wm_objective_status 4 1 1
+		wm_objective_status 4 0 2
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_destroyed"
+		wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		trigger game_manager sound_alarm
+	}
+}
+
+storage_wall_explosive
+{
+	spawn
+	{
+		wait 300
+		constructible_class 3
+	}
+	
+	death
+	{
+		alertentity storage_wall_rubble
+		trigger game_manager sound_alarm
+		
+		trigger storage_wall_mover remove
+		trigger storage_wall_hint remove
+		trigger storage_wall_open remove
+		trigger storage_wall_closed remove
+		
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_red
+		remapshaderflush
+		
+		wm_announce "Storage Wall destroyed!"
+		
+		wm_objective_status 3 1 1
+		wm_objective_status 3 0 2
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrance2_destroyed"
+		wm_teamvoiceannounce 1 "frostbite_allies_entrance2_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 0 bitset 1				// SIDE GATE IS DESTROYED
+		globalaccum 0 abort_if_bitset 0		// ABORT_IF_MAIN_GATE_DESTROYED
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+	}
+}
+
+storage_wall_open
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_closed
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_hint
+{
+	activate
+	{
+		trigger storage_wall_lever activate
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_lever
+// ACCUM 0:	cmd_door_LEVER	(0=CLOSED, 1=OPEN)
+{
+	spawn
+	{
+		wait 200
+		gotomarker storage_wall_lever_up 16 wait
+		gotomarker storage_wall_lever_down 16 wait
+	}
+	
+	trigger activate
+	{
+		setstate storage_wall_hint invisible
+		accum 0 trigger_if_equal 0 storage_wall_lever open		// TRIGGER_IF_CLOSED
+		accum 0 trigger_if_equal 1 storage_wall_lever close		// TRIGGER_IF_OPEN
+	}	
+	
+	trigger close
+	{
+		halt
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker storage_wall_lever_down 16 wait
+		accum 0 set 0	// CLOSED
+		stopsound
+		trigger storage_wall_mover activate
+		wait 1000
+		setstate storage_wall_hint default
+	}
+	
+	trigger open
+	{
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker storage_wall_lever_up 16 wait
+		accum 0 set 1		// OPEN
+		stopsound
+		globalaccum 4 abort_if_bitset 1
+		trigger storage_wall_mover activate
+		globalaccum 4 abort_if_bitset 0
+		wait 1000
+		setstate storage_wall_hint default
+	}
+}
+
+// ACCUM 0:
+//	0=CLOSED
+//	1=OPENING
+//	2=OPEN
+//	3=CLOSING
+storage_wall_mover
+{
+	spawn
+	{
+		wait 200
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_green
+		remapshaderflush
+	}
+	
+	trigger activate
+	{
+		accum 0 trigger_if_equal 0 storage_wall_mover open				// IF_CLOSED
+		accum 0 trigger_if_equal 1 storage_wall_mover stop_and_close	// IF_OPENING
+		accum 0 trigger_if_equal 2 storage_wall_mover close				// IF_OPEN
+		accum 0 trigger_if_equal 3 storage_wall_mover stop_and_open		// IF_CLOSING
+	}
+	
+	trigger stop_and_close
+	{
+		halt
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self close
+	}
+	
+	trigger stop_and_open
+	{
+		halt
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self open
+	}
+	
+	trigger close
+	{
+		accum 0 set 3	// CLOSING
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker storage_wall_closed 32 wait
+		accum 0 abort_if_not_equal 3	// ABORT_IF_NOT_CLOSING
+		setstate storage_wall_hint invisible
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 0	// CLOSED
+		setstate storage_wall_hint default
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_green
+		remapshaderflush
+	}
+	
+	trigger open
+	{
+		accum 0 set 1	// OPENING
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker storage_wall_open 32 wait
+		accum 0 abort_if_not_equal 1	// ABORT_IF_NOT_OPENING
+		setstate storage_wall_hint invisible
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 2	// OPEN
+		setstate storage_wall_hint default
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_red
+		remapshaderflush
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+//////////
+// Docs //
+//////////
+
+docs
+{
+	trigger stolen 
+	{
+		setstate docs_cm_marker invisible 
+	}
+	  
+	trigger dropped
+	{
+		wm_announce "Documents dropped!"
+	}
+
+	trigger returned 
+	{ 
+		setstate docs_cm_marker default
+	}
+}
+
+transmitter
+{
+	death
+	{
+		trigger game_manager allies_transmit
+	}
+}
+
+// === ALLIED COMMAND POST ===
+
+allied_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+
+		setstate allied_cp_built_model invisible
+		setstate allied_cp_destroyed invisible
+		setstate allied_cp_destroyed_model invisible
+		setstate allied_cp_wobj invisible
+		
+		disablespeaker allied_compost_sound
+	}
+	
+	buildstart
+	{
+		setstate allied_cp_closed_model invisible
+		setstate allied_cp_closed invisible
+		setstate allied_cp_destroyed invisible
+		setstate allied_cp_destroyed_model invisible
+		setstate allied_cp_built_model underconstruction
+	}
+
+	decayed
+	{
+		setstate allied_cp_closed_model default
+		setstate allied_cp_closed default
+		setstate allied_cp_built_model invisible
+	}
+
+	built
+	{
+		setstate allied_cp_built_model default
+		setstate allied_cp default
+
+		wm_announce	"^5Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"	
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+		
+		wm_objective_status	6 1 1
+		wm_objective_status	6 0 2
+
+		setstate allied_cp_wobj default
+		alertentity allied_cp_spawns
+
+		enablespeaker allied_compost_sound
+	}
+
+	death
+	{
+		setstate allied_cp_built_model invisible
+		setstate allied_cp invisible
+		setstate allied_cp_destroyed default
+		setstate allied_cp_destroyed_model default
+
+		wm_announce	"^1Axis team has destroyed the Allied Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+		
+		wm_objective_status	6 1 0
+		wm_objective_status	6 0 0		
+
+		setstate allied_cp_wobj invisible
+		alertentity allied_cp_spawns
+
+		disablespeaker allied_compost_sound
+	}
+}
+
+/////////////////////////////////////////////////
+// Axis Command Post
+/////////////////////////////////////////////////
+axis_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+
+		setstate axis_cp_damaged_model invisible
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_damaged invisible
+		
+		disablespeaker axis_compost_sound
+	}
+
+	buildstart
+	{
+		setstate axis_cp_damaged_model invisible
+		setstate axis_cp_damaged invisible
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_closed invisible
+		setstate axis_cp_built_model underconstruction
+	}
+
+	decayed
+	{
+		setstate axis_cp_closed_model default
+		setstate axis_cp_closed default
+		setstate axis_cp_built_model invisible
+	}
+
+	built
+	{
+		setstate axis_cp_built_model default
+		setstate axis_cp default
+
+		wm_announce	"^1Axis Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+		
+		wm_objective_status	5 0 1
+		wm_objective_status	5 1 2
+		
+		enablespeaker axis_compost_sound
+	}
+
+	death
+	{
+		setstate axis_cp_built_model invisible
+		setstate axis_cp invisible
+		setstate axis_cp_damaged_model default
+		setstate axis_cp_damaged default
+
+		wm_announce	"^5Allied team has destroyed the Axis Command Post!"
+				
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+		
+		wm_objective_status	5 1 0
+		wm_objective_status	5 0 0
+		
+		disablespeaker axis_compost_sound
+	}
+}
+
+gramophone_hint
+{
+	activate
+	{
+		setstate gramophone_hint invisible
+		togglespeaker record_music
+		wait 39414	// wait for wav to finish		
+		setstate gramophone_hint default
+	}
+}
+
+// ============================================================================
+// Platform MG42 Nest
+// ============================================================================
+platform_mg42 
+{ 
+	spawn 
+	{ 
+		wait 200 
+		constructible_class 2 
+
+		setstate platform_mg42_sandbags invisible
+		setstate platform_mg invisible
+	}
+	
+	buildstart
+	{
+		setstate platform_mg42_sandbags underconstruction
+		setstate platform_mg underconstruction
+	}
+
+	decayed
+	{
+		setstate platform_mg42_sandbags invisible
+		setstate platform_mg invisible
+	}
+
+	built 
+	{
+		setstate platform_mg42_sandbags default
+		setstate platform_mg default
+		setstate platform_mg42_materials invisible 
+
+		wm_announce	"Axis team has constructed the Platform MG Nest!"
+	}
+
+	death
+	{
+		setstate platform_mg42_sandbags invisible
+		repairmg42 platform_mg
+		setstate platform_mg invisible
+		setstate platform_mg42_materials default
+		
+		wm_announce	"Allied team has destroyed the Platform MG Nest!"
+	}
+}
