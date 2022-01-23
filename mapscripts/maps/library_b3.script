@@ -1,13 +1,15 @@
-//	Â¬ Info:		www.Team-AoW.de - Kontakt: aowblacky@hotmail.com - IRC: #Library   @Quakenet
+//x0rnn - added extra axis spawns in library office
 
-//	Â¬ Map name:	Library (library_b3.bsp)
-//	Â¬ Map by:		BlAcky
-//	Â¬ Script by:	BlAcky
-//	Â¬ Release:		21 Feb. 2012
-//	Â¬ Version:		beta3
+//	¬ Info:		www.Team-AoW.de - Kontakt: aowblacky@hotmail.com - IRC: #Library   @Quakenet
+
+//	¬ Map name:	Library (library_b3.bsp)
+//	¬ Map by:		BlAcky
+//	¬ Script by:	BlAcky
+//	¬ Release:		21 Feb. 2012
+//	¬ Version:		beta3
 
 
-//	Â¬ GlobalAccums
+//	¬ GlobalAccums
 //		1: Flag		 (0=axis captured, 1=allies captured)
 //		2: Maingate  (0=not destroyed, 1=destroyed)
 //		3: Generator (0=not destroyed, 1=destroyed)
@@ -18,7 +20,7 @@
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ GAME MANAGER
+// ¬ GAME MANAGER
 //  ==========================================================================================================================================================================================
 
 game_manager
@@ -35,6 +37,59 @@ game_manager
 			mins "-150 -200 -16"
 			maxs "150 200 16"
 		}
+
+		create
+		{
+			scriptName "libraryspawn_obj"
+			classname "team_WOLF_objective"
+			targetname "libraryspawn_obj"
+			origin "-87 3946 -75"
+			spawnflags 1        // TEAM_AXIS(2)
+			description "Library Office Spawns"
+		}
+		setstate libraryspawn_obj invisible
+
+		// spawn 1
+		create
+		{
+			scriptName "libraryspawn1"
+			classname "team_CTF_redspawn"
+			targetname "libraryspawns"
+			origin "-125 3929 -75"
+			spawnflags 3        // TEAM_AXIS
+			angle "360"
+		}
+		// spawn 2
+		create
+		{
+			scriptName "libraryspawn2"
+			classname "team_CTF_redspawn"
+			targetname "libraryspawns"
+			origin "-121 4034 -75"
+			spawnflags 3        // TEAM_AXIS
+			angle "360"
+		} 
+		// spawn 3
+		create
+		{
+			scriptName "libraryspawn3"
+			classname "team_CTF_redspawn"
+			targetname "libraryspawns"
+			origin "-165 3854 -75"
+			spawnflags 3        // TEAM_AXIS
+			angle "360"
+		}
+		// spawn 4
+		//create
+		//{
+		//	scriptName "libraryspawn4"
+		//	classname "team_CTF_redspawn"
+		//	targetname "libraryspawns"
+		//	origin "-24 3958 -75"
+		//	spawnflags 3        // TEAM_AXIS
+		//	angle "360"
+		//}  
+		setstate libraryspawns invisible
 
 		wm_axis_respawntime	30		//Axis Respawntime
 		wm_allied_respawntime 20	//Allies Respawntime
@@ -123,7 +178,7 @@ game_manager
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ WINDOW BARRIER
+// ¬ WINDOW BARRIER
 //  ==========================================================================================================================================================================================
 
 window-barrier
@@ -174,7 +229,7 @@ window-barrier
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ COMMANDPOST + SPAWNS
+// ¬ COMMANDPOST + SPAWNS
 //  ==========================================================================================================================================================================================
 
 neutral_cp_toi
@@ -648,7 +703,7 @@ flag1_flag
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ MAIN GATE
+// ¬ MAIN GATE
 //  ==========================================================================================================================================================================================
 
 maingate
@@ -702,7 +757,7 @@ maingate
 }
 
 //  ==========================================================================================================================================================================================
-// Â¬ DOCUMENTS
+// ¬ DOCUMENTS
 //  ==========================================================================================================================================================================================
 
 documents
@@ -732,7 +787,7 @@ documents
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ TRANSMITTER
+// ¬ TRANSMITTER
 //  ==========================================================================================================================================================================================
 
 transmitter
@@ -753,7 +808,7 @@ transmitter
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ TANK + BARRIER
+// ¬ TANK + BARRIER
 //  ==========================================================================================================================================================================================
 
 //	accum 0, script lock
@@ -1628,6 +1683,10 @@ tank_turret
 		setstate library_axisdoor_open default
 		
 		wm_announce "Library Doors are open!"
+		wm_announce "The Axis Library Office Spawn is activated!"
+
+		setstate libraryspawn_obj default
+		setstate libraryspawns default
 	}
 }
 
@@ -1771,7 +1830,7 @@ generator_smoke
 
 
 //  ==========================================================================================================================================================================================
-// Â¬ BANNER SCRIPTS
+// ¬ BANNER SCRIPTS
 //  ==========================================================================================================================================================================================
 
 banner1
