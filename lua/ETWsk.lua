@@ -269,7 +269,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- WÃ¼rzburg Radar
+-- Würzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -408,7 +408,7 @@ function getConfig(map)
 -- Frostbite
     elseif map == "frostbite" then
         c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
-        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, radius2 = 450}
+        c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, pos = {-134, 1331, 280}, radius2 = 450}
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
         c.spawns[4] = {state = NO_PROTECT} -- Upper Complex (Command Post)
         c.spawns[5] = {state = NO_PROTECT} --Axis Spawn (Documents)
@@ -537,6 +537,7 @@ function getConfig(map)
     elseif map == "library_b3" then
         c.spawns[1] = {name = "Allied First Spawn", state = PROTECT_ALLIES, pos = {-2202, -3267, -15}, radius2 = 500}
         c.spawns[2] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {-582, 3303, -115}, radius2 = 400}
+        c.spawns[3] = {name = "Library Office Spawn", state = PROTECT_AXIS, pos = {-96, 3971, -75}, radius2 = 260}
 
 -- ET Ice
     elseif map == "et_ice" then
