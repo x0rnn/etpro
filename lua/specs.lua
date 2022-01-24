@@ -28,7 +28,11 @@ end
 function et_ClientDisconnect(clientNum)
 	if speclock[clientNum] == true then
 		speclock[clientNum] = nil
-		table.remove(speclock_id, clientNum)
+		local index={}
+		for k,v in pairs(speclock_id) do
+			index[v]=k
+		end
+		table.remove(speclock_id, index[clientNum])
 		if next(speclock) == nil then
 			speclock_flag = false
 		end
