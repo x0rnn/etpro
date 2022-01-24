@@ -204,7 +204,11 @@ function et_ClientUserinfoChanged(clientNum)
 	if players[clientNum] ~= team then
 		if team == 1 then
 			if players[clientNum] == 2 then
-				table.remove( alliedPlayers, clientNum )
+				local index={}
+				for k,v in pairs(alliedPlayers) do
+					index[v]=k
+				end
+				table.remove( alliedPlayers, index[clientNum] )
 				numAlliedPlayers = table.getn( alliedPlayers )
 			end
 			table.insert( axisPlayers, clientNum )
@@ -212,7 +216,11 @@ function et_ClientUserinfoChanged(clientNum)
 			players[clientNum] = team
 		elseif team == 2 then
 			if players[clientNum] == 1 then
-				table.remove( axisPlayers, clientNum )
+				local index={}
+				for k,v in pairs(axisPlayers) do
+					index[v]=k
+				end
+				table.remove( axisPlayers, index[clientNum] )
 				numAxisPlayers = table.getn( axisPlayers )
 			end
 			table.insert( alliedPlayers, clientNum )
@@ -220,10 +228,18 @@ function et_ClientUserinfoChanged(clientNum)
 			players[clientNum] = team
 		else
 			if players[clientNum] == 1 then
-				table.remove( axisPlayers, clientNum )
+				local index={}
+				for k,v in pairs(axisPlayers) do
+					index[v]=k
+				end
+				table.remove( axisPlayers, index[clientNum] )
 				numAxisPlayers = table.getn( axisPlayers )
 			elseif players[clientNum] == 2 then
-				table.remove( alliedPlayers, clientNum )
+				local index={}
+				for k,v in pairs(alliedPlayers) do
+					index[v]=k
+				end
+				table.remove( alliedPlayers, index[clientNum] )
 				numAlliedPlayers = table.getn( alliedPlayers )
 			end
 			players[clientNum] = team
@@ -292,11 +308,19 @@ end
 
 function et_ClientDisconnect( clientNum )
 	if players[clientNum] == 1 then
-		table.remove( axisPlayers, clientNum )
+		local index={}
+		for k,v in pairs(axisPlayers) do
+			index[v]=k
+		end
+		table.remove( axisPlayers, index[clientNum] )
 		numAxisPlayers = table.getn( axisPlayers )
 	end
 	if players[clientNum] == 2 then
-		table.remove( alliedPlayers, clientNum )
+		local index={}
+		for k,v in pairs(alliedPlayers) do
+			index[v]=k
+		end
+		table.remove( alliedPlayers, index[clientNum] )
 		numAlliedPlayers = table.getn( alliedPlayers )
 	end
 	players[clientNum] = nil
