@@ -340,7 +340,11 @@ function et_ClientCommand(id, command)
 								if et.gentity_get(cno, "pers.connected") == 2 then
 									if speclock[cno] == true then
 										speclock[cno] = nil
-										table.remove(speclock_id, cno)
+										local index={}
+										for k,v in pairs(speclock_id) do
+											index[v]=k
+										end
+										table.remove(speclock_id, index[cno])
 										if next(speclock) == nil then
 											speclock_flag = false
 										end
@@ -359,7 +363,11 @@ function et_ClientCommand(id, command)
 							if cno ~= nil then
 								if speclock[cno] == true then
 									speclock[cno] = nil
-									table.remove(speclock_id, cno)
+									local index={}
+									for k,v in pairs(speclock_id) do
+										index[v]=k
+									end
+									table.remove(speclock_id, index[cno])
 									if next(speclock) == nil then
 										speclock_flag = false
 									end
