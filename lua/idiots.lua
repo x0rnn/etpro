@@ -204,7 +204,11 @@ function et_ClientDisconnect(clientNum)
 		invisible_mute[clientNum] = nil
 		zero_kills[clientNum] = nil
 		block_class_flag = false
-		table.remove(idiots_id, clientNum)
+		local index={}
+		for k,v in pairs(idiots_id) do
+			index[v]=k
+		end
+		table.remove(idiots_id, index[clientNum])
 		if next(idiots2) == nil then
 			flag = false
 		end
@@ -215,7 +219,13 @@ function et_ClientDisconnect(clientNum)
 	if invisible_mute[clientNum] ~= nil then
 		invisible_mute[clientNum] = nil
 	end
-	table.remove(crestrict_id, clientNum)
+	local index={}
+	for k,v in pairs(crestrict_id) do
+		index[v]=k
+	end
+	if crestrict_id[index[clientNum]] ~= nil then
+		table.remove(crestrict_id, index[clientNum])
+	end
 
 	if player1_id[clientNum] ~= nil then
 		player1[player1_id[clientNum]][2] = nil
