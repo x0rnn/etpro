@@ -341,7 +341,7 @@ function et_Obituary(victim, killer, mod)
 						et.G_Damage(killer, 80, 1022, 1000, 8, 34)
 						et.G_Sound(killer, et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
 					end
-					if mod == 6 or mod == 7 or mod == 8 or mod == 9 or mod == 10 or mod == 58 or mod == 59 then -- knife, luger, colt, mp40, thompson, akimbo colt, akimbo luger
+					if mod == 6 or mod == 7 or mod == 8 or mod == 9 or mod == 10 or mod == 58 or mod == 59 or mod == 11 or mod == 12 or mod == 14 or mod == 15 or mod == 55 or mod == 50 or mod == 60 or mod == 61 or mod == 41 or mod == 42 then -- knife, luger, colt, mp40, thompson, akimbo colt, akimbo luger, sten, garand, silenced luger, fg42, k43, silenced colt, akimbo silenced colt, akimbo silenced luger, garand rifle, k43 rifle
 						if et.gentity_get(killer,"sess.PlayerType") ~= 1 then -- medic
 							if tks[killer] == nil then
 								tks[killer] = { [victim] = 1 }
