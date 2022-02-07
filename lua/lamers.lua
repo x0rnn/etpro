@@ -342,32 +342,8 @@ function et_Obituary(victim, killer, mod)
 						et.G_Sound(killer, et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
 					end
 					if mod == 6 or mod == 7 or mod == 8 or mod == 9 or mod == 10 or mod == 58 or mod == 59 or mod == 11 or mod == 12 or mod == 14 or mod == 15 or mod == 55 or mod == 50 or mod == 60 or mod == 61 or mod == 41 or mod == 42 then -- knife, luger, colt, mp40, thompson, akimbo colt, akimbo luger, sten, garand, silenced luger, fg42, k43, silenced colt, akimbo silenced colt, akimbo silenced luger, garand rifle, k43 rifle
-						if et.gentity_get(killer,"sess.PlayerType") ~= 1 then -- medic
-							if tks[killer] == nil then
-								tks[killer] = { [victim] = 1 }
-							else
-								if tks[killer][victim] == nil then
-									tks[killer][victim] = 1
-								else
-									tks[killer][victim] = tks[killer][victim] + 1
-								end
-
-								if tks[killer][victim] == tks_warn1 then
-									et.trap_SendServerCommand(killer, "chat \"^3You teamkilled " .. name2 .. "^3" .. tks_warn1 .. " times. This script thinks you're doing it intentionally.\"\n")
-									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. " " .. tks_warn1 .. " times.\n")
-								end
-								if tks[killer][victim] == tks_warn2 then
-									et.trap_SendServerCommand(killer, "chat \"^3If you continue teamkilling " .. name2 .. "^3, you will be put to spectators.\"\n")
-									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. " " .. tks_warn2 .. " times.\n")
-								end
-								if tks[killer][victim] == tks_spec then
-									et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. killer .. "\n")
-									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3moved to spectators for intentionally teamkilling " .. name2 .. "^3 too many times.\"\n")
-									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. "' " .. tks_spec .. " times. Moved to spec for intentionally teamkilling.\n")
-								end
-							end
-						else
-							if mod == 6 then -- knife
+						if tonumber(et.gentity_get(victim, "ps.powerups", 8)) ~= 1 then -- victim not in disguise 
+							if et.gentity_get(killer,"sess.PlayerType") ~= 1 then -- killer not medic
 								if tks[killer] == nil then
 									tks[killer] = { [victim] = 1 }
 								else
@@ -389,6 +365,32 @@ function et_Obituary(victim, killer, mod)
 										et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. killer .. "\n")
 										et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3moved to spectators for intentionally teamkilling " .. name2 .. "^3 too many times.\"\n")
 										et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. "' " .. tks_spec .. " times. Moved to spec for intentionally teamkilling.\n")
+									end
+								end
+							else
+								if mod == 6 then -- knife
+									if tks[killer] == nil then
+										tks[killer] = { [victim] = 1 }
+									else
+										if tks[killer][victim] == nil then
+											tks[killer][victim] = 1
+										else
+											tks[killer][victim] = tks[killer][victim] + 1
+										end
+
+										if tks[killer][victim] == tks_warn1 then
+											et.trap_SendServerCommand(killer, "chat \"^3You teamkilled " .. name2 .. "^3" .. tks_warn1 .. " times. This script thinks you're doing it intentionally.\"\n")
+											et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. " " .. tks_warn1 .. " times.\n")
+										end
+										if tks[killer][victim] == tks_warn2 then
+											et.trap_SendServerCommand(killer, "chat \"^3If you continue teamkilling " .. name2 .. "^3, you will be put to spectators.\"\n")
+											et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. " " .. tks_warn2 .. " times.\n")
+										end
+										if tks[killer][victim] == tks_spec then
+											et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. killer .. "\n")
+											et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3moved to spectators for intentionally teamkilling " .. name2 .. "^3 too many times.\"\n")
+											et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. "' " .. tks_spec .. " times. Moved to spec for intentionally teamkilling.\n")
+										end
 									end
 								end
 							end
