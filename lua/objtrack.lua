@@ -79,7 +79,7 @@ function et_Print(text)
 		end
 	end -- end radar
 
-	if mapname == "goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -132,60 +132,6 @@ function et_Print(text)
 			table.remove(goldcarriers_id, 1)
 		end
 	end -- end goldrush
-
-	if mapname == "uje_goldrush" then
-		if(string.find(text, "team_CTF_redflag")) then
-			local i, j = string.find(text, "%d+")   
-	        local id = tonumber(string.sub(text, i, j))
-			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
-			local name = et.gentity_get(id, "pers.netname") 
-			if team == 2 then
-				goldcarriers[id] = true
-				table.insert(goldcarriers_id, id)
-				if table.getn(goldcarriers_id) == 1 then
-					if firstflag == false then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
-					else
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
-					end
-				elseif table.getn(goldcarriers_id) == 2 then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
-				end
-			elseif team == 1 then
-				if firstflag == true then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
-				else
-					if table.getn(goldcarriers_id) == 1 then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
-					else
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
-					end
-				end
-			end
-		end
-		if(string.find(text, "Allied team has secured the first Gold Crate")) then
-			local x = 1
-			for index in pairs(goldcarriers_id) do
-				if goldcarriers[goldcarriers_id[x]] == true then
-					local redflag = et.gentity_get(goldcarriers_id[x], "ps.powerups", 6)
-					if redflag == 0 then
-						local name = et.gentity_get(goldcarriers_id[x], "pers.netname")
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
-						goldcarriers[goldcarriers_id[x]] = nil
-						table.remove(goldcarriers_id, x)
-					end
-				end
-				x = x + 1
-			end
-			firstflag = true
-		end
-		if(string.find(text, "Allied team has secured the second Gold Crate")) then
-			local name = et.gentity_get(goldcarriers_id[1], "pers.netname")
-			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the second Gold Crate!\"\n")
-			goldcarriers[goldcarriers_id[1]] = nil
-			table.remove(goldcarriers_id, 1)
-		end
-	end -- end uje_goldrush
 
 	if (string.find(mapname, "frostbite")) then
 		if(string.find(text, "team_CTF_redflag")) then
@@ -750,7 +696,7 @@ function et_Print(text)
 		end
 	end -- end te_escape2
 
-	if mapname == "radar_phx_b_3" then
+	if mapname == "radar_phx_b_3" or (string.find(mapname, "radar_truck")) then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -872,17 +818,7 @@ function et_Obituary(victim, killer, mod)
 			x = x + 1
 		end
 	end
-	if mapname == "goldrush" then
-		goldcarriers[victim] = nil
-		local x = 1
-		for index in pairs(goldcarriers_id) do
-			if goldcarriers_id[x] == victim then
-				table.remove(goldcarriers_id, x)
-			end
-			x = x + 1
-		end
-	end
-	if mapname == "uje_goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" then
 		goldcarriers[victim] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
@@ -1013,7 +949,7 @@ function et_Obituary(victim, killer, mod)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "radar_phx_b_3" then
+	if mapname == "radar_phx_b_3" or (string.find(mapname, "radar_truck")) then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
 			table.remove(doccarriers_id, 1)
@@ -1056,17 +992,7 @@ function et_ClientDisconnect(i)
 			x = x + 1
 		end
 	end
-	if mapname == "goldrush" then
-		goldcarriers[i] = nil
-		local x = 1
-		for index in pairs(goldcarriers_id) do
-			if goldcarriers_id[x] == i then
-				table.remove(goldcarriers_id, x)
-			end
-			x = x + 1
-		end
-	end
-	if mapname == "uje_goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" then
 		goldcarriers[i] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
@@ -1197,7 +1123,7 @@ function et_ClientDisconnect(i)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "radar_phx_b_3" then
+	if mapname == "radar_phx_b_3" or (string.find(mapname, "radar_truck")) then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
