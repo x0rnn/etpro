@@ -482,15 +482,20 @@ function et_ConsoleCommand()
 					et.G_Print("You had no matches to that id.\n")
 				end
             else
-         	  local userinfo = et.trap_GetUserinfo( inSlot(et.trap_Argv(1)) )
-         	  local PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
-          	 oldname = et.Info_ValueForKey( userinfo, "name" )
-           	newname = et.trap_Argv(2)
-          	 userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(2) )
-          	 et.trap_SetUserinfo( inSlot(et.trap_Argv(1)), userinfo )
-          	 et.trap_SendConsoleCommand(et.EXEC_APPEND, "mute " .. "\"" .. PlayerName .. "\"" .. "\n" ) 
-           	PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
-          	 et.trap_SendConsoleCommand(et.EXEC_APPEND, "unmute " .. "\"" .. PlayerName .. "\"" .. "\n" )
+				if inSlot(et.trap_Argv(1)) ~= nil then
+					local userinfo = et.trap_GetUserinfo( inSlot(et.trap_Argv(1)) )
+					local userinfo = et.trap_GetUserinfo( inSlot(et.trap_Argv(1)) )
+					local PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
+					oldname = et.Info_ValueForKey( userinfo, "name" )
+					newname = et.trap_Argv(2)
+					userinfo = et.Info_SetValueForKey( userinfo, "name", et.trap_Argv(2) )
+					et.trap_SetUserinfo( inSlot(et.trap_Argv(1)), userinfo )
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "mute " .. "\"" .. PlayerName .. "\"" .. "\n" ) 
+					PlayerName = et.Q_CleanStr( et.Info_ValueForKey( userinfo, "name" ) )
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "unmute " .. "\"" .. PlayerName .. "\"" .. "\n" )
+				else
+					et.G_Print("You had no matches to that name.\n")
+				end
             end
           end
           return 1
@@ -596,7 +601,7 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -604,7 +609,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -613,7 +618,7 @@ function et_ConsoleCommand()
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -621,7 +626,7 @@ function et_ConsoleCommand()
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				--else
 					--et.gentity_set(v[1][1], "ps.powerups", 1, 0)
 					--et.G_Damage(v[1][1], 80, 1022, 1000, 8, 34)
@@ -671,23 +676,23 @@ function et_ConsoleCommand()
 		if axisdmg >= alliesdmg then -- weaker_team == allies
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				end
 			end
 		elseif alliesdmg > axisdmg then -- weaker_team == axis
 			for k,v in ipairs(weaker_team) do
 				if v[1][3] == 2 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxis " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putaxisf " .. v[1][1] .. "\n")
 				end
 			end
 			for k,v in ipairs(stronger_team) do
 				if v[1][3] == 1 then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putallies " .. v[1][1] .. "\n")
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref putalliesf " .. v[1][1] .. "\n")
 				end
 			end
 		end
