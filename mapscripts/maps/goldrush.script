@@ -617,6 +617,11 @@ tank
 		trigger self tracks_forward
 		trigger game_manager allies_steal_tank
 
+		// ----- Harlekin Anti Spawnkill roof Start -----
+  	      setstate tankspawnroof default
+   	 	wm_announce "Tank Depot Anti Spawnkill roof activated!"
+		// ----- Harlekin Anti Spawnkill roof End -----
+
 		accum 1 bitset 2
 		followspline 0 spln3 50 wait length 32
 		accum 1 bitreset 2
@@ -697,11 +702,6 @@ tank
 		accum 1 bitset 2
 		followspline 0 spln10 50 wait length 32
 		accum 1 bitreset 2
-
-		// ----- Harlekin Anti Spawnkill roof Start -----
-  	       setstate tankspawnroof default
-   	 	wm_announce "Tank Depot Anti Spawnkill roof activated!"
-		// ----- Harlekin Anti Spawnkill roof End -----
 
 		trigger self run_continue
 	}
@@ -2335,7 +2335,7 @@ truck
 		// ----- Harlekin Truck Spawn Wave 1 Start -----
 	       setstate truckspawn_obj default
 	       setstate truckspawn_spawn default
-//	       setautospawn  "South Courtyard" 0
+	       setautospawn  "South Courtyard" 0
 		wm_announce "The Axis are sending reinforcements to stop the Truck!"
 		// ----- Harlekin Truck Spawn Wave 1 End -----
 
