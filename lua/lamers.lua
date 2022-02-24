@@ -4,8 +4,9 @@
 -- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
 -- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2 and 3, put spec at 4)
--- players who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
--- intended for players with a lame gamestyle of spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
+-- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
+-- gibs rambo medics with >= 25 kills and revive ratio less than 6.6% on every 5th kill (25, 30, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
+-- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
 -- removed panzerfaust when less than 12 players
 -- removed riflenades when less than 6 players
 -- removed mortar when less than 16 players
@@ -56,6 +57,9 @@ al_threshold_2 = 20
 al_threshold_3 = 35
 al_threshold_4 = 55
 
+revives = {}
+medickills = {}
+
 checkInterval = 10000
 playerCount = 0
 GS = 2
@@ -101,6 +105,12 @@ function et_ClientDisconnect(clientNum)
 	if al_msg[clientNum] ~= nil then
 		al_msg[clientNum] = nil
 	end
+	if revives[clientNum] ~= nil then
+		revives[clientNum] = nil
+	end
+	if medickills[clientNum] ~= nil then
+		medickills[clientNum] = nil
+	end
 end
 
 function et_ConsoleCommand()
@@ -117,11 +127,15 @@ function et_ConsoleCommand()
     return(0)
 end
 
+local function roundNum(num, n)
+	local mult = 10^(n or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+
 function et_Obituary(victim, killer, mod)
 	-- mod: 17 panzer, 27 airstrike, 30 arty, 49 mobile mg42, 57 mortar
 	
-	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
-	if gamestate == 0 then
+	if GS == 0 then
 		if killer ~= 1022 and killer ~= 1023 then
 			local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(killer), "cl_guid")
 			local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
@@ -216,7 +230,6 @@ function et_Obituary(victim, killer, mod)
 							end
 						end
 
-
 					elseif mod == 27 or mod == 30 then
 						if tonumber(et.gentity_get(killer, "sess.skill", 3)) >= 3 then
 							if artylamers[cl_guid] == nil then
@@ -298,6 +311,32 @@ function et_Obituary(victim, killer, mod)
 				end
 			else
 				if v_teamid ~= k_teamid then
+					if et.gentity_get(killer, "sess.PlayerType") == 1 then
+						if medickills[killer] == nil then
+							medickills[killer] = 1
+						else
+							medickills[killer] = medickills[killer] + 1
+						end
+						
+						local kr = 0
+						if medickills[killer] >= 25 then
+							if revives[killer] == nil then
+								revives[killer] = 0
+							end
+							kr = revives[killer] / medickills[killer]
+							if kr < 0.066 then
+								if math.mod(medickills[killer], 5) == 0 then
+									msg = string.format("cpm \"" .. name .. " ^3flexed his Rambo muscles too much and exploded. ^7" .. medickills[killer] .. " ^3kills, ^7" .. revives[killer] .. " ^3revives, ^7" .. roundNum(kr, 3)*100 .. " ^3ratio.\n")
+									et.trap_SendServerCommand(-1, msg)
+									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " flexed his Rambo muscles too much and exploded. " .. medickills[killer] .. " kills, " .. revives[killer] .. " revives, " .. roundNum(kr, 3)*100 .. " ratio. \n")
+									et.gentity_set(killer, "ps.powerups", 1, 0)
+									et.G_Damage(killer, 80, 1022, 1000, 8, 34)
+									et.G_Sound(killer, soundindex)
+								end
+							end
+						end
+               	end
+
 					if panzerlamers[cl_guid] ~= nil then
 						panzerlamers[cl_guid][2] = kills
 					end
@@ -404,11 +443,10 @@ end
 
 function et_Print(text)
 	if string.find(text, "etpro event:%s+%d+%s+%d+%s+(.*)shoved") then
-		gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
-		if gamestate == 0 then
+		if GS == 0 then
 			local junk1,junk2,id1,id2 = string.find(text, "etpro event:%s+(%d+)%s+(%d+)%s+(.*)shoved")
 			if (et.gentity_get(tonumber(id2), "ps.powerups", 1) + 1000) <= et.trap_Milliseconds() then
-				if respawn_time[tonumber(id2)] <= et.trap_Milliseconds() then
+				if respawn_time[tonumber(id2)] ~= nil and respawn_time[tonumber(id2)] <= et.trap_Milliseconds() then
 					local id1_team = et.gentity_get(tonumber(id1), "sess.sessionTeam")
 					local id2_team = et.gentity_get(tonumber(id2), "sess.sessionTeam")
 					if id1_team == id2_team then
@@ -462,8 +500,7 @@ function et_Print(text)
 			end
 		end
 	elseif string.find(text, "Ammo_Pack") then
-		gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
-		if gamestate == 0 then
+		if GS == 0 then
 			local junk1,junk2,id = string.find(text, "^Ammo_Pack:%s+(%d+)%s+%d+")
 			if ammo_given[tonumber(id)] == nil then
 				ammo_given[tonumber(id)] = 1
@@ -530,13 +567,21 @@ function et_Print(text)
 			end
 		end
 	elseif string.find(text, "weapon_magicammo") then
-		gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
-		if gamestate == 0 then
+		if GS == 0 then
 			local i, j = string.find(text, "%d+")
 			local id = tonumber(string.sub(text, i, j))
 			if ammolamers[id] == true then
 				et.gentity_set(id, "ps.ammo", 12, 0)
 				et.gentity_set(id, "ps.ammoclip", 12, 0)
+			end
+		end
+	elseif string.find(text, "Medic_Revive") then
+		if GS == 0 then
+			local junk1,junk2,medic,zombie = string.find(text, "^Medic_Revive:%s+(%d+)%s+(%d+)")
+			if revives[tonumber(medic)] == nil then
+				revives[tonumber(medic)] = 1
+			else
+				revives[tonumber(medic)] = revives[tonumber(medic)] + 1
 			end
 		end
 	end
@@ -562,21 +607,22 @@ end
 
 function et_ClientSpawn(id, revived)
 	if revived ~= 1 then
-		local team = et.gentity_get(id, "sess.sessionTeam")
-		if team == 1 or team == 2 then
-			respawn_time[id] = et.trap_Milliseconds() + 10000
-	
-			if ammolamers[id] == true then
-				if al_msg[id] == false then
-					et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-					al_msg[id] = true
-				end
-				et.gentity_set(id, "ps.ammo", 12, 0)
-				et.gentity_set(id, "ps.ammoclip", 12, 0)
-			end
-		end
 		if GS == 0 then
 			if GSFlag == true then
+				local team = et.gentity_get(id, "sess.sessionTeam")
+				if team == 1 or team == 2 then
+					respawn_time[id] = et.trap_Milliseconds() + 10000
+
+					if ammolamers[id] == true then
+						if al_msg[id] == false then
+							et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+							al_msg[id] = true
+						end
+						et.gentity_set(id, "ps.ammo", 12, 0)
+						et.gentity_set(id, "ps.ammoclip", 12, 0)
+					end
+				end
+
 				if playerCount < 16 then
 					if et.gentity_get(id,"sess.PlayerType") == 0 then
 						if et.gentity_get(id, "sess.latchPlayerWeapon") == 35 then
