@@ -332,6 +332,8 @@ function et_Obituary(victim, killer, mod)
 									et.gentity_set(killer, "ps.powerups", 1, 0)
 									et.G_Damage(killer, 80, 1022, 1000, 8, 34)
 									et.G_Sound(killer, soundindex)
+								else
+									et.trap_SendServerCommand(killer, "chat \"^3You have ^1" .. 5 - math.mod(medickills[killer], 5) .. " ^3kills left without reviving a teammate before you explode.\"\n")
 								end
 							end
 						end
