@@ -319,21 +319,23 @@ function et_Obituary(victim, killer, mod)
 						end
 						
 						local kr = 0
-						if medickills[killer] >= 25 then
-							if revives[killer] == nil then
-								revives[killer] = 0
-							end
-							kr = revives[killer] / medickills[killer]
-							if kr < 0.066 then
-								if math.mod(medickills[killer], 5) == 0 then
-									msg = string.format("cpm \"" .. name .. " ^3flexed his Rambo muscles too much and exploded. ^7" .. medickills[killer] .. " ^3kills, ^7" .. revives[killer] .. " ^3revives, ^7" .. roundNum(kr, 3)*100 .. " ^3ratio.\n")
-									et.trap_SendServerCommand(-1, msg)
-									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " flexed his Rambo muscles too much and exploded. " .. medickills[killer] .. " kills, " .. revives[killer] .. " revives, " .. roundNum(kr, 3)*100 .. " ratio. \n")
-									et.gentity_set(killer, "ps.powerups", 1, 0)
-									et.G_Damage(killer, 80, 1022, 1000, 8, 34)
-									et.G_Sound(killer, soundindex)
-								else
-									et.trap_SendServerCommand(killer, "chat \"^3You have ^1" .. 5 - math.mod(medickills[killer], 5) .. " ^3kills left without reviving a teammate before you explode.\"\n")
+						if playerCount > 20 then
+							if medickills[killer] >= 25 then
+								if revives[killer] == nil then
+									revives[killer] = 0
+								end
+								kr = revives[killer] / medickills[killer]
+								if kr < 0.066 then
+									if math.mod(medickills[killer], 5) == 0 then
+										msg = string.format("cpm \"" .. name .. " ^3flexed his Rambo muscles too much and exploded. ^7" .. medickills[killer] .. " ^3kills, ^7" .. revives[killer] .. " ^3revives, ^7" .. roundNum(kr, 3)*100 .. " ^3ratio.\n")
+										et.trap_SendServerCommand(-1, msg)
+										et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " flexed his Rambo muscles too much and exploded. " .. medickills[killer] .. " kills, " .. revives[killer] .. " revives, " .. roundNum(kr, 3)*100 .. " ratio. \n")
+										et.gentity_set(killer, "ps.powerups", 1, 0)
+										et.G_Damage(killer, 80, 1022, 1000, 8, 34)
+										et.G_Sound(killer, soundindex)
+									else
+										et.trap_SendServerCommand(killer, "chat \"^3You have ^1" .. 5 - math.mod(medickills[killer], 5) .. " ^3kills left without reviving a teammate before you explode.\"\n")
+									end
 								end
 							end
 						end
