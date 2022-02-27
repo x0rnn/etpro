@@ -152,7 +152,18 @@ game_manager
 		}
         setstate flagspawnroof invisible
 
-
+		//roof over wall
+		create
+		{
+			scriptName "wallspawnroof"
+			classname "func_fakebrush"
+            targetname "wallspawnroof"
+			origin "4894 7309 130"
+			contents 1  // SOLID
+			mins "-250 -180 -88"
+			maxs "250 250 88"
+		}
+        setstate wallspawnroof invisible
 
 		accum 1 set 0		// State of objective number one
 		accum 5 set 0		// Corrent number of Pak 75mm guns destroyed
@@ -512,6 +523,7 @@ oldcitywall //Broken section of Old City wall
         //jade - trigger for roof over flag spawn
         setstate flagspawnroof default
 
+		setstate wallspawnroof default
 	}
 }
 
