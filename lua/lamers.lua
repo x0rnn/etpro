@@ -5,7 +5,7 @@
 -- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2 and 3, put spec at 4)
 -- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
--- gibs rambo medics with >= 25 kills and revive ratio less than 6.6% on every 5th kill (25, 30, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
+-- gibs rambo medics with >= 25 kills and revive ratio less than 6.6% on every 10th kill (30, 40, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
 -- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
 -- removed panzerfaust when less than 12 players
 -- removed riflenades when less than 6 players
@@ -326,7 +326,7 @@ function et_Obituary(victim, killer, mod)
 								end
 								kr = revives[killer] / medickills[killer]
 								if kr < 0.066 then
-									if math.mod(medickills[killer], 5) == 0 then
+									if math.mod(medickills[killer], 10) == 0 then
 										msg = string.format("cpm \"" .. name .. " ^3flexed his Rambo muscles too much and exploded. ^7" .. medickills[killer] .. " ^3kills, ^7" .. revives[killer] .. " ^3revives, ^7" .. roundNum(kr, 3)*100 .. " ^3ratio.\n")
 										et.trap_SendServerCommand(-1, msg)
 										et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " flexed his Rambo muscles too much and exploded. " .. medickills[killer] .. " kills, " .. revives[killer] .. " revives, " .. roundNum(kr, 3)*100 .. " ratio. \n")
@@ -334,7 +334,9 @@ function et_Obituary(victim, killer, mod)
 										et.G_Damage(killer, 80, 1022, 1000, 8, 34)
 										et.G_Sound(killer, soundindex)
 									else
-										et.trap_SendServerCommand(killer, "chat \"^3You have ^1" .. 5 - math.mod(medickills[killer], 5) .. " ^3kills left without reviving a teammate before you explode.\"\n")
+										if math.mod(medickills[killer], 10) >= 5 then
+											et.trap_SendServerCommand(killer, "chat \"^3You have ^1" .. 10 - math.mod(medickills[killer], 10) .. " ^3kills left without reviving a teammate before you explode.\"\n")
+										end
 									end
 								end
 							end
