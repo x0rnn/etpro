@@ -269,7 +269,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- Würzburg Radar
+-- WÃ¼rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -415,7 +415,7 @@ function getConfig(map)
         c.actions[1] = {spawn = 3, newstate = NO_PROTECT, trigger = "Allies have transmitted the Supply Documents"}
         
 -- ETL Frostbite
-    elseif map == "etl_frostbite_v15" then
+    elseif map == "etl_frostbite" then
         c.spawns[1] = {name = "Allied Barracks", state = PROTECT_ALLIES, pos = {-4698, -233, -201}, radius2 = 550}
         c.spawns[2] = {name = "Axis Barracks", state = PROTECT_AXIS, pos = {-140, 1286, 280}, radius2 = 400}
         c.spawns[3] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-847, 1440, 24}, radius2 = 440}
