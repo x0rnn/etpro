@@ -762,7 +762,7 @@ function et_Print(text)
 		end
 	end -- end 1944_beach
 
-	if mapname == "et_brewdog_b3" then
+	if mapname == "et_brewdog_b4" then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -782,7 +782,7 @@ function et_Print(text)
 			doccarriers[doccarriers_id[1]] = nil
 			table.remove(doccarriers_id, 1)
 		end
-	end -- end et_brewdog_b3
+	end -- end et_brewdog_b4
 
 	if (string.find(mapname, "_ice")) then
 		if(string.find(text, "team_CTF_blueflag")) then
@@ -973,7 +973,7 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
-	if mapname == "et_brewdog_b3" then
+	if mapname == "et_brewdog_b4" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
 			table.remove(doccarriers_id, 1)
@@ -1147,7 +1147,7 @@ function et_ClientDisconnect(i)
 			table.remove(doccarriers_id, 1)
 		end
 	end
-	if mapname == "et_brewdog_b3" then
+	if mapname == "et_brewdog_b4" then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
