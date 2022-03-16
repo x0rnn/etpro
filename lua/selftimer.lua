@@ -68,7 +68,6 @@ function et_RunFrame(levelTime)
 						if health > 0 then
 							if redspawn + redlimbo1 / 1000 - ltm <= 3 and redspawn + redlimbo1 / 1000 - ltm > 0 then
 								et.G_ClientSound(alerted_id[x], sound)
-								et.trap_SendServerCommand(-1, "chat \"^1" .. redspawn + redlimbo1 / 1000 - ltm .. "\"\n")
 							end
 						end
 					end
@@ -89,7 +88,6 @@ function et_RunFrame(levelTime)
 						if health > 0 then
 							if bluespawn + bluelimbo1 / 1000 - ltm <= 3 and bluespawn + bluelimbo1 / 1000 - ltm > 0 then
 								et.G_ClientSound(alerted_id[x], sound)
-								et.trap_SendServerCommand(-1, "chat \"^1" .. bluespawn + bluelimbo1 / 1000 - ltm .. "\"\n")
 							end
 						end
 					end
