@@ -68,20 +68,20 @@ function et_ClientCommand(id, command)
 					if team == 1 then
 						if votecount[id] == 0 then
 							if et.trap_Argv(1) == "yes" then
-								et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted ^2YES\"")
+								et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted ^2YES\n")
 								votecount[id] = votecount[id] + 1
 							elseif et.trap_Argv(1) == "no" then
-								et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted NO\"")
+								et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted NO\n")
 								votecount[id] = votecount[id] + 1
 							end
 						end
 					elseif team == 2 then
 						if votecount[id] == 0 then
 							if et.trap_Argv(1) == "yes" then
-								et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^4voted ^2YES\"")
+								et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^4voted ^2YES\n")
 								votecount[id] = votecount[id] + 1
 							elseif et.trap_Argv(1) == "no" then
-								et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^4voted ^1NO\"")
+								et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^4voted ^1NO\n")
 								votecount[id] = votecount[id] + 1
 							end
 						end
@@ -91,10 +91,10 @@ function et_ClientCommand(id, command)
 						if team == 1 then
 							if votecount[id] == 0 then
 								if et.trap_Argv(1) == "yes" then
-									et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted ^2YES\"")
+									et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted ^2YES\n")
 									votecount[id] = votecount[id] + 1
 								elseif et.trap_Argv(1) == "no" then
-									et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted NO\"")
+									et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted NO\n")
 									votecount[id] = votecount[id] + 1
 								end
 							end
@@ -103,10 +103,10 @@ function et_ClientCommand(id, command)
 						if team == 2 then
 							if votecount[id] == 0 then
 								if et.trap_Argv(1) == "yes" then
-									et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted ^2YES\"")
+									et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted ^2YES\n")
 									votecount[id] = votecount[id] + 1
 								elseif et.trap_Argv(1) == "no" then
-									et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^1voted NO\"")
+									et.trap_SendServerCommand(-1, "sc \"" .. name .. " ^1voted NO\n")
 									votecount[id] = votecount[id] + 1
 								end
 							end
