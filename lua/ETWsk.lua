@@ -281,7 +281,7 @@ function getConfig(map)
         c.spawns[7] = {name = "Lower Warehouse II", state = PROTECT_AXIS, pos = {-1270, -3772, 1248}, radius2 = 230}
         c.spawns[8] = {name = "Lower Warehouse III", state = PROTECT_AXIS, pos = {-1369, -3662, 1248}, radius2 = 151}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "secured the Forward Bunker"}
-    elseif map == "radar_phx_b_3" then
+    elseif map == "radar_phx_b_3" or map == "radar_truck" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
         c.spawns[2] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {2504, 3422, 1333}, radius2 = 999}
         c.spawns[6] = {name = "Abandoned Villa", state = PROTECT_ALLIES, pos = {1504, 4495, 1333}, radius2 = 660}
