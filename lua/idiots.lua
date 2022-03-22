@@ -804,7 +804,7 @@ function et_ClientCommand(id, cmd)
 				end
 				if admin_flag == true then
 					if cnt < 3 then
-						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3PartOfName text\"\n")
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3PartOfName text ^3(IN CONSOLE!)\"\n")
 					else
 						if string.len(args_table[2]) < 3 then
 							cno = tonumber(args_table[2])
