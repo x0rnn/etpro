@@ -1,5 +1,6 @@
 -- selftimer.lua by x0rnn, notifies you with sound last 3 seconds before your next respawn so you can selfkill in time
 -- commands: !timer during match to activate it, !untimer to turn it off
+-- messes up if match is paused :(
 
 EV_GLOBAL_CLIENT_SOUND = 54
 redspawn = 0
