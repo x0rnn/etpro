@@ -1,6 +1,5 @@
 -- selftimer.lua by x0rnn, notifies you with sound last 3 seconds before your next respawn so you can selfkill in time
 -- commands: !timer during match to activate it, !untimer to turn it off
--- you have to symlink /etadmin_mod/etc/shrubbot.cfg to etpro folder
 
 filename = "shrubbot.cfg"
 EV_GLOBAL_CLIENT_SOUND = 54
@@ -19,10 +18,11 @@ changedblue = false
 alertflag = false
 alerted = {}
 alerted_id = {}
-sound = "sound/player/hurt_barbwire.wav"
+--sound = "sound/player/hurt_barbwire.wav"
+sound = "sound/misc/talk.wav"
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("selftimer.lua "..et.FindSelf())
+	et.RegisterModname("timer.lua "..et.FindSelf())
 
 	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
 	for i=0,maxClients-1 do
@@ -270,7 +270,6 @@ function et_ClientCommand(id, cmd)
 						table.insert(alerted_id, id)
 					end
 					alertflag = true
-					return 1
 				else
 					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
 				end
@@ -287,9 +286,40 @@ function et_ClientCommand(id, cmd)
 						alertflag = false
 					end
 				end
-				return 1
+			end
+			if string.lower(et.trap_Argv(1)) == "!pause" then
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 7 then -- level 7+
+							admin_flag = true
+							break
+						end
+					end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					changedred = true
+					redflag = false
+					changedblue = true
+					blueflag = false
+				end
 			end
 		end
 	end
 	return(0)
+end
+
+function et_Print(text)
+	if string.find(text, "LUA event: match auto-paused") then
+		changedred = true
+		redflag = false
+		changedblue = true
+		blueflag = false
+	end
 end
