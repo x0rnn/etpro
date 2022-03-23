@@ -18,11 +18,10 @@ changedblue = false
 alertflag = false
 alerted = {}
 alerted_id = {}
---sound = "sound/player/hurt_barbwire.wav"
-sound = "sound/misc/talk.wav"
+sound = "sound/player/hurt_barbwire.wav"
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("timer.lua "..et.FindSelf())
+	et.RegisterModname("selftimer.lua "..et.FindSelf())
 
 	maxClients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
 	for i=0,maxClients-1 do
