@@ -3,8 +3,11 @@
 
 filename = "shrubbot.cfg"
 EV_GLOBAL_CLIENT_SOUND = 54
+ltm = 0
 redspawn = 0
 bluespawn = 0
+redspawn2 = 0
+bluespawn2 = 0
 players = {}
 spawns = {}
 redflag = false
@@ -58,7 +61,7 @@ function et_RunFrame(levelTime)
 				bluelimbo2 = bluelimbo1
 			end
 		end
-		local ltm = os.time()
+		ltm = os.time()
 		if redflag == true then
 			if alertflag == true then
 				local x = 1
@@ -107,38 +110,51 @@ function et_ClientSpawn(id, revived)
 	if gamestate == 0 then
 		if revived ~= 1 then
 			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local health = tonumber(et.gentity_get(id, "health"))
 			if team == 1 then
-				if redflag == false then
-					if spawns[id] == nil then
-						spawns[id] = 1
-					else
-						spawns[id] = spawns[id] + 1
+				if health > 0 then
+					if redflag == false then
+						if spawns[id] == nil then
+							spawns[id] = 1
+						else
+							spawns[id] = spawns[id] + 1
+						end
+						if spawns[id] == 2 then
+							redflag = true
+							redspawn = os.time()
+						end
+						if changedred == true then
+							redflag = true
+							redspawn = os.time()
+							changedred = false
+						end
 					end
-					if spawns[id] == 2 then
-						redflag = true
-						redspawn = os.time()
-					end
-					if changedred == true then
-						redflag = true
-						redspawn = os.time()
-						changedred = false
+					redspawn2 = os.time()
+					if redspawn ~= 0 and redspawn ~= redspawn2 then
+						redspawn = redspawn2
 					end
 				end
 			elseif team == 2 then
-				if blueflag == false then
-					if spawns[id] == nil then
-						spawns[id] = 1
-					else
-						spawns[id] = spawns[id] + 1
+				if health > 0 then
+					if blueflag == false then
+						if spawns[id] == nil then
+							spawns[id] = 1
+						else
+							spawns[id] = spawns[id] + 1
+						end
+						if spawns[id] == 2 then
+							blueflag = true
+							bluespawn = os.time()
+						end
+						if changedblue == true then
+							blueflag = true
+							bluespawn = os.time()
+							changedblue = false
+						end
 					end
-					if spawns[id] == 2 then
-						blueflag = true
-						bluespawn = os.time()
-					end
-					if changedblue == true then
-						blueflag = true
-						bluespawn = os.time()
-						changedblue = false
+					bluespawn2 = os.time()
+					if bluespawn ~= 0 and bluespawn ~= bluespawn2 then
+						bluespawn = bluespawn2
 					end
 				end
 			end
