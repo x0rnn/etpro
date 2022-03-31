@@ -719,6 +719,17 @@ function et_ClientCommand(id, cmd)
 				table.insert(args_table, i)
 				cnt = cnt + 1
 			end
+			local function Util_Concat(tab, seperator)
+				if seperator == nil then return table.concat(tab) end
+				local buffer = {}
+				for i, v in ipairs(tab) do
+					buffer[table.getn(buffer) + 1] = v
+					if i < table.getn(tab) then
+						buffer[table.getn(buffer) + 1] = seperator
+					end
+				end
+				return table.concat(buffer)
+			end
 			if args_table[1] == "!teleport" then
 				fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
 				if len ~= -1 then
@@ -806,12 +817,16 @@ function et_ClientCommand(id, cmd)
 					if cnt < 3 then
 						et.trap_SendServerCommand(id, "chat \"Usage: ^7!fakechat ^3PartOfName text ^3(IN CONSOLE!)\"\n")
 					else
-						if string.len(args_table[2]) < 3 then
-							cno = tonumber(args_table[2])
+						local temp = args_table
+						local temp2 = args_table[2]
+						table.remove(temp, 1)
+						table.remove(temp, 1)
+						if string.len(temp2) < 3 then
+							cno = tonumber(temp2)
 							if cno then
 								if et.gentity_get(cno, "pers.connected") == 2 then
-									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(3) .. "\"")
-									et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. et.ConcatArgs(3) .. "\n")
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. Util_Concat(temp, " ") .. "\"")
+									et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. Util_Concat(temp, " ") .. "\n")
 								else
 									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 								end
@@ -819,10 +834,10 @@ function et_ClientCommand(id, cmd)
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
 						else
-							cno = inSlot(args_table[2])
+							cno = inSlot(temp2)
 							if cno ~= nil then
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. et.ConcatArgs(3) .. "\"")
-								et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. et.ConcatArgs(3) .. "\n")
+								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. "^7: ^2" .. Util_Concat(temp, " ") .. "\"")
+								et.G_LogPrint("say: (FakeChat): " .. et.gentity_get(id, "pers.netname") .. ": " .. et.gentity_get(cno, "pers.netname") .. ": " .. Util_Concat(temp, " ") .. "\n")
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
 							end
