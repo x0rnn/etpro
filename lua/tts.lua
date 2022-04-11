@@ -1,4 +1,5 @@
 -- tts.py by x0rnn, primitive TTS (text-to-speech) system based on arpabet (https://en.wikipedia.org/wiki/Arpabet)
+-- use with https://github.com/x0rnn/etpro/blob/master/lua/tts.pk3 and https://github.com/x0rnn/etpro/blob/master/lua/tts.txt
 
 filename = "tts.txt"
 dict = {}
