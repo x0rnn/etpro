@@ -37,7 +37,7 @@ function readDict(args_table, id)
 	local wordcount = table.getn(args_table)
 	local fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
 	if len == -1 then
-		et.G_Print("arpabet.lua: no arpabet.txt\n")
+		et.G_Print("tts.lua: no tts.txt\n")
 		return(0)
 	end
 	local filestr = et.trap_FS_Read(fd, len)
