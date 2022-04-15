@@ -34,32 +34,40 @@ end
 function readDict(args_table, id)
 	arpabet = ""
 	local wordcount = table.getn(args_table)
-	local fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
-	if len == -1 then
-		et.G_Print("tts.lua: no tts.txt\n")
-		return(0)
-	end
-	local filestr = et.trap_FS_Read(fd, len)
-	et.trap_FS_FCloseFile(fd)
+	if next(dict) == nil then
+		local fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+		if len == -1 then
+			et.G_Print("tts.lua: no tts.txt\n")
+			return(0)
+		end
+		local filestr = et.trap_FS_Read(fd, len)
+		et.trap_FS_FCloseFile(fd)
 
-	local word, arpa
-	for word, arpa in string.gfind(filestr,"([%a]+)\t([^\n]+)") do
-		dict[word] =
-		{
-			arpa
-		}
+		local word, arpa
+		for word, arpa in string.gfind(filestr,"([%a]+)\t([^\n]+)") do
+			dict[word] =
+			{
+				arpa
+			}
+		end
 	end
 	if next(dict) ~= nil then
 		local cnt = 0
-		for i = 0, wordcount-1 do
-			if type(dict[args_table[i+1]]) == "table" then
+		for i = 1, wordcount do
+			if type(dict[args_table[i]]) == "table" then
 				cnt = cnt + 1
-				arpabet = arpabet .. dict[args_table[i+1]][1] .. " "
+				arpabet = arpabet .. dict[args_table[i]][1] .. " "
 			end
 		end
 		if cnt ~= wordcount then
 			arpabet = ""
-			et.trap_SendServerCommand(id, "chat \"^7Didn't find all words, can't do TTS.\"\n")
+			local missing = "" 
+			for i = 1, wordcount do
+				if type(dict[args_table[i]]) ~= "table" then
+					missing = missing .. args_table[i] .. " "
+				end
+			end
+			et.trap_SendServerCommand(id, "chat \"^7Didn't find the following words: ^3" .. missing .. "^7, can't do TTS.\"\n")
 		end
 		if arpabet ~= "" then
 			local arpa_table = {}
