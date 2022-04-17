@@ -97,10 +97,10 @@ function et_ClientCommand(id, command)
 		local args_table = {}
 		cnt = 0
 		for i in string.gfind(args, "%S+") do
-			table.insert(args_table, i)
+			table.insert(args_table, string.lower(i))
 			cnt = cnt + 1
 		end
-		if args_table[1] ~= nil and string.lower(args_table[1]) == "!tts" then
+		if args_table[1] ~= nil and args_table[1] == "!tts" then
 			fd,len = et.trap_FS_FOpenFile(shrubbot, et.FS_READ)
 				if len ~= -1 then
 					filestr = et.trap_FS_Read(fd, len)
