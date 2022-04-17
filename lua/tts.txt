@@ -5726,6 +5726,7 @@ crush	K R AH SH
 crushed	K R AH SH T
 crushing	K R AH SH IH NG
 crust	K R AH S T
+crux	K R AH K S
 cruz	K R UW Z
 cry	K R AY
 crying	K R AY IH NG
@@ -12669,6 +12670,7 @@ khan	K AA N
 khmer	K M EH R
 ki	K IY
 kia	K IY ER
+kiano	K IY AE N OW
 kick	K IH K
 kicked	K IH K T
 kicker	K IH K ER
@@ -16060,6 +16062,8 @@ olivier	OW L IH V IY EY
 ollie	AA L IY
 olsen	OW L S AH N
 olson	OW L S AH N
+oly	OW L IH
+olyphant	OW L IH F AH N T
 olympia	OW L IH M P IY AH
 olympic	OW L IH M P IH K
 olympics	OW L IH M P IH K S
@@ -18290,6 +18294,8 @@ punctuation	P AH NG K CH UW EY SH AH N
 pundit	P AH N D AH T
 pundits	P AH N D IH T S
 punish	P AH N IH SH
+puni	P AH N IH
+punisher	P AH N IH SH ER
 punishable	P AH N IH SH AH B AH L
 punished	P AH N IH SH T
 punishment	P AH N IH SH M AH N T
@@ -20847,6 +20853,7 @@ shoe	SH UW
 shoes	SH UW Z
 shook	SH UH K
 shoot	SH UW T
+shootej	SH UW T	AH JH
 shooter	SH UW T ER
 shooters	SH UW T ER Z
 shooting	SH UW T IH NG
@@ -22320,6 +22327,7 @@ sucker	S AH K ER
 suckers	S AH K ER Z
 sucking	S AH K IH NG
 sucks	S AH K S
+sux	S AH K S
 suction	S AH K SH AH N
 sudan	S UW D AE N
 sudanese	S UW D AH N IY Z
@@ -25702,3 +25710,81 @@ zoo	Z UW
 zoology	Z OW AA L AH JH IY
 zoom	Z UW M
 zulu	Z UW L UW
+ain't	EY N T
+aren't	AA R AH N T
+can't	K AE N T
+could've	K UH D AH V
+couldn't	K UH D AH N T
+didn't	D IH D AH N T
+doesn't	D AH Z AH N T
+don't	D OW N T
+hadn't	HH AE D AH N T
+hasn't	HH AE Z AH N T
+haven't	HH AE V AH N T
+he'd	HH IY D
+he'll	HH IY L
+he's	HH IY Z
+here's	HH IH R Z
+how'd	HH AW D
+how's	HH AW Z
+i'd	AY D
+i'll	AY L
+i'm	AY M
+i've	AY V
+isn't	IH Z AH N T
+it'd	IH T AH D
+it'll	IH T AH L
+it's	IH T S
+let's	L EH T S
+might've	M AY T AH V
+mustn't	M AH S AH N T
+she'd	SH IY D
+she'll	SH IY L
+she's	SH IY Z
+should've	SH UH D AH V
+shouldn't	SH UH D AH N T
+somebody's	S AH M B AA D IY Z
+someone's	S AH M W AH N Z
+something's	S AH M TH IH NG Z
+that'd	DH AE T IH D
+that'll	DH AE T AH L
+that's	DH AE T S
+there'd	DH EH R D
+there's	DH EH R Z
+they'd	DH EY D
+they'll	DH EY L
+they're	DH EH R
+they've	DH EY V
+we'd	W IY D
+we'll	W IY L
+we're	W IY R
+we've	W IY V
+weren't	W ER AH N T
+what's	W AH T S
+when's	W EH N Z
+where'd	W EH R D
+where's	W EH R Z
+where've	W EH R AH V
+who'd	HH UW D
+who'll	HH UW L
+who's	HH UW Z
+why'd	W AY D
+why're	W AY ER
+why's	W AY Z
+won't	W OW N T
+would've	W UH D AH V
+wouldn't	W UH D AH N T
+you'd	Y UW D
+you'll	Y UW L
+you're	Y UH R
+you've	Y UW V
+tts	T IY T IY AE S
+snossi	S N OW S IY
+ogni	OW G N IY
+ogniwan	OW G N IY W AH N
+mucha	M UW CH AH
+muchacho	M UW CH AH CH OW
+qpa	K UW P AH
+qpaq	K UW P AH K
+hirn	HH IH R N
+hirntot	HH IH R N T OW T
