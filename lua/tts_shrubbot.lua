@@ -68,7 +68,7 @@ function readDict(args_table, id)
 					missing = missing .. args_table[i] .. " "
 				end
 			end
-			et.trap_SendServerCommand(id, "chat \"^7Didn't find the following words: ^3" .. missing .. "^7, can't do TTS.\"\n")
+			et.trap_SendServerCommand(id, "chat \"^7Didn't find the following words: ^3" .. string.sub(missing, 1, -2) .. "^7, can't do TTS.\"\n")
 		end
 		if arpabet ~= "" then
 			local arpa_table = {}
