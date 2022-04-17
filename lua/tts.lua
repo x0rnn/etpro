@@ -44,7 +44,7 @@ function readDict(args_table, id)
 		et.trap_FS_FCloseFile(fd)
 
 		local word, arpa
-		for word, arpa in string.gfind(filestr,"([%a]+)\t([^\n]+)") do
+		for word, arpa in string.gfind(filestr,"([^\n]+)\t([^\n]+)") do
 			dict[word] =
 			{
 				arpa
