@@ -12670,7 +12670,6 @@ khan	K AA N
 khmer	K M EH R
 ki	K IY
 kia	K IY ER
-kiano	K IY AE N OW
 kick	K IH K
 kicked	K IH K T
 kicker	K IH K ER
@@ -25726,6 +25725,7 @@ he'll	HH IY L
 he's	HH IY Z
 here's	HH IH R Z
 how'd	HH AW D
+how'll	HH AW L
 how's	HH AW Z
 i'd	AY D
 i'll	AY L
@@ -25763,6 +25763,7 @@ weren't	W ER AH N T
 what's	W AH T S
 when's	W EH N Z
 where'd	W EH R D
+where'l	W EH R L
 where's	W EH R Z
 where've	W EH R AH V
 who'd	HH UW D
@@ -25784,6 +25785,7 @@ ogni	OW G N IY
 ogniwan	OW G N IY W AH N
 mucha	M UW CH AH
 muchacho	M UW CH AH CH OW
+kiano	K IY AA N OW
 qpa	K UW P AH
 qpaq	K UW P AH K
 hirn	HH IH R N
