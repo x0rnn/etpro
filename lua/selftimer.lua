@@ -39,9 +39,9 @@ function et.G_ClientSound(id, soundfile)
 end
 
 function et_RunFrame(levelTime)
+	local gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 	if math.mod(levelTime, 1000) ~= 0 then return end
 
-	local gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 	if gamestate == 0 then
 		redlimbo1 = tonumber(et.trap_Cvar_Get("g_redlimbotime"))
 		bluelimbo1 = tonumber(et.trap_Cvar_Get("g_bluelimbotime"))
