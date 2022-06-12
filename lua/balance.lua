@@ -1,6 +1,6 @@
 -- balance.lua, original by harald, modified by x0rnn:
 -- notify players when teams are uneven (player count) or unbalanced (damage given)
--- pause the match when one team has 3+ players more and unpause when teams are even again
+-- pause the match when one team has 2/3+ players more and unpause when teams are even again
 
 players = {}
 checkInterval = 15000 -- 15 seconds
@@ -57,30 +57,49 @@ function et_RunFrame( levelTime )
 	if gamestate == 0 then
 		numAlliedPlayers = table.getn( alliedPlayers )
 		numAxisPlayers = table.getn( axisPlayers )
+		local allPlayers = numAlliedPlayers + numAxisPlayers
 		local axisdmg = 0
 		local alliesdmg = 0
 	
 		if numAlliedPlayers >= numAxisPlayers + unevenDiff then
-			if numAlliedPlayers >= numAxisPlayers + 3 then
+			if allPlayers > 21 then
+				if numAlliedPlayers >= numAxisPlayers + 3 then
+					if paused == false then
+						et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
+						paused = true
+						et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Even the teams!\"\n")
+						et.G_LogPrint("LUA event: match auto-paused\n")
+					end
+				else
+					et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+				end
+			else
 				if paused == false then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
 					paused = true
 					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Even the teams!\"\n")
 					et.G_LogPrint("LUA event: match auto-paused\n")
 				end
-			else
-				et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 			end
 		elseif numAxisPlayers >= numAlliedPlayers + unevenDiff then
-			if numAxisPlayers >= numAlliedPlayers + 3 then
+			if allPlayers > 21 then
+				if numAxisPlayers >= numAlliedPlayers + 3 then
+					if paused == false then
+						et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
+						paused = true
+						et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Even the teams!\"\n")
+						et.G_LogPrint("LUA event: match auto-paused\n")
+					end
+				else
+					et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
+				end
+			else
 				if paused == false then
 					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
 					paused = true
 					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Even the teams!\"\n")
 					et.G_LogPrint("LUA event: match auto-paused\n")
 				end
-			else
-				et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 			end
 		end
 
@@ -248,31 +267,31 @@ function et_ClientUserinfoChanged(clientNum)
 
 	if paused == true then
 		if numAlliedPlayers > numAxisPlayers then
-			if numAlliedPlayers - numAxisPlayers < 2 then
-				if tmp == 2 and team == 1 then
-					if eveners[cl_guid] == nil then
-						eveners[cl_guid] = 1
-					else
-						eveners[cl_guid] = eveners[cl_guid] + 1
-					end
-					writeLog(eveners)
-					et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+			if tmp == 2 and team == 1 then
+				if eveners[cl_guid] == nil then
+					eveners[cl_guid] = 1
+				else
+					eveners[cl_guid] = eveners[cl_guid] + 1
 				end
+				writeLog(eveners)
+				et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+			end
+			if numAlliedPlayers - numAxisPlayers < 2 then
 				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
 				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
 				paused = false
 			end
 		elseif numAxisPlayers > numAlliedPlayers then
-			if numAxisPlayers - numAlliedPlayers < 2 then
-				if tmp == 1 and team == 2 then
-					if eveners[cl_guid] == nil then
-						eveners[cl_guid] = 1
-					else
-						eveners[cl_guid] = eveners[cl_guid] + 1
-					end
-					writeLog(eveners)
-					et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+			if tmp == 1 and team == 2 then
+				if eveners[cl_guid] == nil then
+					eveners[cl_guid] = 1
+				else
+					eveners[cl_guid] = eveners[cl_guid] + 1
 				end
+				writeLog(eveners)
+				et.trap_SendServerCommand(clientNum, "chat \"^7Thank you for switching. Your good deed has been logged.\"\n")
+			end
+			if numAxisPlayers - numAlliedPlayers < 2 then
 				et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref unpause\n")
 				et.trap_SendServerCommand(-1, "chat \"^3Match unpaused!\"\n")
 				paused = false
