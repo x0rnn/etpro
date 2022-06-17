@@ -1,10 +1,10 @@
 -- balance.lua, original by harald, modified by x0rnn:
 -- notify players when teams are uneven (player count) or unbalanced (damage given)
--- pause the match when one team has 2/3+ players more and unpause when teams are even again
+-- pause the match when one team has 3+ players more and unpause when teams are even again
 
 players = {}
-checkInterval = 15000 -- 15 seconds
-checkInterval2 = 60000 -- must be equal or a multiplier of above
+checkInterval = 60000 -- 60 seconds
+checkInterval2 = 180000 -- must be equal or a multiplier of above
 unevenDiff = 2
 unbalancedDiff = 15000
 axisPlayers = {}
@@ -57,12 +57,10 @@ function et_RunFrame( levelTime )
 	if gamestate == 0 then
 		numAlliedPlayers = table.getn( alliedPlayers )
 		numAxisPlayers = table.getn( axisPlayers )
-		local allPlayers = numAlliedPlayers + numAxisPlayers
 		local axisdmg = 0
 		local alliesdmg = 0
-	
-		if numAlliedPlayers >= numAxisPlayers + unevenDiff then
-			if allPlayers > 21 then
+		if math.mod(levelTime,checkInterval2) == 0 then
+			if numAlliedPlayers >= numAxisPlayers + unevenDiff then
 				if numAlliedPlayers >= numAxisPlayers + 3 then
 					if paused == false then
 						et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
@@ -73,16 +71,7 @@ function et_RunFrame( levelTime )
 				else
 					et.trap_SendServerCommand(-1, "chat \"^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 				end
-			else
-				if paused == false then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
-					paused = true
-					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^4Allies ^7have ^4" .. numAlliedPlayers-numAxisPlayers .. " ^7players more. ^3Even the teams!\"\n")
-					et.G_LogPrint("LUA event: match auto-paused\n")
-				end
-			end
-		elseif numAxisPlayers >= numAlliedPlayers + unevenDiff then
-			if allPlayers > 21 then
+			elseif numAxisPlayers >= numAlliedPlayers + unevenDiff then
 				if numAxisPlayers >= numAlliedPlayers + 3 then
 					if paused == false then
 						et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
@@ -93,17 +82,10 @@ function et_RunFrame( levelTime )
 				else
 					et.trap_SendServerCommand(-1, "chat \"^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Please even the teams!\"\n")
 				end
-			else
-				if paused == false then
-					et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref pause\n")
-					paused = true
-					et.trap_SendServerCommand(-1, "chat \"^3Match auto-paused: ^1Axis ^7have ^1" .. numAxisPlayers-numAlliedPlayers .. " ^7players more. ^3Even the teams!\"\n")
-					et.G_LogPrint("LUA event: match auto-paused\n")
-				end
 			end
 		end
 
-		if math.mod(levelTime,checkInterval2) == 0 then
+		--if math.mod(levelTime,checkInterval) == 0 then
 			for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 				local team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
 				if team == 1 or team == 2 then
@@ -183,7 +165,7 @@ function et_RunFrame( levelTime )
 				end
 				et.trap_SendServerCommand(-1, "chat \"^7Top 3 ^4Allied ^7damage dealers: " .. et.gentity_get(dmg_id[1], "pers.netname") .. " ^4(" .. dmg[1] .. ")^7, " .. et.gentity_get(dmg_id[2], "pers.netname") .. " ^4(" .. dmg[2] .. ")^7, " .. et.gentity_get(dmg_id[3], "pers.netname") .. " ^4(" .. dmg[3] .. ")\"\n")
 			end
-		end
+		--end
 	end
 end
 
