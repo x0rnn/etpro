@@ -68,7 +68,8 @@ function et_RunFrame(levelTime)
 					local team = tonumber(et.gentity_get(alerted_id[x], "sess.sessionTeam"))
 					if team == 1 then
 						local health = tonumber(et.gentity_get(alerted_id[x], "health"))
-						if health > 0 then
+						local body = tonumber(et.gentity_get(alerted_id[x], "r.contents"))
+						if health > 0 or (health <= 0 and body == 67108864) then
 							if redspawn + redlimbo1 / 1000 - ltm <= 3 and redspawn + redlimbo1 / 1000 - ltm > 0 then
 								et.G_ClientSound(alerted_id[x], sound)
 							end
@@ -88,7 +89,8 @@ function et_RunFrame(levelTime)
 					local team = tonumber(et.gentity_get(alerted_id[x], "sess.sessionTeam"))
 					if team == 2 then
 						local health = tonumber(et.gentity_get(alerted_id[x], "health"))
-						if health > 0 then
+						local body = tonumber(et.gentity_get(alerted_id[x], "r.contents"))
+						if health > 0 or (health <= 0 and body == 67108864) then
 							if bluespawn + bluelimbo1 / 1000 - ltm <= 3 and bluespawn + bluelimbo1 / 1000 - ltm > 0 then
 								et.G_ClientSound(alerted_id[x], sound)
 							end
