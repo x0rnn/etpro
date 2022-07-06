@@ -876,6 +876,9 @@ function et_ClientBegin(id)
     	axis_time[id] = et.trap_Milliseconds()
     elseif team == 2 then
     	allies_time[id] = et.trap_Milliseconds()
+    elseif team == 3 then
+	axis_time[id] = 0
+	allies_time[id] = 0
     end
 end
 
