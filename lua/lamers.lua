@@ -1,15 +1,16 @@
 -- lamers.lua by x0rnn
--- x% chance (default 10%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
+-- x% chance (default 15%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
 -- players who continuously push other players get a warning first and get put to spectators if they continue (default: single player 7x warn, 10x spec; multiple players 10x warn, 15x warn, 22x put spec). Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
 -- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
 -- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
--- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2 and 3, put spec at 4)
+-- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2, gib at 3, put spec at 4)
 -- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
 -- gibs rambo medics with >= 30 kills and revive ratio less than 6.6% on every 10th kill (30, 40, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
--- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into (team) arty
+-- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into team arty
 -- removed panzerfaust when less than 12 players
 -- removed riflenades when less than 6 players
 -- removed mortar when less than 16 players
+-- warn & kick players on excessive team damage (td remains even after going spec, so they can't reset)
 
 panzerlamers = {}
 mortarlamers = {}
@@ -60,7 +61,14 @@ al_threshold_4 = 55
 revives = {}
 medickills = {}
 
+players = {}
+team_dmg = {}
+teamswitch = {}
+td_warn = 700
+td_kick = 1100
+
 checkInterval = 10000
+checkInterval2 = 60000
 playerCount = 0
 GS = 2
 GSFlag = false
@@ -68,6 +76,13 @@ GSFlag = false
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("lamers.lua "..et.FindSelf())
 	soundindex = et.G_SoundIndex("/sound/etpro/osp_goat.wav")
+
+    local i = 0
+	for i=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+		team_dmg[i] = 0
+		players[i] = nil
+		teamswitch[i] = false
+	end
 end
 
 function et_ClientDisconnect(clientNum)
@@ -111,6 +126,33 @@ function et_ClientDisconnect(clientNum)
 	if medickills[clientNum] ~= nil then
 		medickills[clientNum] = nil
 	end
+	team_dmg[clientNum] = 0
+	players[clientNum] = nil
+	teamswitch[clientNum] = false
+end
+
+function et_ClientBegin(id)
+    local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+	if players[id] == nil then
+		players[id] = team
+	end
+end
+
+function et_ClientUserinfoChanged(clientNum)
+    local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
+
+	if players[clientNum] == nil then
+		players[clientNum] = team
+	end
+
+    if players[clientNum] ~= team then
+   	teamswitch[clientNum] = true
+        if (team == 1 or team == 2) and players[clientNum] ~= 3 then
+            team_dmg[clientNum] = 0
+        end
+    end
+    
+    players[clientNum] = team
 end
 
 function et_ConsoleCommand()
@@ -259,52 +301,55 @@ function et_Obituary(victim, killer, mod)
 						end
 					end
 				elseif v_teamid == k_teamid then
-					if mod == 30 then
-						if artywalkers[victim] == nil then
-							artywalkers[victim] = { [killer] = 1 }
-						else
-							if artywalkers[victim][killer] == nil then
-								artywalkers[victim][killer] = 1
+					if killer ~= victim then
+						team_dmg[killer] = tonumber(et.gentity_get(killer, "sess.team_damage"))
+						if mod == 30 then
+							if artywalkers[victim] == nil then
+								artywalkers[victim] = { [killer] = 1 }
 							else
-								artywalkers[victim][killer] = artywalkers[victim][killer] + 1
-							end
+								if artywalkers[victim][killer] == nil then
+									artywalkers[victim][killer] = 1
+								else
+									artywalkers[victim][killer] = artywalkers[victim][killer] + 1
+								end
 
-							if artywalkers[victim][killer] == artywalk_warn1 then
-								et.trap_SendServerCommand(victim, "chat \"^3You have walked into " .. name .. "^3's arty a lot of times. This script thinks you're doing it intentionally.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_warn1 .. " times.\n")
+								if artywalkers[victim][killer] == artywalk_warn1 then
+									et.trap_SendServerCommand(victim, "chat \"^3You have walked into " .. name .. "^3's arty a lot of times. This script thinks you're doing it intentionally.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_warn1 .. " times.\n")
+								end
+								if artywalkers[victim][killer] == artywalk_warn2 then
+									et.trap_SendServerCommand(victim, "chat \"^3If you continue walking into " .. name .. "^3's arty, you will be put to spectators.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_warn2 .. " times.\n")
+								end
+								if artywalkers[victim][killer] == artywalk_spec then
+									et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally walking into " .. name .. "^3's arty too many times.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_spec .. " times. Moved to spec for intentionally walking into arty.\n")
+								end
 							end
-							if artywalkers[victim][killer] == artywalk_warn2 then
-								et.trap_SendServerCommand(victim, "chat \"^3If you continue walking into " .. name .. "^3's arty, you will be put to spectators.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_warn2 .. " times.\n")
-							end
-							if artywalkers[victim][killer] == artywalk_spec then
-								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally walking into " .. name .. "^3's arty too many times.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " walked into " .. name .. "'s arty " .. artywalk_spec .. " times. Moved to spec for intentionally walking into arty.\n")
-							end
-						end
-					elseif mod == 45 then
-						if minewalkers[victim] == nil then
-							minewalkers[victim] = { [killer] = 1 }
-						else
-							if minewalkers[victim][killer] == nil then
-								minewalkers[victim][killer] = 1
+						elseif mod == 45 then
+							if minewalkers[victim] == nil then
+								minewalkers[victim] = { [killer] = 1 }
 							else
-								minewalkers[victim][killer] = minewalkers[victim][killer] + 1
-							end
+								if minewalkers[victim][killer] == nil then
+									minewalkers[victim][killer] = 1
+								else
+									minewalkers[victim][killer] = minewalkers[victim][killer] + 1
+								end
 
-							if minewalkers[victim][killer] == minewalk_warn1 then
-								et.trap_SendServerCommand(victim, "chat \"^3You have stepped on " .. name .. "^3's mines a lot of times. This script thinks you're doing it intentionally.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn1 .. " times.\n")
-							end
-							if minewalkers[victim][killer] == minewalk_warn2 then
-								et.trap_SendServerCommand(victim, "chat \"^3If you continue stepping on " .. name .. "^3's mines, you will be put to spectators.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn2 .. " times.\n")
-							end
-							if minewalkers[victim][killer] == minewalk_spec then
-								et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally stepping on " .. name .. "^3's mines too many times.\"\n")
-								et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_spec .. " times. Moved to spec for intentionally stepping on mines.\n")
+								if minewalkers[victim][killer] == minewalk_warn1 then
+									et.trap_SendServerCommand(victim, "chat \"^3You have stepped on " .. name .. "^3's mines a lot of times. This script thinks you're doing it intentionally.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn1 .. " times.\n")
+								end
+								if minewalkers[victim][killer] == minewalk_warn2 then
+									et.trap_SendServerCommand(victim, "chat \"^3If you continue stepping on " .. name .. "^3's mines, you will be put to spectators.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_warn2 .. " times.\n")
+								end
+								if minewalkers[victim][killer] == minewalk_spec then
+									et.trap_SendConsoleCommand(et.EXEC_APPEND, "ref remove " .. victim .. "\n")
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(victim, "pers.netname") .. " ^3moved to spectators for intentionally stepping on " .. name .. "^3's mines too many times.\"\n")
+									et.G_LogPrint("LUA event: " .. et.gentity_get(victim, "pers.netname") .. " stepped on " .. name .. "'s mines " .. minewalk_spec .. " times. Moved to spec for intentionally stepping on mines.\n")
+								end
 							end
 						end
 					end
@@ -379,6 +424,9 @@ function et_Obituary(victim, killer, mod)
 						end
 					end
 				else
+					if killer ~= victim then
+						team_dmg[killer] = tonumber(et.gentity_get(killer, "sess.team_damage"))
+					end
 					if mod == 24 then
 						msg = string.format("chat \"" .. name .. " ^3gibbed for pushing " .. et.gentity_get(victim, "pers.netname") .. "^3 into his death.\n")
 						et.G_LogPrint("LUA event: " .. name .. " gibbed for pushing " .. et.gentity_get(victim, "pers.netname") .. " into his death.\n")
@@ -404,6 +452,10 @@ function et_Obituary(victim, killer, mod)
 									end
 									if tks[killer][victim] == tks_warn2 then
 										et.trap_SendServerCommand(killer, "chat \"^3If you continue teamkilling " .. name2 .. "^3, you will be put to spectators.\"\n")
+										et.gentity_set(killer, "ps.powerups", 1, 0)
+										et.G_Damage(killer, 80, 1022, 1000, 8, 34)
+										et.G_Sound(killer, et.G_SoundIndex("/sound/etpro/osp_goat.wav"))
+										et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3gibbed for teamkilling " .. name2 .. " ^1" .. tks_warn2 .. " ^3times.\n")
 										et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. " teamkilled " .. name2 .. " " .. tks_warn2 .. " times.\n")
 									end
 									if tks[killer][victim] == tks_spec then
@@ -608,6 +660,23 @@ function et_RunFrame( levelTime )
 		if playerCount ~= 0 then
 			GSFlag = true
 		end
+
+		for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+			local team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
+			if team == 1 or team == 2 then
+				if math.mod(levelTime,checkInterval2) == 0 then
+					if et.gentity_get(j,"sess.PlayerType") ~= 1 and et.gentity_get(j,"sess.PlayerType") ~= 4 then
+						if et.gentity_get(j, "sess.team_damage") > td_warn then
+							et.trap_SendServerCommand(j, "chat \"^1" .. et.gentity_get(j, "sess.team_damage") .. "^3 team damage given! Watch your fire or change class or you might get kicked!\"")
+						end
+					end
+				end
+				if et.gentity_get(j, "sess.team_damage") > td_kick then
+					et.trap_SendConsoleCommand(et.EXEC_APPEND, "pb_sv_kick "..(j + 1).." 15 \"You made too much team damage, please watch your fire.\" \"You made too much team damage, please watch your fire.\"\n")
+					et.G_LogPrint("LUA event: " .. et.gentity_get(j, "pers.netname") .. " kicked for too much team damage (" .. et.gentity_get(j, "sess.team_damage") .. ")\n")
+				end
+			end
+		end
 	end
 end
 
@@ -617,6 +686,14 @@ function et_ClientSpawn(id, revived)
 			if GSFlag == true then
 				local team = et.gentity_get(id, "sess.sessionTeam")
 				if team == 1 or team == 2 then
+
+					local health = tonumber(et.gentity_get(id, "health"))
+ 			      -- sess.kills = 0 should mean this is the first spawn.
+  			     if health >= 100 and teamswitch[id] and et.gentity_get(id, "sess.kills") == 0 then
+						et.gentity_set(id, "sess.team_damage", team_dmg[id])
+						teamswitch[id] = false
+			       end
+
 					respawn_time[id] = et.trap_Milliseconds() + 10000
 
 					if ammolamers[id] == true then
@@ -689,7 +766,13 @@ function et_ClientCommand(id, command)
 				if string.lower(args_table[2]) == "admin" then
 					et.trap_SendServerCommand(id, "chat \"^3Please include a valid reason when calling an admin.\"")
 					return 1
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^3: I wish to register a complaint!\"")
+					et.G_globalSound("sound/montypython/complaint.wav")
 				end
+			else
+				et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. "^3: I wish to register a complaint!\"")
+				et.G_globalSound("sound/montypython/complaint.wav")
 			end
 		end
 	end
