@@ -1,5 +1,6 @@
 -- specs.lua - auto-puts 999 and afk players to spectator
 -- !specs command to list who specs are spectating
+-- !timeout command to force someone to spec for x minutes
 -- !(un)speclock command to prevent someone spectating the game
 -- inactivity code from "Player Inactivity Modification" (inacmod.lua) by hadro
 -- g_inactivity needs to be enabled
@@ -14,6 +15,8 @@ filename = "shrubbot.cfg"
 speclock = {}
 speclock_id = {}
 speclock_flag = false
+timeout = 2 -- timeout in minutes
+player_timestamp = {}
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname("specs.lua "..et.FindSelf())
@@ -54,12 +57,21 @@ function et_ConsoleCommand()
 end
 
 function et_ClientUserinfoChanged(clientNum)
+	local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 	local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
 	if speclock[clientNum] == true then
 		if team == 1 or team == 2 then
 			speclock[clientNum] = nil
 			if next(speclock) == nil then
 				speclock_flag = false
+			end
+		end
+	end
+	if player_timestamp[cl_guid] ~= nil then
+		if team == 1 or team == 2 then
+			if os.time(os.date("!*t")) < player_timestamp[cl_guid] then
+				et.trap_SendConsoleCommand( et.EXEC_APPEND, "ref remove " .. clientNum .. "\n" )
+				et.trap_SendServerCommand(clientNum, "chat \" ^3You still have " .. player_timestamp[cl_guid] - os.time(os.date("!*t")) .. " seconds left until your timeout ends and you can rejoin a team.\"\n")
 			end
 		end
 	end
@@ -162,6 +174,8 @@ end
 
 function et_ClientCommand(id, command)
 	admin_flag = false
+	caller_lvl = 0
+	called_lvl = 0
 	guid = et.Info_ValueForKey(et.trap_GetUserinfo(id), "cl_guid")
 	if et.trap_Argv(0) == "say" or et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_buddy" or et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 		if et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
@@ -202,7 +216,7 @@ function et_ClientCommand(id, command)
 				end
 			end
 		else
-			if et.trap_Argv(1) == "!specs" then
+			if string.lower(et.trap_Argv(1)) == "!specs" then
 				if gamestate == 0 then
 					fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
 					if len ~= -1 then
@@ -374,6 +388,99 @@ function et_ClientCommand(id, command)
 									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3unspeclocked.\"\n")
 								else
 									et.trap_SendServerCommand(id, "chat \"^7Target is not speclocked.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						end
+					end
+				else
+					et.trap_SendServerCommand(id, "chat \"^7This command is not available to you.\"\n")
+				end
+			end
+			if args_table[1] == "!timeout" then
+				fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+				if len ~= -1 then
+					filestr = et.trap_FS_Read(fd, len)
+					et.trap_FS_FCloseFile(fd)
+					for v in string.gfind(filestr, guid .. "\nlevel\t%= ([^\n]+)") do
+						if tonumber(v) >= 5 then
+							admin_flag = true
+							caller_lvl = tonumber(v)
+							break
+						end
+					end
+					filestr = nil
+				else
+					et.trap_FS_FCloseFile(fd)
+					et.trap_SendServerCommand(id, "chat \"^7shrubbot.cfg not found.\"\n")
+				end
+				if admin_flag == true then
+					if cnt ~= 2 then
+						et.trap_SendServerCommand(id, "chat \"Usage: ^7!timeout <^3PartOfName^7>\"\n")
+					else
+						if string.len(args_table[2]) < 3 then
+							cno = tonumber(args_table[2])
+							if cno then
+								if et.gentity_get(cno, "pers.connected") == 2 then
+									local team = tonumber(et.gentity_get(cno, "sess.sessionTeam"))
+									if team == 1 or team == 2 then
+										local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid")
+										fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+										if len ~= -1 then
+											filestr = et.trap_FS_Read(fd, len)
+											et.trap_FS_FCloseFile(fd)
+											for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+												if tonumber(v) then
+													called_lvl = tonumber(v)
+													break
+												end
+											end
+											filestr = nil
+										end
+										if called_lvl < caller_lvl then
+											player_timestamp[cl_guid] = os.time(os.date("!*t")) + 60 * timeout
+											et.trap_SendConsoleCommand( et.EXEC_APPEND, "ref remove " .. cno .. "\n" )
+											et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3was issued a " .. timeout .. " minute timeout to chill off.\"\n")
+										else
+											et.trap_SendServerCommand(id, "chat \"^7Target is the same or higher level, can't timeout.\"\n")
+										end
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target is a spectator, can't timeout.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+								end
+							else
+								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")
+							end
+						else
+							cno = inSlot(args_table[2])
+							if cno ~= nil then
+								local team = tonumber(et.gentity_get(cno, "sess.sessionTeam"))
+								if team == 1 or team == 2 then
+									local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(cno), "cl_guid")
+									fd,len = et.trap_FS_FOpenFile(filename, et.FS_READ)
+									if len ~= -1 then
+										filestr = et.trap_FS_Read(fd, len)
+										et.trap_FS_FCloseFile(fd)
+										for v in string.gfind(filestr, cl_guid .. "\nlevel\t%= ([^\n]+)") do
+											if tonumber(v) then
+												called_lvl = tonumber(v)
+												break
+											end
+										end
+										filestr = nil
+									end
+									if called_lvl < caller_lvl then
+										player_timestamp[cl_guid] = os.time(os.date("!*t")) + 60 * timeout
+										et.trap_SendConsoleCommand( et.EXEC_APPEND, "ref remove " .. cno .. "\n" )
+										et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(cno, "pers.netname") .. " ^3was issued a " .. timeout .. " minute timeout to chill off.\"\n")
+									else
+										et.trap_SendServerCommand(id, "chat \"^7Target is the same or higher level, can't timeout.\"\n")
+									end
+								else
+									et.trap_SendServerCommand(id, "chat \"^7Target is a spectator, can't timeout.\"\n")
 								end
 							else
 								et.trap_SendServerCommand(id, "chat \"^7Target not found.\"\n")

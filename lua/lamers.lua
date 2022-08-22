@@ -1,22 +1,24 @@
 -- lamers.lua by x0rnn
--- x% chance (default 15%) to gib panzer/mortar/arty/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/arty/mg42
+-- x% chance (default 15%) to gib panzer/mortar/mg42 lamers on every 5th kill who have more than min_kill (default 25) kills and min_percent (default 85%) or more of all their kills are by panzer/mortar/mg42
 -- players who continuously push other players get a warning first and get put to spectators if they continue (default: single player 7x warn, 10x spec; multiple players 10x warn, 15x warn, 22x put spec). Pushing up to 10 sec after spawn doesn't count due to possible blockers, etc.
 -- players who continuously walk into other players' artillery (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 6 and 7, put spec at 8)
 -- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2, gib at 3, put spec at 4)
--- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <1 kills/10 ammo given, <5/20, <10/35, <15/55)
+-- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <2 kills/10 ammo given, <5/20, <10/35, <15/55)
+-- fieldops who just call arty and do nothing else will have their binoculars/arty taken away until they get more normal kills (defaults: <1 normal kills/10 arty kills, <5/15, <10/20, <15/30)
 -- gibs rambo medics with >= 30 kills and revive ratio less than 6.6% on every 10th kill (30, 40, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
 -- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into team arty
 -- removed panzerfaust when less than 12 players
 -- removed riflenades when less than 6 players
 -- removed mortar when less than 16 players
--- warn & kick players on excessive team damage (td remains even after going spec, so they can't reset)
+-- warn (td_warn) & kick (td_kick) players on excessive team damage (td remains even after going spec, so they can't reset)
 
 panzerlamers = {}
 mortarlamers = {}
-artylamers = {}
 mglamers = {}
-chance = 15
+nonhwkills = {}
+fopkills = {}
+chance = 30
 chance_mortar = 30
 min_kills = 25
 min_kills_mortar = 20
@@ -48,7 +50,6 @@ minewalk_spec = 6
 
 ammolamers = {}
 ammo_given = {}
-al_msg = {}
 al_minkills_1 = 2
 al_minkills_2 = 5
 al_minkills_3 = 10
@@ -58,12 +59,24 @@ al_threshold_2 = 20
 al_threshold_3 = 35
 al_threshold_4 = 55
 
+foplamers = {}
+foplamer = {}
+fop_minkills_1 = 1
+fop_minkills_2 = 5
+fop_minkills_3 = 10
+fop_minkills_4 = 15
+fop_threshold_1 = 10
+fop_threshold_2 = 15
+fop_threshold_3 = 20
+fop_threshold_4 = 30
+
 revives = {}
 medickills = {}
 
 players = {}
 team_dmg = {}
 teamswitch = {}
+team2 = {}
 td_warn = 700
 td_kick = 1100
 
@@ -82,22 +95,32 @@ function et_InitGame(levelTime, randomSeed, restart)
 		team_dmg[i] = 0
 		players[i] = nil
 		teamswitch[i] = false
+		team2[i] = nil
 	end
 end
 
 function et_ClientDisconnect(clientNum)
-	cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
+	local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid")
 	if panzerlamers[cl_guid] ~= nil then
 		panzerlamers[cl_guid] = nil
 	end
 	if mortarlamers[cl_guid] ~= nil then
 		mortarlamers[cl_guid] = nil
 	end
-	if artylamers[cl_guid] ~= nil then
-		artylamers[cl_guid] = nil
+	if foplamers[cl_guid] ~= nil then
+		foplamers[cl_guid] = nil
+	end
+	if foplamer[clientNum] ~= nil then
+		foplamer[clientNum] = nil
 	end
 	if mglamers[cl_guid] ~= nil then
 		mglamers[cl_guid] = nil
+	end
+	if nonhwkills[cl_guid] ~= nil then
+		nonhwkills[cl_guid] = nil
+	end
+	if fopkills[cl_guid] ~= nil then
+		fopkills[cl_guid] = nil
 	end
 	if shoves[clientNum] ~= nil then
 		shoves[clientNum] = nil
@@ -117,9 +140,6 @@ function et_ClientDisconnect(clientNum)
 	if ammolamers[clientNum] ~= nil then
 		ammolamers[clientNum] = nil
 	end
-	if al_msg[clientNum] ~= nil then
-		al_msg[clientNum] = nil
-	end
 	if revives[clientNum] ~= nil then
 		revives[clientNum] = nil
 	end
@@ -128,6 +148,7 @@ function et_ClientDisconnect(clientNum)
 	end
 	team_dmg[clientNum] = 0
 	players[clientNum] = nil
+	team2[clientNum] = nil
 	teamswitch[clientNum] = false
 end
 
@@ -139,6 +160,7 @@ function et_ClientBegin(id)
 end
 
 function et_ClientUserinfoChanged(clientNum)
+	local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(clientNum), "cl_guid") 
     local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
 
 	if players[clientNum] == nil then
@@ -146,12 +168,29 @@ function et_ClientUserinfoChanged(clientNum)
 	end
 
     if players[clientNum] ~= team then
-   	teamswitch[clientNum] = true
+		teamswitch[clientNum] = true
         if (team == 1 or team == 2) and players[clientNum] ~= 3 then
-            team_dmg[clientNum] = 0
+			--team_dmg[clientNum] = 0 -- reset if going from axis to allies or reverse
         end
+        if (team == 1 or team == 2) and players[clientNum] == 3 then
+            if team2[clientNum] ~= nil then
+				if team ~= team2[clientNum] then
+					--team_dmg[clientNum] = 0 -- reset if going from axis/allies to spec and then opposite team as before
+				end
+            end
+        end
+        if team == 3 then
+			team2[clientNum] = players[clientNum]
+			nonhwkills[cl_guid] = nil
+			panzerlamers[cl_guid] = nil
+			mortarlamers[cl_guid] = nil
+			mglamers[cl_guid] = nil
+			foplamers[cl_guid] = nil
+			ammolamers[cl_guid] = nil
+			fopkills[cl_guid] = nil
+		end
     end
-    
+
     players[clientNum] = team
 end
 
@@ -175,33 +214,37 @@ local function roundNum(num, n)
 end
 
 function et_Obituary(victim, killer, mod)
-	-- mod: 17 panzer, 27 airstrike, 30 arty, 49 mobile mg42, 57 mortar
+	-- mod: 17 panzer, 30 arty, 49 mobile mg42, 57 mortar
 	
 	if GS == 0 then
 		if killer ~= 1022 and killer ~= 1023 then
 			local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(killer), "cl_guid")
 			local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
 			local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
-			local kills = tonumber(et.gentity_get(killer, "sess.kills"))
+			--local kills = tonumber(et.gentity_get(killer, "sess.kills"))
 			local name = et.gentity_get(killer, "pers.netname")
 			local name2 = et.gentity_get(victim, "pers.netname")
 			local health = tonumber(et.gentity_get(killer, "health"))
 			
 			math.randomseed(et.trap_Milliseconds())
 
-			if mod == 17 or mod == 27 or mod == 30 or mod == 49 or mod == 57 then
+			if mod == 17 or mod == 30 or mod == 49 or mod == 57 then
 				if v_teamid ~= k_teamid then
 					if mod == 17 then
 						if tonumber(et.gentity_get(killer, "sess.skill", 5)) == 4 then
 							if panzerlamers[cl_guid] == nil then
-								panzerlamers[cl_guid] = {1, kills}
+								if nonhwkills[cl_guid] == nil then
+									nonhwkills[cl_guid] = 0
+									panzerlamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								else
+									panzerlamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								end
 							else
 								panzerlamers[cl_guid][1] = panzerlamers[cl_guid][1] + 1
-								panzerlamers[cl_guid][2] = kills
 							end
 
 							if panzerlamers[cl_guid][1] >= min_kills then
-								if panzerlamers[cl_guid][1] / kills >= min_percent/100 then
+								if panzerlamers[cl_guid][1] / (nonhwkills[cl_guid] + panzerlamers[cl_guid][1]) >= min_percent/100 then
 									if math.mod(panzerlamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
 											local choice = math.random(1, 100)
@@ -221,14 +264,18 @@ function et_Obituary(victim, killer, mod)
 					elseif mod == 57 then
 						if tonumber(et.gentity_get(killer, "sess.skill", 5)) > 0 then
 							if mortarlamers[cl_guid] == nil then
-								mortarlamers[cl_guid] = {1, kills}
+								if nonhwkills[cl_guid] == nil then
+									nonhwkills[cl_guid] = 0
+									mortarlamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								else
+									mortarlamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								end
 							else
 								mortarlamers[cl_guid][1] = mortarlamers[cl_guid][1] + 1
-								mortarlamers[cl_guid][2] = kills
 							end
 
 							if mortarlamers[cl_guid][1] >= min_kills_mortar then
-								if mortarlamers[cl_guid][1] / kills >= min_percent/100 then
+								if mortarlamers[cl_guid][1] / (nonhwkills[cl_guid] + mortarlamers[cl_guid][1]) >= min_percent/100 then
 									if math.mod(mortarlamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
 											local choice = math.random(1, 100)
@@ -248,14 +295,18 @@ function et_Obituary(victim, killer, mod)
 					elseif mod == 49 then
 						if tonumber(et.gentity_get(killer, "sess.skill", 5)) > 1 then
 							if mglamers[cl_guid] == nil then
-								mglamers[cl_guid] = {1, kills}
+								if nonhwkills[cl_guid] == nil then
+									nonhwkills[cl_guid] = 0
+									mglamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								else
+									mglamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								end
 							else
 								mglamers[cl_guid][1] = mglamers[cl_guid][1] + 1
-								mglamers[cl_guid][2] = kills
 							end
 
 							if mglamers[cl_guid][1] >= min_kills then
-								if mglamers[cl_guid][1] / kills >= min_percent/100 then
+								if mglamers[cl_guid][1] / (nonhwkills[cl_guid] + mglamers[cl_guid][1]) >= min_percent/100 then
 									if math.mod(mglamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
 											local choice = math.random(1, 100)
@@ -272,33 +323,54 @@ function et_Obituary(victim, killer, mod)
 							end
 						end
 
-					elseif mod == 27 or mod == 30 then
-						if tonumber(et.gentity_get(killer, "sess.skill", 3)) >= 3 then
-							if artylamers[cl_guid] == nil then
-								artylamers[cl_guid] = {1, kills}
+					elseif mod == 30 then
+						--if tonumber(et.gentity_get(killer, "sess.skill", 3)) >= 3 then
+							if fopkills[cl_guid] == nil or fopkills[cl_guid] == 0 then
+								fopkills[cl_guid] = 1
 							else
-								artylamers[cl_guid][1] = artylamers[cl_guid][1] + 1
-								artylamers[cl_guid][2] = kills
+								fopkills[cl_guid] = fopkills[cl_guid] + 1
+							end
+							if foplamers[cl_guid] == nil then
+								if nonhwkills[cl_guid] == nil then
+									nonhwkills[cl_guid] = 0
+									foplamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								else
+									foplamers[cl_guid] = {1, nonhwkills[cl_guid]}
+								end
+							else
+								foplamers[cl_guid][1] = foplamers[cl_guid][1] + 1
 							end
 
-							if artylamers[cl_guid][1] >= min_kills then
-								if artylamers[cl_guid][1] / kills >= min_percent/100 then
-									if math.mod(artylamers[cl_guid][1], 5) == 0 then
-										if health > 0 then
-											local choice = math.random(1, 100)
-											if choice <= chance then
-												msg = string.format("cpm \"^3Huh. One of " .. name .. "^3's airstrike grenades was actually a real grenade. It malfunctioned.\n")
-												et.trap_SendServerCommand(-1, msg)
-												et.G_LogPrint("LUA event: Huh. One of " .. name .. "'s airstrike grenades was actually a real grenade. It malfunctioned.\n")
-												et.gentity_set(killer, "ps.powerups", 1, 0)
-												et.G_Damage(killer, 80, 1022, 1000, 8, 34)
-												et.G_Sound(killer, soundindex)
-											end
-										end
-									end
+							if foplamers[cl_guid][1] >= fop_threshold_1 and foplamers[cl_guid][1] <= fop_threshold_2 then
+								if nonhwkills[cl_guid] < fop_minkills_1 then
+									foplamer[killer] = true
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+									et.gentity_set(killer, "ps.stats", 1, 0)
+									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. "'s binoculars broke from overuse\n")
+								end
+							elseif foplamers[cl_guid][1] >= fop_threshold_2 and foplamers[cl_guid][1] <= fop_threshold_3 then
+								if nonhwkills[cl_guid] < fop_minkills_2 then
+									foplamer[cl_guid] = true
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+									et.gentity_set(killer, "ps.stats", 1, 0)
+									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. "'s binoculars broke from overuse\n")
+								end
+							elseif foplamers[cl_guid][1] > fop_threshold_3 and foplamers[cl_guid][1] <= fop_threshold_4 then
+								if nonhwkills[cl_guid] < fop_minkills_3 then
+									foplamer[killer] = true
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+									et.gentity_set(killer, "ps.stats", 1, 0)
+									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. "'s binoculars broke from overuse\n")
+								end
+							elseif foplamers[cl_guid][1] > fop_threshold_4 then
+								if nonhwkills[cl_guid] < fop_minkills_4 then
+									foplamer[killer] = true
+									et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(killer, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+									et.gentity_set(killer, "ps.stats", 1, 0)
+									et.G_LogPrint("LUA event: " .. et.gentity_get(killer, "pers.netname") .. "'s binoculars broke from overuse\n")
 								end
 							end
-						end
+						--end
 					end
 				elseif v_teamid == k_teamid then
 					if killer ~= victim then
@@ -388,38 +460,93 @@ function et_Obituary(victim, killer, mod)
 						end
                	end
 
-					if panzerlamers[cl_guid] ~= nil then
-						panzerlamers[cl_guid][2] = kills
+					if et.gentity_get(killer, "sess.PlayerType") == 0 then
+						if nonhwkills[cl_guid] == nil then
+							nonhwkills[cl_guid] = 1
+						else
+							nonhwkills[cl_guid] = nonhwkills[cl_guid] + 1
+						end
 					end
-					if mortarlamers[cl_guid] ~= nil then
-						mortarlamers[cl_guid][2] = kills
-					end
-					if artylamers[cl_guid] ~= nil then
-						artylamers[cl_guid][2] = kills
-					end
-					if mglamers[cl_guid] ~= nil then
-						mglamers[cl_guid][2] = kills
-					end
-					if ammolamers[killer] == true then
-						if ammo_given[killer] <= al_threshold_4 then
-							if ammo_given[killer] <= al_threshold_3 then
-								if ammo_given[killer] <= al_threshold_2 then
-									if kills >= al_minkills_1 then
-										ammolamers[killer] = false
+					
+					if et.gentity_get(killer, "sess.PlayerType") == 3 then
+						if fopkills[cl_guid] == nil or fopkills[cl_guid] == 0 then
+							fopkills[cl_guid] = 1
+						else
+							if mod ~= 27 then --airstrike
+								if nonhwkills[cl_guid] == nil then
+									nonhwkills[cl_guid] = 1
+								else
+									nonhwkills[cl_guid] = nonhwkills[cl_guid] + 1
+								end
+							end
+							fopkills[cl_guid] = fopkills[cl_guid] + 1
+						end
+ 
+						if ammolamers[killer] == true then
+							if ammo_given[killer] <= al_threshold_4 then
+								if ammo_given[killer] <= al_threshold_3 then
+									if ammo_given[killer] <= al_threshold_2 then
+										if fopkills[cl_guid] >= al_minkills_1 then
+											ammolamers[killer] = false
+											et.trap_SendServerCommand(killer, "chat \"^3You've been given your ammo crates back!\"\n")
+											et.gentity_set(killer, "ps.ammo", 12, 1)
+											et.gentity_set(killer, "ps.ammoclip", 12, 1)
+										end
+									else
+										if fopkills[cl_guid] >= al_minkills_2 then
+											ammolamers[killer] = false
+											et.trap_SendServerCommand(killer, "chat \"^3You've been given your ammo crates back!\"\n")
+											et.gentity_set(killer, "ps.ammo", 12, 1)
+											et.gentity_set(killer, "ps.ammoclip", 12, 1)
+										end
 									end
 								else
-									if kills >= al_minkills_2 then
+									if fopkills[cl_guid] >= al_minkills_3 then
 										ammolamers[killer] = false
+										et.trap_SendServerCommand(killer, "chat \"^3You've been given your ammo crates back!\"\n")
+										et.gentity_set(killer, "ps.ammo", 12, 1)
+										et.gentity_set(killer, "ps.ammoclip", 12, 1)
 									end
 								end
 							else
-								if kills >= al_minkills_3 then
+								if fopkills[cl_guid] >= al_minkills_4 then
 									ammolamers[killer] = false
+									et.trap_SendServerCommand(killer, "chat \"^3You've been given your ammo crates back!\"\n")
+									et.gentity_set(killer, "ps.ammo", 12, 1)
+									et.gentity_set(killer, "ps.ammoclip", 12, 1)
 								end
 							end
-						else
-							if kills >= al_minkills_4 then
-								ammolamers[killer] = false
+						end
+
+						if foplamer[killer] == true then
+							if foplamers[cl_guid][1] <= fop_threshold_4 then
+								if foplamers[cl_guid][1] <= fop_threshold_3 then
+									if foplamers[cl_guid][1] <= fop_threshold_2 then
+										if nonhwkills[cl_guid] >= fop_minkills_1 then
+											foplamer[killer] = false
+											et.trap_SendServerCommand(killer, "chat \"^3You've been rewarded with a brand new set of binoculars!\"\n")
+											et.gentity_set(killer, "ps.stats", 1, 64)
+										end
+									else
+										if nonhwkills[cl_guid] >= fop_minkills_2 then
+											foplamer[killer] = false
+											et.trap_SendServerCommand(killer, "chat \"^3You've been rewarded with a brand new set of binoculars!\"\n")
+											et.gentity_set(killer, "ps.stats", 1, 64)
+										end
+									end
+								else
+									if nonhwkills[cl_guid] >= fop_minkills_3 then
+										foplamer[killer] = false
+										et.trap_SendServerCommand(killer, "chat \"^3You've been rewarded with a brand new set of binoculars!\"\n")
+										et.gentity_set(killer, "ps.stats", 1, 64)
+									end
+								end
+							else
+								if nonhwkills[cl_guid] >= fop_minkills_4 then
+									foplamer[killer] = false
+									et.trap_SendServerCommand(killer, "chat \"^3You've been rewarded with a brand new set of binoculars!\"\n")
+									et.gentity_set(killer, "ps.stats", 1, 64)
+								end
 							end
 						end
 					end
@@ -564,62 +691,41 @@ function et_Print(text)
 				ammo_given[tonumber(id)] = 1
 			else
 				ammo_given[tonumber(id)] = ammo_given[tonumber(id)] + 1
-
+				local cl_guid = et.Info_ValueForKey(et.trap_GetUserinfo(tonumber(id)), "cl_guid")
+				if fopkills[cl_guid] == nil then
+					fopkills[cl_guid] = 0
+				end
 				if ammo_given[tonumber(id)] >= al_threshold_1 and ammo_given[tonumber(id)] <= al_threshold_2 then
-					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
-					if kills < al_minkills_1 then
+					if fopkills[cl_guid] < al_minkills_1 then
 						ammolamers[tonumber(id)] = true
-						al_msg[tonumber(id)] = false
-						if ammolamers[tonumber(id)] == true then
-							if al_msg[tonumber(id)] == false then
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-								al_msg[tonumber(id)] = true
-							end
-							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
-							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
-						end
+						et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+						et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+						et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						et.G_LogPrint("LUA event: " .. et.gentity_get(tonumber(id), "pers.netname") .. " got his ammo packs confiscated\n")
 					end
 				elseif ammo_given[tonumber(id)] >= al_threshold_2 and ammo_given[tonumber(id)] <= al_threshold_3 then
-					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
-					if kills < al_minkills_2 then
+					if fopkills[cl_guid] < al_minkills_2 then
 						ammolamers[tonumber(id)] = true
-						al_msg[tonumber(id)] = false
-						if ammolamers[tonumber(id)] == true then
-							if al_msg[tonumber(id)] == false then
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-								al_msg[tonumber(id)] = true
-							end
-							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
-							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
-						end
+						et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+						et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+						et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						et.G_LogPrint("LUA event: " .. et.gentity_get(tonumber(id), "pers.netname") .. " got his ammo packs confiscated\n")
 					end
 				elseif ammo_given[tonumber(id)] > al_threshold_3 and ammo_given[tonumber(id)] <= al_threshold_4 then
-					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
-					if kills < al_minkills_3 then
+					if fopkills[cl_guid] < al_minkills_3 then
 						ammolamers[tonumber(id)] = true
-						al_msg[tonumber(id)] = false
-						if ammolamers[tonumber(id)] == true then
-							if al_msg[tonumber(id)] == false then
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-								al_msg[tonumber(id)] = true
-							end
-							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
-							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
-						end
+						et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+						et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+						et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						et.G_LogPrint("LUA event: " .. et.gentity_get(tonumber(id), "pers.netname") .. " got his ammo packs confiscated\n")
 					end
 				elseif ammo_given[tonumber(id)] > al_threshold_4 then
-					local kills = tonumber(et.gentity_get(tonumber(id), "sess.kills"))
-					if kills < al_minkills_4 then
+					if fopkills[cl_guid] < al_minkills_4 then
 						ammolamers[tonumber(id)] = true
-						al_msg[tonumber(id)] = false
-						if ammolamers[tonumber(id)] == true then
-							if al_msg[tonumber(id)] == false then
-								et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-								al_msg[tonumber(id)] = true
-							end
-							et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
-							et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
-						end
+						et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(tonumber(id), "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
+						et.gentity_set(tonumber(id), "ps.ammo", 12, 0)
+						et.gentity_set(tonumber(id), "ps.ammoclip", 12, 0)
+						et.G_LogPrint("LUA event: " .. et.gentity_get(tonumber(id), "pers.netname") .. " got his ammo packs confiscated\n")
 					end
 				end
 			end
@@ -696,13 +802,16 @@ function et_ClientSpawn(id, revived)
 
 					respawn_time[id] = et.trap_Milliseconds() + 10000
 
-					if ammolamers[id] == true then
-						if al_msg[id] == false then
+					if et.gentity_get(id,"sess.PlayerType") == 3 then
+						if ammolamers[id] == true then
 							et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3got his ammo packs confiscated until he gets more kills.\"\n")
-							al_msg[id] = true
+							et.gentity_set(id, "ps.ammo", 12, 0)
+							et.gentity_set(id, "ps.ammoclip", 12, 0)
 						end
-						et.gentity_set(id, "ps.ammo", 12, 0)
-						et.gentity_set(id, "ps.ammoclip", 12, 0)
+						if foplamer[id] == true then
+							et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+							et.gentity_set(id, "ps.stats", 1, 0)
+						end
 					end
 				end
 
@@ -744,6 +853,13 @@ function et_ClientSpawn(id, revived)
 						end
 					end
 				end
+			end
+		end
+	else
+		if et.gentity_get(id,"sess.PlayerType") == 3 then
+			if foplamer[id] == true then
+				--et.trap_SendServerCommand(-1, "chat \"" .. et.gentity_get(id, "pers.netname") .. " ^3's binoculars broke from overuse. More kills = new pair.\"\n")
+				et.gentity_set(id, "ps.stats", 1, 0)
 			end
 		end
 	end
