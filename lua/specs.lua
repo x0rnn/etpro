@@ -184,7 +184,7 @@ function et_ClientCommand(id, command)
 				if len ~= -1 then
 					filestr = et.trap_FS_Read(fd, len)
 					et.trap_FS_FCloseFile(fd)
-					for v in string.gfind(filestr, guid .. "\nlevel\t%= ([^\n])") do
+					for v in string.gfind(filestr, guid .. "\nlevel\t%= ([^\n]+)") do
 						if tonumber(v) >= 4 then -- level 4+ (Deputy+)
 							admin_flag = true
 							break
@@ -222,7 +222,7 @@ function et_ClientCommand(id, command)
 					if len ~= -1 then
 						filestr = et.trap_FS_Read(fd, len)
 						et.trap_FS_FCloseFile(fd)
-						for v in string.gfind(filestr, guid .. "\nlevel\t%= ([^\n])") do
+						for v in string.gfind(filestr, guid .. "\nlevel\t%= ([^\n]+)") do
 							if tonumber(v) >= 4 then -- level 4+ (Deputy+)
 								admin_flag = true
 								break
