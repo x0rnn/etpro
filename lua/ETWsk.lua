@@ -269,7 +269,7 @@ function getConfig(map)
         c.spawns[4] = {name = "Command Post spawnt", state = NO_PROTECT}
         c.spawns[5] = {name = "West Bunker Allies", state = NO_PROTECT}
         c.spawns[6] = {name = "Axis spawn / Command Post", state = NO_PROTECT}
--- Würzburg Radar
+-- W�rzburg Radar
 -- Radar 05.10.2018 - added axis house exit protection
     elseif map == "radar" then
         c.spawns[1] = {state = NO_PROTECT} -- Side Gate Command Post Spawn
@@ -480,7 +480,14 @@ function getConfig(map)
         c.spawns[5] = {name = "Axis Depot Back Exit", state = PROTECT_AXIS, pos = {771, -2629, -47}, radius2 = 260}
         c.spawns[6] = {name = "Axis Depot Tunnel", state = PROTECT_AXIS, pos = {890, -2270, -147}, radius2 = 260}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
-
+    elseif map == "etl_supply" then
+        c.spawns[1] = {name = "Allied start", state = PROTECT_ALLIES, pos = {-2050, 131, 0}, radius2 = 540}
+        c.spawns[3] = {name = "Forward", state = NO_PROTECT, pos = {-283, 2391, 264}, radius2 = 220}
+        c.spawns[4] = {state = NO_PROTECT} --Command Post Spawn
+        c.spawns[2] = {name = "Axis Depot", state = PROTECT_AXIS, pos = {650, -1810, -135}, radius2 = 330}
+        c.spawns[5] = {name = "Axis Depot Back Exit", state = PROTECT_AXIS, pos = {771, -2629, -47}, radius2 = 260}
+        c.spawns[6] = {name = "Axis Depot Tunnel", state = PROTECT_AXIS, pos = {890, -2270, -147}, radius2 = 260}
+        c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
 -- Supply Pro 23.10.2018
     elseif map == "supply_pro" then
         c.spawns[1] = {name = "Farmhouse", state = PROTECT_ALLIES, pos = {-2175, -210, 24}, radius2 = 221}
