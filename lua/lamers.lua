@@ -5,7 +5,7 @@
 -- players who continuously walk onto other players' landmines (teamkill) will get a warning first and get put to spectators if they continue (default: warn at 4 and 5, put spec at 6)
 -- players who continuously teamkill (knife, pistols, smg (for medics only knife counts)) other players will get a warning first and get put to spectators if they continue (default: warn at 2, gib at 3, put spec at 4)
 -- fieldops who just hand out ammo and do nothing else will have their ammo packs taken away until they get more kills (defaults: <2 kills/10 ammo given, <5/20, <10/35, <15/55)
--- fieldops who just call arty and do nothing else will have their binoculars/arty taken away until they get more normal kills (defaults: <1 normal kills/10 arty kills, <5/15, <10/20, <15/30)
+-- fieldops who just call arty and do nothing else will have their binoculars/arty taken away until they get more normal kills (defaults: <2 normal kills/10 arty kills, <5/15, <10/20, <15/30)
 -- gibs rambo medics with >= 30 kills and revive ratio less than 6.6% on every 10th kill (30, 40, etc.) if their revive ratio doesn't improve (basically 1 new revive is all that's needed)
 -- intended for players with a lame gamestyle of ramboing/spamming/camping panzer/mortar/arty/mg42 and not doing anything else and overall laming by pushing and intentionally walking into team arty
 -- removed panzerfaust when less than 12 players
@@ -61,7 +61,7 @@ al_threshold_4 = 55
 
 foplamers = {}
 foplamer = {}
-fop_minkills_1 = 1
+fop_minkills_1 = 2
 fop_minkills_2 = 5
 fop_minkills_3 = 10
 fop_minkills_4 = 15
