@@ -185,6 +185,7 @@ function et_Print( text )
 					timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
 					if timeleft < 30000 then
 						sudden_death = true
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death activated!\n")
 						et.trap_SendServerCommand(-1, "chat \"^1Sudden Death mode is activated! Defuse the dynamite or lose!\"")
 						et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") + 0.5)
 						et.G_globalSound("sound/misc/sudden_death.wav")
@@ -211,6 +212,7 @@ function et_Print( text )
 						timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
 						if timeleft < 30000 then
 							sudden_death = true
+							et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death activated!\n")
 							et.trap_SendServerCommand(-1, "chat \"^1Sudden Death mode is activated! Defuse the dynamite or lose!\"")
 							et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") + 0.5)
 							et.G_globalSound("sound/misc/sudden_death.wav")
@@ -241,6 +243,7 @@ function et_Print( text )
 				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" then
 					if sudden_death == true then
 						et.trap_Cvar_Set("timelimit", 0.0001)
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
 					end
 				end
 			end
@@ -248,6 +251,7 @@ function et_Print( text )
 				if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
 					if sudden_death == true then
 						et.trap_Cvar_Set("timelimit", 0.0001)
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
 					end
 				end
 			end
@@ -271,18 +275,24 @@ function et_Print( text )
 				if plant == "Allied team has destroyed the South Anti-Tank Gun!" or plant == "Allied team has destroyed the North Anti-Tank Gun!" then
 					if first_obj == false then
 						first_obj = true
+					else
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Allies win!\n")
 					end
 				end
 			elseif mapname == "erdenberg_t1" then
 				if plant == "The West Flak88 has been destroyed!" or plant == "The East Flak88 has been destroyed!" then
 					if first_obj == false then
 						first_obj = true
+					else
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Allies win!\n")
 					end
 				end
 			elseif mapname == "tc_base" then
 				if plant == "Allied team has disabled the South Radar!" or plant == "Allied team has disabled the North Radar!" then
 					if first_obj == false then
 						first_obj = true
+					else
+						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Allies win!\n")
 					end
 				end
 			end
