@@ -221,7 +221,7 @@ game_manager
 		wait 1000
 		// Toggle the line of the respective setting you want to change by (un-)commenting.
 		//
-		setdamagable truck 1					// Make truck invulnerable
+		setdamagable truck 0					// Make truck invulnerable
 		// setstate crane_controls_TJ invisible	// Clip brush in crane controls window	(enabled by default)
 		 setstate radio_1_speaker invisible	// Radio in forward bunker spawn (enabled by default)
 		 setstate radio_2_speaker invisible	// Radio at depot gates (enabled by default)
@@ -1180,7 +1180,8 @@ crane_rope_4
 		wm_teamvoiceannounce 0 "axis_gold_secured"
 		wm_teamvoiceannounce 1 "allies_gold_secured"
 		// *---------------------------------------------------------------------------------*
-		
+		setdamagable truck 1
+		wm_announce "The Truck is now damageable!"
 		gotomarker crane_path1 100 wait
 		trigger crane_arm crane_arm_sound_stop
 	}
