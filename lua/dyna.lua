@@ -1,3 +1,5 @@
+-- x0rnn: added dynamite "sudden death" mode
+
 ---------------------------------
 ------- Dynamite counter --------
 -------  By Necromancer  --------
@@ -12,7 +14,16 @@ SHOW = 2
 
 -- This script can be freely used and modified as long as the original author\s are mentioned (and their homepage: www.usef-et.org)
 
-
+mapname = ""
+mapstarted = false
+paused = false
+mapstart_time = 0
+paused_time = 0
+unpaused_time = 0
+stuck_time = 0
+intervals = {[1]=0, [2]=0}
+sudden_death = false
+first_obj = false
 
 -- Constans
 COLOR = {}
@@ -35,6 +46,7 @@ OLD = os.time()
 
 function et_InitGame(levelTime, randomSeed, restart)
     et.RegisterModname("dyna.lua" .. et.FindSelf())
+	mapname = string.lower(et.trap_Cvar_Get("mapname"))
 end
 
 function et_RunFrame( levelTime )
@@ -57,6 +69,51 @@ function et_RunFrame( levelTime )
 			--timer[dyno] = nil
 		end
 	end
+
+	if math.mod(levelTime, 1000) == 0 then
+		local gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+		if gamestate == 0 then
+			if mapstarted == false then
+				mapstart_time = et.trap_Milliseconds()
+				mapstarted = true
+			else
+				if paused == true then
+					local cs = et.trap_GetConfigstring(11)
+					if intervals[1] == 0 then
+						intervals[1] = cs
+					elseif intervals[1] ~= 0 then
+						if intervals[2] == 0 then
+							intervals[2] = cs
+						elseif intervals[2] ~= 0 then
+							intervals[1] = intervals[2]
+							intervals[2] = cs
+							if intervals[1] == intervals[2] then
+								paused = false
+								unpaused_time = et.trap_Milliseconds() - 1000
+								stuck_time = unpaused_time - paused_time + stuck_time
+								intervals[1] = 0
+								intervals[2] = 0
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function et_ConsoleCommand()
+	local arg = et.trap_Argv(1)
+	if arg == "pause" then
+		paused = true
+		paused_time = et.trap_Milliseconds()
+	end
+	if arg == "unpause" then
+		paused = false
+		unpaused_time = et.trap_Milliseconds()
+		stuck_time = unpaused_time - paused_time + stuck_time + 10000
+	end
+	return(0)
 end
 
 function place_destroyed(place) -- removes any dynamties that were planted on this objective
@@ -100,7 +157,6 @@ function et_Print( text )
 	--etpro popup: axis planted "the Old City MG Nest"
 	start,stop = string.find(text, POPUP .. " popup:",1,true) -- check that its not any player print, trying to manipulate the dyno counter
 	if start and stop then
-		
 		start,stop,team,plant = string.find(text, POPUP .. " popup: (%S+) planted \"([^%\"]*)\"")
 		if start and stop then -- dynamite planted
 			if team == "axis" then team = 1 
@@ -121,18 +177,113 @@ function et_Print( text )
 
 			print_message(-1, -1, timer[index]["place"])
 			--et.G_LogPrint("dynamite set: " .. index .. "\n")
+
+			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" then
+				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" then
+					local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
+					local timeleft
+					timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
+					if timeleft < 30000 then
+						sudden_death = true
+						et.trap_SendServerCommand(-1, "chat \"^1Sudden Death mode is activated! Defuse the dynamite or lose!\"")
+						et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") + 0.5)
+						et.G_globalSound("sound/misc/sudden_death.wav")
+						for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+							local team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
+							if team == 2 then
+								if et.gentity_get(j,"sess.PlayerType") == 2 then
+									local health = tonumber(et.gentity_get(j, "health"))
+									if health > 0 then
+										et.gentity_set(j, "ps.ammoclip", 15, 0)
+										et.trap_SendServerCommand(j, "chat \"^1Sudden Death mode is activated! Can't plant additional dynamites!\"")
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t1" then
+				if first_obj == true then
+					if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
+						local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
+						local timeleft
+						timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
+						if timeleft < 30000 then
+							sudden_death = true
+							et.trap_SendServerCommand(-1, "chat \"^1Sudden Death mode is activated! Defuse the dynamite or lose!\"")
+							et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") + 0.5)
+							et.G_globalSound("sound/misc/sudden_death.wav")
+							for j=0, tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
+								local team = tonumber(et.gentity_get(j, "sess.sessionTeam"))
+								if team == 2 then
+									if et.gentity_get(j,"sess.PlayerType") == 2 then
+										local health = tonumber(et.gentity_get(j, "health"))
+										if health > 0 then
+											et.gentity_set(j, "ps.ammoclip", 15, 0)
+											et.trap_SendServerCommand(j, "chat \"^1Sudden Death mode is activated! Can't plant additional dynamites!\"")
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 
 		start,stop,team,plant = string.find(text, POPUP .. " popup: (%S+) defused \"([^%\"]*)\"")
 		if start and stop then -- dynamite defused
 			if team == "axis" then team = 1 
 			else team = 2 end
+
+			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" then
+				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" then
+					if sudden_death == true then
+						et.trap_Cvar_Set("timelimit", 0.0001)
+					end
+				end
+			end
+			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t1" then
+				if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
+					if sudden_death == true then
+						et.trap_Cvar_Set("timelimit", 0.0001)
+					end
+				end
+			end
+
 			for index,temp in pairs(timer) do
 				if timer[index]["place"] == plant then
 					print_message(-1, -2, timer[index]["place"])
 					timer[index] = nil
 					--et.G_LogPrint("dynamite removed: " .. index .. "\n")
 					return
+				end
+			end
+		end
+	end
+	--etpro announce: "Allied team has destroyed the South Anti-Tank Gun!"
+	start2,stop2 = string.find(text, POPUP .. " announce:",1,true) -- check that its not any player print, trying to manipulate the dyno counter
+	if start2 and stop2 then
+		start2,stop2,plant = string.find(text, POPUP .. " announce: \"([^%\"]*)\"")
+		if start2 and stop2 then -- dynamite planted
+			if mapname == "oasis" or mapname == "sw_oasis_b3" then
+				if plant == "Allied team has destroyed the South Anti-Tank Gun!" or plant == "Allied team has destroyed the North Anti-Tank Gun!" then
+					if first_obj == false then
+						first_obj = true
+					end
+				end
+			elseif mapname == "erdenberg_t1" then
+				if plant == "The West Flak88 has been destroyed!" or plant == "The East Flak88 has been destroyed!" then
+					if first_obj == false then
+						first_obj = true
+					end
+				end
+			elseif mapname == "tc_base" then
+				if plant == "Allied team has disabled the South Radar!" or plant == "Allied team has disabled the North Radar!" then
+					if first_obj == false then
+						first_obj = true
+					end
 				end
 			end
 		end
