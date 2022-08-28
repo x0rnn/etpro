@@ -178,8 +178,8 @@ function et_Print( text )
 			print_message(-1, -1, timer[index]["place"])
 			--et.G_LogPrint("dynamite set: " .. index .. "\n")
 
-			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" then
-				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" then
+			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" or mapname == "mp_sub_rc1" then
+				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" or plant == "the Axis Submarine" then
 					local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
 					local timeleft
 					timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
@@ -239,19 +239,35 @@ function et_Print( text )
 			if team == "axis" then team = 1 
 			else team = 2 end
 
-			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" then
-				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" then
+			if mapname == "battery" or mapname == "sw_battery" or mapname == "fueldump" or mapname == "braundorf_b4" or mapname == "mp_sub_rc1" then
+				if plant == "the Gun Controls" or plant == "the Fuel Dump" or plant == "the bunker controls" or plant == "the Axis Submarine" then
 					if sudden_death == true then
-						et.trap_Cvar_Set("timelimit", 0.0001)
-						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
+						local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
+						local timeleft
+						timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
+						if timeleft - 30000 > 3750 then
+							local t = ((timeleft - 30000) / 1000) / 60
+							et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") - t)
+						else
+							et.trap_Cvar_Set("timelimit", 0.0001)
+							et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
+						end
 					end
 				end
 			end
 			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t1" then
 				if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
 					if sudden_death == true then
-						et.trap_Cvar_Set("timelimit", 0.0001)
-						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
+						local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
+						local timeleft
+						timeleft = timelimit - ((et.trap_Milliseconds() - stuck_time) - mapstart_time)
+						if timeleft - 30000 > 3750 then
+							local t = ((timeleft - 30000) / 1000) / 60
+							et.trap_Cvar_Set("timelimit", et.trap_Cvar_Get("timelimit") - t)
+						else
+							et.trap_Cvar_Set("timelimit", 0.0001)
+							et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Axis defused!\n")
+						end
 					end
 				end
 			end
@@ -294,6 +310,19 @@ function et_Print( text )
 					else
 						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Allies win!\n")
 					end
+				end
+			end
+		end
+	end
+end
+
+function et_ClientSpawn(id, revived)
+	if revived ~= 1 then
+		if sudden_death == true then
+			local team = et.gentity_get(id, "sess.sessionTeam")
+			if team == 2 then
+				if et.gentity_get(id,"sess.PlayerType") == 2 then
+					et.gentity_set(id,"ps.ammoclip", 15, 0)
 				end
 			end
 		end
