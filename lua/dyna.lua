@@ -204,7 +204,7 @@ function et_Print( text )
 					end
 				end
 			end
-			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t1" then
+			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t2" then
 				if first_obj == true then
 					if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
 						local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
@@ -255,7 +255,7 @@ function et_Print( text )
 					end
 				end
 			end
-			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t1" then
+			if mapname == "sw_oasis_b3" or mapname == "oasis" or mapname == "tc_base" or mapname == "erdenberg_t2" then
 				if plant == "the South PAK 75mm Gun" or plant == "the North PAK 75mm Gun" or plant == "the South Anti-Tank Gun" or plant == "the North Anti-Tank Gun" or plant == "the West Flak88" or plant == "the East Flak88" or plant == "the South Radar [02]" or plant == "the North Radar [01]" then
 					if sudden_death == true then
 						local timelimit = et.trap_Cvar_Get("timelimit") * 1000 * 60 - 2000 --counts 2 seconds more for some reason...
@@ -295,7 +295,7 @@ function et_Print( text )
 						et.G_LogPrint("LUA event: " .. mapname .. " Dynamite sudden death, Allies win!\n")
 					end
 				end
-			elseif mapname == "erdenberg_t1" then
+			elseif mapname == "erdenberg_t2" then
 				if plant == "The West Flak88 has been destroyed!" or plant == "The East Flak88 has been destroyed!" then
 					if first_obj == false then
 						first_obj = true
