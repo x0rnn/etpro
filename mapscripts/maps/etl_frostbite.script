@@ -202,7 +202,9 @@ game_manager
 
 		wm_announce "^3Note: This version of Frostbite has 2 docruns:"
 		wm_announce "^3After securing the 1st documents, new deciphered documents appear next to the Transmitter."
-		wm_announce "^3Bring them to the back of the Escape Truck in the Axis garage!" 
+		wm_announce "^3Bring them to the back of the Escape Truck in the Axis garage!"
+
+		setstate gramophone_hint invisible
 	}
 
 	trigger allies_transmit1
@@ -831,7 +833,7 @@ gramophone_hint
 	{
 		setstate gramophone_hint invisible
 		togglespeaker record_music
-		wait 39414	// wait for wav to finish		
+		wait 39414	// wait for wav to finish
 		setstate gramophone_hint default
 	}
 }
