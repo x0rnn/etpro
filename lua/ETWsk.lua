@@ -319,11 +319,11 @@ function getConfig(map)
         c.spawns[4] = {name = "Tank", state = PROTECT_ALLIES, pos = {2513, -321,-95}, radius2 = 540}
         c.spawns[2] = {state = NO_PROTECT}
         c.spawns[3] = {name = "Axis1", state = PROTECT_AXIS, pos = {-1949, -725, 72}, radius2 = 334}
-        c.spawns[6] = {name = "Axis2", state = PROTECT_AXIS, pos = {-1925, -50, 72}, radius2 = 334}
-        c.spawns[7] = {name = "Axis3", state = PROTECT_AXIS, pos = {-978, -445, 72}, radius2 = 334}
-        c.spawns[8] = {name = "Axis4", state = PROTECT_AXIS, pos = {-1464, -596, 72}, radius2 = 334}
-        c.spawns[9] = {name = "Axis5", state = PROTECT_AXIS, pos = {-1241, -212, 72}, radius2 = 434}
-        c.spawns[10] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 100}, radius2 = 447}
+        c.spawns[5] = {name = "Axis2", state = PROTECT_AXIS, pos = {-1925, -50, 72}, radius2 = 334}
+        c.spawns[6] = {name = "Axis3", state = PROTECT_AXIS, pos = {-978, -445, 72}, radius2 = 334}
+        c.spawns[7] = {name = "Axis4", state = PROTECT_AXIS, pos = {-1464, -596, 72}, radius2 = 334}
+        c.spawns[8] = {name = "Axis5", state = PROTECT_AXIS, pos = {-1241, -212, 72}, radius2 = 434}
+        c.spawns[9] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 100}, radius2 = 447}
 
 -- Adlernest_roof_b4
     elseif map == "adlernest_roof_b4" then
