@@ -34,7 +34,7 @@ function et_RunFrame(levelTime)
 			filestr = nil
 			if los_players > 0 and los_players < 30 then
 				if fullmsg ~= "et://et2.hirntot.org:27960" then
-					et.trap_Cvar_Set("sv_fullmsg", "ET://et2.hirntot.org:27960")
+					et.trap_Cvar_Set("sv_fullmsg", "et://et2.hirntot.org:27960")
 				end
 			else
 				if fullmsg == "et://et2.hirntot.org:27960" then
