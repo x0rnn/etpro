@@ -314,11 +314,17 @@ function getConfig(map)
         c.actions[5] = {spawn = 10, newstate = PROTECT_ALLIES, trigger = "Tunnel Spawn enabled"}
         c.actions[6] = {spawn = 10, newstate = NO_PROTECT, trigger = "Tunnel Spawn disabled"}
 -- Adlernest B4 16.11.2008
-    elseif map == "adlernest" then
+    elseif map == "adlernest" or map == "etl_adlernest" then
         c.spawns[1] = {state = PROTECT_ALLIES, radius2 = 570}
         c.spawns[4] = {name = "Tank", state = PROTECT_ALLIES, pos = {2513, -321,-95}, radius2 = 540}
         c.spawns[2] = {state = NO_PROTECT}
-        c.spawns[3] = {name = "Axis", state = PROTECT_AXIS, pos = {-1534, -305, 72}, radius2 = 820}
+        c.spawns[3] = {name = "Axis1", state = PROTECT_AXIS, pos = {-1949, -725, 72}, radius2 = 334}
+        c.spawns[6] = {name = "Axis2", state = PROTECT_AXIS, pos = {-1925, -50, 72}, radius2 = 334}
+        c.spawns[7] = {name = "Axis3", state = PROTECT_AXIS, pos = {-978, -445, 72}, radius2 = 334}
+        c.spawns[8] = {name = "Axis4", state = PROTECT_AXIS, pos = {-1464, -596, 72}, radius2 = 334}
+        c.spawns[9] = {name = "Axis5", state = PROTECT_AXIS, pos = {-1241, -212, 72}, radius2 = 434}
+        c.spawns[10] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 100}, radius2 = 447}
+
 -- Adlernest_roof_b4
     elseif map == "adlernest_roof_b4" then
         c.spawns[1] = {name = "Tank", state = PROTECT_ALLIES, pos = {3476, -1037, -95}, radius2 = 800}
@@ -328,7 +334,7 @@ function getConfig(map)
         c.spawns[5] = {name = "Axis3", state = PROTECT_AXIS, pos = {-978, -445, 72}, radius2 = 334}
         c.spawns[6] = {name = "Axis4", state = PROTECT_AXIS, pos = {-1464, -596, 72}, radius2 = 334}
         c.spawns[7] = {name = "Axis5", state = PROTECT_AXIS, pos = {-1241, -212, 72}, radius2 = 334}
-        c.spawns[8] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 72}, radius2 = 447}
+        c.spawns[8] = {name = "Axis6", state = PROTECT_AXIS, pos = {-1597, -184, 100}, radius2 = 447}
         c.spawns[9] = {name = "Allies Roof1", state = PROTECT_ALLIES, pos = {520, -2522, 546}, radius2 = 650}
         c.spawns[10] = {name = "Allies Roof2", state = PROTECT_ALLIES, pos = {-29, -2296, 296}, radius2 = 200}
         c.spawns[11] = {name = "Axis Roof1", state = PROTECT_AXIS, pos = {-1543, 264, 72}, radius2 = 293}
