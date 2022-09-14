@@ -235,7 +235,6 @@ game_manager
 		wm_announce "^3Initial Map time 11 min"
 		wm_announce "^3Timebonus:  +6 min Forward Bunker Gate"
 		// ----- Harlekin Timebonus Announce -----
-		wm_announce "^3The Truck cannot be moved until Allies breach the Forward Gate!"
 	}
 }
 
@@ -2678,7 +2677,6 @@ truck_trigger
 	{
 		wait 50
 		attachtotag truck tag_wback
-		wait 200
 	}
 }
 
