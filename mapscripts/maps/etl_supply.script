@@ -424,6 +424,7 @@ forward_gate
 		setstate forward_health default
 		setstate forward_health_model default
 		setstate forward_health_broken invisible
+		wm_announce "^3The Truck is now movable again!"
 	}
 }
 
@@ -1343,7 +1344,8 @@ truck
 		playsound sound/vehicles/truck/truck_idle.wav looping volume 127
 		// Reset the truck into correct position
 		followspline 0 truckpath0 10000 wait length 304
-		// followspline 1 truckpath0 10000 wait length 304
+		followspline 1 truckpath0 10000 wait length 304
+		followspline 0 truckpath0 10000 wait length 304
 		accum 3 set 1
 		// accum 3 set 68	//TEST TELEPORTER
 	}
@@ -1467,7 +1469,7 @@ truck
 
 	trigger stuck_check_forwardgate
 	{
-		accum 3 abort_if_not_equal 26	// SPLINE
+		accum 3 abort_if_not_equal 13	// SPLINE
 		globalaccum 1 abort_if_bitset 0	// STUCK?
 		accum 1 bitset 3				// STUCK!
 		
@@ -2673,7 +2675,7 @@ truck_trigger
 {
 	spawn
 	{
-		wait 250
+		wait 50
 		attachtotag truck tag_wback
 	}
 }
