@@ -1766,6 +1766,7 @@ truck
 		accum 1 bitset 2
 		followspline 0 truckpath13 125 wait length 304
 		accum 1 bitreset 2
+		wm_announce "^3Destroy the Forward Bunker Gate!"
 		trigger self run_continue
 	}
 
