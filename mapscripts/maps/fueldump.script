@@ -635,6 +635,17 @@ game_manager
            }
 		// ----- Arni Extra Spawn @ Axis Truck ----- 
 
+           create
+           {
+                   scriptName "crateclip"
+				   targetname "crateclip"
+                   classname "func_fakebrush"
+                   origin "-10317 -5514 648"
+                   contents 1  // SOLID
+                   mins "-20 -25 10"
+                   maxs "20 20 10"
+           }
+
 		// fueldump anti-trickjump player clips - courtesy arni
 
            create
@@ -2209,12 +2220,14 @@ fdbridge
     {
         setstate fdbridge_materials      default
         setstate fdbridge_flag           default
+		setstate crateclip default
     }
 
     trigger hide_materials
     {
         setstate fdbridge_materials      invisible
         setstate fdbridge_flag           invisible
+		setstate crateclip invisible
     }
 
     trigger show_fdbridge
