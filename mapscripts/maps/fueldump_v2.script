@@ -1195,6 +1195,11 @@ game_manager
 		       setstate alliedrearspawn_new invisible
 		// ----- Allied Hut Spawn END -----
 
+		setstate ramp_toi invisible
+		setstate fdramp_materials invisible
+		setstate fdramp_flag invisible
+		setstate crateclip invisible
+
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	15 // Harlekin Changed from 20 to 15
@@ -1414,6 +1419,10 @@ game_manager
 
 		wm_removeteamvoiceannounce 1 "fueldump_allies_tank_reardepot"
 		// *---------------------------------------------------------------------------------*
+		setstate ramp_toi default
+		setstate fdramp_materials default
+		setstate fdramp_flag default
+		setstate crateclip default
 	}
 
 	trigger checkgame
@@ -2571,7 +2580,7 @@ fdramp
     trigger setup
     {
         trigger self hide_fdramp
-        trigger self show_materials
+        //trigger self show_materials
     }
 
     buildstart final
