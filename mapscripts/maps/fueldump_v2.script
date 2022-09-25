@@ -2537,7 +2537,7 @@ fdramp
         wait 200        
         //faceangles 0 90 0 1
         constructible_class 2
-        constructible_chargebarreq 0.1
+        constructible_chargebarreq 2
         constructible_constructxpbonus 20
 
         trigger fdramp setup
