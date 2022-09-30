@@ -483,6 +483,7 @@ function getConfig(map)
         c.spawns[3] = {name = "Forward", state = NO_PROTECT, pos = {-283, 2391, 264}, radius2 = 220}
         c.spawns[4] = {state = NO_PROTECT} --Command Post Spawn
         c.spawns[2] = {name = "Axis Depot", state = PROTECT_AXIS, pos = {650, -1810, -135}, radius2 = 330}
+        c.spawns[7] = {name = "Axis Depot Stairs", state = PROTECT_AXIS, pos = {719, -1487, -31}, radius2 = 150}
         c.spawns[5] = {name = "Axis Depot Back Exit", state = PROTECT_AXIS, pos = {771, -2629, -47}, radius2 = 260}
         c.spawns[6] = {name = "Axis Depot Tunnel", state = PROTECT_AXIS, pos = {890, -2270, -147}, radius2 = 260}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
@@ -491,6 +492,7 @@ function getConfig(map)
         c.spawns[3] = {name = "Forward", state = NO_PROTECT, pos = {-283, 2391, 264}, radius2 = 220}
         c.spawns[4] = {state = NO_PROTECT} --Command Post Spawn
         c.spawns[2] = {name = "Axis Depot", state = PROTECT_AXIS, pos = {650, -1810, -135}, radius2 = 330}
+        c.spawns[7] = {name = "Axis Depot Stairs", state = PROTECT_AXIS, pos = {719, -1487, -31}, radius2 = 150}
         c.spawns[5] = {name = "Axis Depot Back Exit", state = PROTECT_AXIS, pos = {771, -2629, -47}, radius2 = 260}
         c.spawns[6] = {name = "Axis Depot Tunnel", state = PROTECT_AXIS, pos = {890, -2270, -147}, radius2 = 260}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
@@ -501,6 +503,7 @@ function getConfig(map)
         c.spawns[3] = {name = "Forward Bunker Spawn", state = NO_PROTECT, pos = {-271, 2367, 264}, radius2 = 170}
         c.spawns[4] = {state = NO_PROTECT} --Command Post Spawn
         c.spawns[2] = {name = "Axis Depot Spawn", state = PROTECT_AXIS, pos = {650, -1789, -165}, radius2 = 210}
+        c.spawns[8] = {name = "Axis Depot Stairs", state = PROTECT_AXIS, pos = {719, -1487, -31}, radius2 = 150}
         c.spawns[6] = {name = "Axis Depot Spawn Back Exit", state = PROTECT_AXIS, pos = {771, -2629, -47}, radius2 = 220}
         c.spawns[7] = {name = "Axis Depot Spawn Tunnel", state = PROTECT_AXIS, pos = {890, -2270, -147}, radius2 = 260}
         c.actions[1] = {spawn = 3, newstate = PROTECT_ALLIES, trigger = "breached the Forward Bunker"}
