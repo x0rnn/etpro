@@ -109,7 +109,7 @@ game_manager
             	scriptname "fdramp"
             	targetname "fdramp"
 				classname  "func_constructible"
-            	origin     "-10512 -5183 198"
+            	origin     "-10763 -5002 276"
             	spawnflags "8"
             	modelscale "0.4"
         	}
