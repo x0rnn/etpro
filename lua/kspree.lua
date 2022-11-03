@@ -201,7 +201,7 @@ players = {}
 worst_enemy = {}
 easiest_prey = {}
 kteams = { [0]="Spectator", [1]="Axis", [2]="Allies", [3]="Unknown", }
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved", [39]="Most objectives stolen", [40]="Most objectives returned", [41]="RAMBO - Reviving Ain't My Biz. Obv." }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Adrenaline junkie", [31]="Best K/D ratio", [32]="Most health packs taken", [33]="Most ammo packs taken", [34]="Most dynamites planted", [35]="Most dynamites defused", [36]="Most doublekills", [37]="Most shoves", [38]="Most shoved", [39]="Most objectives stolen", [40]="Most objectives returned", [41]="RAMBO - Reviving Ain't My Biz. Obv.", [42]="Can't shut up" }
 
 weapontable = {
 [3]=	"MP40",
@@ -255,7 +255,7 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
         doublekill[i] = { [1]=0 }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0 }
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0}
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
@@ -519,8 +519,8 @@ function getKeysSortedByValue(tbl, sortFunction)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -786,7 +786,14 @@ function topshots_f(id)
 						max_id[41] = i
 					end
 				end
-			end 
+			end
+			-- can't shut up
+			if topshots[i][33] > 10 then
+				if topshots[i][33] > max[42] then
+					max[42] = topshots[i][33]
+					max_id[42] = i
+				end
+			end
 		end
 	end
 	if id == -2 then
@@ -823,7 +830,7 @@ function topshots_f(id)
 		end
 		local j = 1
 		local players2 = {}
-		for j=1, 41 do
+		for j=1, 42 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 36 then
 					if j == 8 then
@@ -882,6 +889,13 @@ function topshots_f(id)
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							topshots[max_id[j]][32] .. " ^7Medic kills, " .. topshots[max_id[j]][20] .. " revives"
+						})
+					elseif j == 42 then
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zchats\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7chats"
 						})
 					else
 						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
@@ -992,7 +1006,7 @@ function topshots_f(id)
 		end
 	else
 		local players4 = {}
-		for j=1, 41 do
+		for j=1, 42 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 36 then
 					if j == 8 then
@@ -1051,6 +1065,13 @@ function topshots_f(id)
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							topshots[max_id[j]][32] .. " ^7Medic kills, " .. topshots[max_id[j]][20] .. " revives"
+						})
+					elseif j == 42 then
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zchats\"\n")
+						table.insert(players2, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j] .. " ^7chats"
 						})
 					else
 						--et.trap_SendServerCommand(id, "cpm \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
@@ -1522,28 +1543,19 @@ function et_Obituary(victim, killer, mod)
 				if mod == 18 then
 					topshots[killer][9] = topshots[killer][9] + 1
 				end
-				-- most panzer kills
+				-- most panzer kills/deaths
 				if mod == 17 then
 					topshots[killer][10] = topshots[killer][10] + 1
-				end
-				-- most mortar kills
-				if mod == 57 then
-					topshots[killer][11] = topshots[killer][11] + 1
-				end
-				-- most panzer deaths
-				if mod == 17 then
 					topshots[victim][12] = topshots[victim][12] + 1
 				end
-				-- most mortar deaths
+				-- most mortar kills/deaths
 				if mod == 57 then
+					topshots[killer][11] = topshots[killer][11] + 1
 					topshots[victim][13] = topshots[victim][13] + 1
 				end
-				-- most mg42 kills
+				-- most mg42 kills/deaths
 				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
 					topshots[killer][18] = topshots[killer][18] + 1
-				end
-				-- most mg42 deaths
-				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
 					topshots[victim][19] = topshots[victim][19] + 1
 				end
 
@@ -1916,7 +1928,7 @@ end
 
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0 }
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0}
     vsstats[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     vsstats_kills[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     vsstats_deaths[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
@@ -2019,7 +2031,8 @@ function multikillstats (id)
 end
 
 function et_ClientCommand(id, command)
-
+	if string.lower(command) == "say" or string.lower(command) == "say_team" then
+		topshots[id][33] = topshots[id][33] + 1
     if et.trap_Argv(0) == "say" then
         if et.gentity_get(id, "sess.muted") == 1 then return 1 end
 		if et.trap_Argv(1) == topshot_cmd then
@@ -2178,6 +2191,7 @@ function et_ClientCommand(id, command)
             return(1)
         end -- end elseif...
     end -- et.trap_Argv(0) == "say"
+    end
 
     if et.trap_Argv(0) == msg_command then
         if et.trap_Argv(1) == "" then
