@@ -314,21 +314,6 @@ function et_Print( text )
 			end
 		end
 	end
-	if sudden_death == true then
-		if string.find(text, "weapon_magicammo") then
-			local gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
-			if gamestate == 0 then
-				local i, j = string.find(text, "%d+")
-				local id = tonumber(string.sub(text, i, j))
-				local team = et.gentity_get(id, "sess.sessionTeam")
-				if team == 2 then
-					if et.gentity_get(id,"sess.PlayerType") == 2 then
-						et.gentity_set(id,"ps.ammoclip",15,0)
-					end
-				end
-			end
-		end
-	end
 end
 
 function et_ClientSpawn(id, revived)
