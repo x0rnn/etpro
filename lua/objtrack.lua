@@ -170,7 +170,7 @@ function et_Print(text)
 		end
 	end -- end frostbite
 
-	if mapname == "missile_b3" then
+	if (string.find(mapname, "missile")) then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -205,9 +205,9 @@ function et_Print(text)
 			objcarriers[objcarriers_id[1]] = nil
 			table.remove(objcarriers_id, 1)
 		end
-	end -- end missile_b3
+	end -- end missile_b3/b4
 
-	if mapname == "sp_delivery_te" then
+	if (string.find(mapname, "sp_delivery")) then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -236,7 +236,7 @@ function et_Print(text)
 				x = x + 1
 			end
 		end
-	end -- end sp_delivery_te
+	end -- end sp_delivery_te/etl_sp_delivery
 
 	if mapname == "sw_goldrush_te" then
 		if(string.find(text, "team_CTF_redflag")) then
@@ -834,13 +834,13 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
-	if mapname == "missile_b3" then
+	if (string.find(mapname, "missile")) then
 		objcarriers[victim] = nil
 		if objcarriers_id[1] == victim then
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "sp_delivery_te" then
+	if (string.find(mapname, "sp_delivery")) then
 		goldcarriers[victim] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
@@ -1008,13 +1008,13 @@ function et_ClientDisconnect(i)
 			table.remove(doccarriers_id, 1)
 		end
 	end
-	if mapname == "missile_b3" then
+	if (string.find(mapname, "missile")) then
 		objcarriers[i] = nil
 		if objcarriers_id[1] == i then
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "sp_delivery_te" then
+	if (string.find(mapname, "sp_delivery")) then
 		goldcarriers[i] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
