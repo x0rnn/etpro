@@ -1,7 +1,17 @@
+// fix door when allies activate Gate Controls -hazz 10.5.2019
+// add checks to make sure autospawns don't work backwards when obj isn't completed in usual order -hazz 10.5.2019
+
 game_manager
 {
 	spawn
 	{
+        //used to track allies spawns
+        globalaccum 1 bitreset 1
+        globalaccum 1 bitreset 2
+        // used to fix the axisonlydoor
+        globalaccum 2 bitreset 1
+        globalaccum 2 bitreset 2
+
 		accum 4 set 0
 		accum 6 set 0
 		accum 7 set 0
@@ -120,7 +130,6 @@ game_manager
 		trigger door1 auf
 		trigger door2 auf
 
-		setautospawn "Forward Allies Bunker Spawn" 1
 		setautospawn "Gate Control Spawn" 0
 
 		alertentity doors_smoke
@@ -128,6 +137,9 @@ game_manager
 		alertentity doors_dst3
 		setstate dcontrols_speaker invisible
 		setstate dcontrols_dst_speaker default
+        globalaccum 1 abort_if_bitset 1
+        globalaccum 1 abort_if_bitset 2
+		setautospawn "Forward Allies Bunker Spawn" 1
 	}
 
 
@@ -485,7 +497,6 @@ forwardflag
 		wm_objective_status 6 0 2
 		wm_objective_status 6 1 1
 
-		setautospawn "Forward Bunker Spawn" 1
 		setautospawn "Gate Control Spawn" 0
 
 		alertentity forwardbunkerspawn_obj
@@ -501,6 +512,8 @@ forwardflag
 		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
 
 		// *---------------------------------------------------------------------------------*
+        globalaccum 1 abort_if_bitset 1 // allied CP is already built, do not autospawn flag
+		setautospawn "Forward Bunker Spawn" 1
 	}
 
 	trigger kill
@@ -516,13 +529,15 @@ forwardflag
 		wm_objective_status 6 0 2
 		wm_objective_status 6 1 1
 
-		setautospawn "Forward Allies Bunker Spawn" 1
 		setautospawn "Gate Control Spawn" 0
 
 		setstate forwardbunkerspawn_obj invisible
 		setstate forwardbunkerspawn invisible
 		//alertentity forwardbunkerspawn_obj
 		//alertentity forwardbunkerspawn
+        globalaccum 1 abort_if_bitset 1 // allied CP is already built, do not autospawn flag
+        globalaccum 1 abort_if_bitset 2 // allies have already activated the Gate Controls, do not autospawn flag
+		setautospawn "Forward Allies Bunker Spawn" 1
 	}
 
 }
@@ -630,8 +645,8 @@ spawn
 }
 activate allies
 {
-	accum 5 abort_if_equal 1
-	accum 5 set 1
+	globalaccum 1 bitset 2 // Gate Controls activated, don't set autospawn back anymore
+    globalaccum 2 bitset 1 // so the axis door doesn't close after opening anymore
 
 	setstate gate_fi invisible
 
@@ -671,9 +686,7 @@ activate allies
 	trigger gate open
 	trigger gate2 open
 	setstate gatecontrol_spk_steam invisible
-	setstate axisonlydoor2 default
-	setstate axisonlydoor invisible
-	trigger axisonlydoor2 open
+	trigger axisonlydoor open
 
 	wm_objective_status 3 0 2
 	wm_objective_status 3 1 1
@@ -683,14 +696,14 @@ activate allies
 trigger disablespawns
 {
 	setautospawn "Rocket Gate Spawn" 1
-	accum 5 abort_if_equal 1
+	globalaccum 1 abort_if_bitset 2 // Gate Controls already activated, do not autospawn at flag
 	setautospawn "Forward Allies Bunker Spawn" 1
 
 }
 
 trigger enablespawns
 {
-	accum 5 abort_if_equal 1
+	globalaccum 1 abort_if_bitset 2 // Gate Controls already activated, do not autospawn at CP
 	setautospawn "CP Spawn" 1
 
 }
@@ -760,6 +773,10 @@ trigger resetaccum
 {
 	accum 1 set 0
 }
+trigger kill
+{
+    remove
+}
 }
 
 axisonlydoor
@@ -769,17 +786,24 @@ spawn
 }
 trigger open
 {
+    globalaccum 2 abort_if_bitset 2
+    globalaccum 2 bitset 2
 	playsound sound/movers/doors/door6_open.wav
 
 	gotomarker axisonlydoor_2 60 wait
 
 	wait 2000
-
+    globalaccum 2 abort_if_bitset 1
 	playsound sound/movers/doors/door6_open.wav
 
 	gotomarker axisonlydoor_1 60 wait
 
+    globalaccum 2 bitreset 2
 	trigger axisonlydoor_st resetaccum
+}
+trigger kill
+{
+    remove
 }
 }
 
@@ -1176,7 +1200,7 @@ allied_radio_built_model
 		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
 		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
-
+        globalaccum 1 bitset 1
 		trigger gate_fi enablespawns
 	}
 
@@ -1203,7 +1227,7 @@ allied_radio_built_model
 
 		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
 		// *---------------------------------------------------------------------------------*
-
+        globalaccum 1 bitreset 1
 		trigger gate_fi disablespawns
 	}
 }
