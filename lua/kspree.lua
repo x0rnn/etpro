@@ -1562,10 +1562,17 @@ function et_Obituary(victim, killer, mod)
                 -- announce_hp
                 if announce_hp then
                   local killerhp = et.gentity_get(killer, "health")
-                  if killerhp < 0 then
+                  local C = 2
+                  if killerhp <= 50 then
+                 	C = 3
+                  end
+                  if killerhp <= 20 then
+                 	C = 1
+                  end
+                  if killerhp <= 0 then
                     et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zwas dead.\n"))
                   else
-                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zhad ^1" .. killerhp .. " ^zHP left. Distance was ^1" .. math.floor(roundNum(killdist)) .. " ^zm.\n"))
+                    et.trap_SendServerCommand(victim, string.format(announce_hp_pos .. " \"" .. playerName(killer) ..  " ^zhad ^" .. C .. killerhp .. " ^zHP left. Distance was ^1" .. math.floor(roundNum(killdist)) .. " ^zm.\n"))
                   end
                 end
             else
