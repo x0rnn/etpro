@@ -391,7 +391,7 @@ game_manager
                    classname "func_fakebrush"
                    origin "-10929 -5080 398"
                    contents 1
-                   mins "-40 -60 0"
+                   mins "-50 -80 0"
                    maxs "10 25 0"
            }
            create
@@ -401,7 +401,7 @@ game_manager
                    classname "func_fakebrush"
                    origin "-10929 -5173 406"
                    contents 1
-                   mins "-20 -20 0"
+                   mins "-50 -20 0"
                    maxs "20 20 0"
            }
            create
@@ -411,7 +411,7 @@ game_manager
                    classname "func_fakebrush"
                    origin "-10929 -5193 412"
                    contents 1
-                   mins "-20 -20 0"
+                   mins "-50 -40 0"
                    maxs "20 0 0"
            }
            create
