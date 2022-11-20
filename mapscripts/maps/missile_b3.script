@@ -1,0 +1,1427 @@
+game_manager
+{
+	spawn
+	{
+		accum 4 set 0
+		accum 6 set 0
+		accum 7 set 0
+		wm_axis_respawntime 30
+		wm_allied_respawntime 20
+		wm_set_round_timelimit 15
+		wm_number_of_objectives 7
+		wm_setwinner 0
+
+		wm_objective_status 1 0 0
+		wm_objective_status 1 1 0
+		wm_objective_status 2 0 0
+		wm_objective_status 2 1 0
+		wm_objective_status 3 0 0
+		wm_objective_status 3 1 0
+		wm_objective_status 4 0 0
+		wm_objective_status 4 1 0
+		wm_objective_status 5 0 0
+		wm_objective_status 5 1 0
+		wm_objective_status 6 0 0
+		wm_objective_status 6 1 0
+		wm_objective_status 7 0 0
+		wm_objective_status 7 1 0
+
+		setautospawn "Bunker Spawn" 1
+		setautospawn "Forward Bunker Spawn" 0
+
+		wait 1000
+
+		setstate rocket invisible
+
+		alertentity rocketcontrol
+
+		trigger game_manager setstatesoff
+
+		setstate axisonlydoor2 invisible
+
+		setstate allies_gatespawn_obj invisible
+		setstate forwardbunkerspawn_forward_obj invisible
+		setstate rocketcontrol invisible
+		setstate t25 invisible
+		setstate drocketcontrols_toi invisible
+
+		setstate gate_fi invisible
+
+		setstate truck invisible
+		setstate truck_bwheel2 invisible
+		setstate truck_fwheel invisible
+
+		wait 500
+
+		setstate dcontrols_dst_speaker invisible
+		setstate gatecontrol_spk invisible
+		setstate gatecontrol_spk_steam invisible
+
+		wait 500
+
+		//*---------------*
+		wm_teamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_teamvoiceannounce 1 "battery_allies_generator_destroy"
+
+		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+		wm_addteamvoiceannounce 1 "battery_allies_generator_destroy"
+
+		wm_teamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_teamvoiceannounce 0 "battery_axis_generator_defend"
+
+		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+		wm_addteamvoiceannounce 0 "battery_axis_generator_defend"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		//*---------------*
+
+	}
+
+	trigger doors_destroyed
+	{
+		wm_announce	"Allies have destroyed the Door Control!"
+
+		setstate forwardbunkerspawn_obj invisible
+		setstate forwardbunkerspawn invisible
+
+		setstate forwardbunkerspawn_forward_obj default
+		alertentity forwardbunkerspawn_forward
+
+		trigger forwardflag kill
+
+		wm_objective_status 1 0 2
+		wm_objective_status 1 1 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 1 "allies_supply_get"
+
+		wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
+		wm_teamvoiceannounce 1 "allies_supply_get"
+
+		wm_removeteamvoiceannounce 1 "battery_allies_generator_destroy"
+		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+
+
+		wm_addteamvoiceannounce 0 "axis_supply_def"
+
+		wm_teamvoiceannounce 0 "axis_hq_objective_destroyed"
+		wm_teamvoiceannounce 0 "axis_supply_def"
+
+		wm_removeteamvoiceannounce 0 "battery_axis_generator_defend"
+		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+
+		// *---------------------------------------------------------------------------------*
+
+		trigger door1 auf
+		trigger door2 auf
+
+		setautospawn "Forward Allies Bunker Spawn" 1
+		setautospawn "Gate Control Spawn" 0
+
+		alertentity doors_smoke
+		alertentity doors_dst2
+		alertentity doors_dst3
+		setstate dcontrols_speaker invisible
+		setstate dcontrols_dst_speaker default
+	}
+
+
+	trigger checkgame
+	{
+		accum 4 abort_if_not_equal 1
+		wm_setwinner 1
+
+		wm_endround
+	}
+
+	trigger timelimit_hit
+	{
+		trigger rocket move0
+
+		trigger rocket move
+
+		// Axis animation
+	}
+
+	trigger allieswin
+	{
+		trigger truck position	
+
+		trigger door3 auf
+
+		wait 4000
+
+		trigger truck move
+
+		// Truck run
+	}
+}
+
+
+
+// *********************************************
+// ************** Rocket Control ***************
+// *********************************************
+
+glotz
+{
+spawn
+{
+wait 200
+trigger self setup
+
+constructible_class 3
+}
+
+trigger setup
+{
+setstate glotz invisible
+
+setstate baumaterial_toi default
+
+setstate baumaterial default
+setstate baumaterial_mod default
+}
+
+buildstart final
+{
+setstate glotz underconstruction
+
+alertentity glotzfake
+
+setstate baumaterial default
+setstate baumaterial_mod default
+}
+
+built final
+{
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_supply_get"
+
+		wm_addteamvoiceannounce 1 "allies_supply_get"
+		wm_removeteamvoiceannounce 1 "allies_hq_need_engineer"
+
+		wm_teamvoiceannounce 0 "axis_cons_lost"
+		wm_removeteamvoiceannounce 0 "axis_prot_cons"
+
+		// *---------------------------------------------------------------------------------*
+
+setstate glotz invisible
+
+setstate baumaterial invisible
+setstate baumaterial_mod invisible
+
+setstate rocketcontrol default
+
+alertentity glotz_blub
+
+wm_announce "The Rocket Controls have been dismantled."
+
+setstate drocketcontrols_toi default
+setstate t25 default
+setstate baumaterial_toi invisible
+
+wm_objective_status 4 0 2
+wm_objective_status 4 1 1
+}
+
+decayed final
+{
+setstate glotz invisible
+
+alertentity glotzfake
+
+setstate baumaterial default
+setstate baumaterial_mod default
+}
+
+death
+{
+}
+
+}
+
+
+
+truckbox2
+{
+	spawn
+	{
+		wait 50
+		setstate truckbox2 invisible
+		accum 2 set 0
+	}
+
+	trigger visible
+	{
+		setstate truckbox2 default
+		accum 2 abort_if_not_equal 0
+		wm_announce	"Allies have transported the Rocket Control!"
+
+		wm_objective_status 5 0 2
+		wm_objective_status 5 1 1
+
+		accum 2 set 1
+	}
+
+	trigger invisible
+	{
+		setstate truckbox2 invisible
+	}
+}
+
+truckboxtrans2
+{
+	trigger visible
+	{
+		setstate truckboxtrans2 default
+	}
+
+	trigger invisible
+	{
+		setstate truckboxtrans2 invisible
+	}
+}
+
+
+rocketcontrol
+{
+	spawn
+	{
+
+	}
+
+	trigger stolen
+	{
+
+		setstate t25 invisible
+
+	}
+
+	trigger returned
+	{
+
+		setstate t25 default
+
+	}
+
+	trigger captured
+	{
+		trigger truckbox2 visible
+		trigger truckboxtrans2 invisible
+		setstate drocketcontrols_toi invisible
+		setstate t25 invisible
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_captured"
+
+		wm_teamvoiceannounce 1 "allies_hq_objective_captured"
+		// *---------------------------------------------------------------------------------*
+
+
+		accum 4 set 1
+
+		trigger game_manager checkgame
+		trigger game_manager allieswin
+
+		wm_setwinner 1
+
+		wm_endround
+
+		// Allies win
+	}
+}
+
+
+
+// *********************************************
+// ************** Door Control *****************
+// *********************************************
+
+doors
+{
+	spawn
+	{
+		wait 50
+		constructible_class	3
+	}
+
+	death
+	{
+		trigger game_manager doors_destroyed
+	}
+}
+
+
+door1
+{
+	spawn
+	{
+	}
+
+	trigger auf
+	{
+		wait 500
+
+		playsound sound/movers/misc/big_gate1.wav
+
+		wait 400
+
+		playsound sound/movers/misc/big_gate2.wav looping forever
+
+		gotomarker door1_path 32 wait
+
+		stopsound
+
+		playsound sound/movers/misc/big_gate3.wav
+
+	}
+}
+
+
+door2
+{
+	spawn
+	{
+	}
+
+	trigger auf
+	{
+		wait 500
+
+		playsound sound/movers/misc/big_gate1.wav
+
+		wait 400
+
+		playsound sound/movers/misc/big_gate2.wav looping forever
+
+		gotomarker door2_path 32 wait
+
+		stopsound
+
+		playsound sound/movers/misc/big_gate3.wav
+
+	}
+}
+
+
+door3
+{
+	spawn
+	{
+	}
+
+	trigger auf
+	{
+		wait 500
+
+		playsound sound/movers/misc/big_gate1.wav
+
+		wait 400
+
+		playsound sound/movers/misc/big_gate2.wav looping forever
+
+		gotomarker door3_path 32 wait
+
+		stopsound
+
+		playsound sound/movers/misc/big_gate3.wav
+
+	}
+}
+
+
+forwardflag
+{
+	spawn
+	{
+		accum 3 set 0	// 0-Axis, 1-Allied
+		wm_objective_status 6 0 1
+		wm_objective_status 6 1 2
+	}
+
+	trigger axis_capture	// Flag has been claimed by an axis player
+	{
+		accum 3 abort_if_equal 0 // Do Axis already own the flag?
+
+		accum 3 set 0 // Axis own the flag
+		wm_announce	"Axis reclaim the Forward Bunker!"
+
+
+		wm_objective_status 6 0 1
+		wm_objective_status 6 1 2
+
+		setautospawn "Bunker Spawn" 1
+		setautospawn "Forward Bunker Spawn" 0
+
+		alertentity forwardbunkerspawn_obj
+		alertentity forwardbunkerspawn
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 1 "radar_allies_bunker_capture"
+
+		wm_teamvoiceannounce 1 "radar_allies_bunker_reclaimed"
+
+		wm_addteamvoiceannounce 0 "radar_axis_bunker_stop"
+
+		wm_teamvoiceannounce 0 "radar_axis_bunker_reclaimed"
+
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_capture	// Flag has been claimed by an allied player
+	{
+		accum 3 abort_if_equal 1 // Do Allies already own flag?
+
+		accum 3 set 1 // Allied own the flag
+		wm_announce	"Allies capture the Forward Bunker!"
+
+		wm_objective_status 6 0 2
+		wm_objective_status 6 1 1
+
+		setautospawn "Forward Bunker Spawn" 1
+		setautospawn "Gate Control Spawn" 0
+
+		alertentity forwardbunkerspawn_obj
+		alertentity forwardbunkerspawn
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "radar_allies_bunker_captured"
+
+		wm_removeteamvoiceannounce 1 "radar_allies_bunker_capture"
+
+		wm_teamvoiceannounce 0 "radar_axis_bunker_captured"
+
+		wm_removeteamvoiceannounce 0 "radar_axis_bunker_stop"
+
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger kill
+	{
+		trigger forwardflag force_allied
+		remove
+	}
+
+	trigger force_allied
+	{
+		accum 3 abort_if_equal 1 // Do Allies already own flag?
+
+		wm_objective_status 6 0 2
+		wm_objective_status 6 1 1
+
+		setautospawn "Forward Allies Bunker Spawn" 1
+		setautospawn "Gate Control Spawn" 0
+
+		setstate forwardbunkerspawn_obj invisible
+		setstate forwardbunkerspawn invisible
+		//alertentity forwardbunkerspawn_obj
+		//alertentity forwardbunkerspawn
+	}
+
+}
+
+
+
+
+// *********************************************
+// ************** Power Supply *****************
+// *********************************************
+truckbox1
+{
+	spawn
+	{
+		wait 50
+		setstate truckbox1 invisible
+		accum 1 set 0
+	}
+
+	trigger visible
+	{
+		setstate truckbox1 default
+		accum 1 abort_if_not_equal 0
+		wm_announce	"Allies have transported the Power Supply!"
+
+		wm_objective_status 2 0 2
+		wm_objective_status 2 1 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_captured"
+
+		wm_removeteamvoiceannounce 0 "axis_supply_def"
+
+		wm_teamvoiceannounce 1 "allies_hq_objective_captured"
+
+		wm_removeteamvoiceannounce 0 "allies_supply_get"
+		// *---------------------------------------------------------------------------------*
+
+		accum 1 set 1
+	}
+
+	trigger invisible
+	{
+		setstate truckbox1 invisible
+	}
+}
+
+truckboxtrans1
+{
+	trigger visible
+	{
+		setstate truckboxtrans1 default
+	}
+
+	trigger invisible
+	{
+		setstate truckboxtrans1 invisible
+	}
+}
+
+
+powersupply
+{
+	spawn
+	{
+		setstate powersupply_exit invisible
+	}
+
+	trigger stolen
+	{
+		setstate t24 invisible
+		setstate powersupply_exit default
+	}
+
+	trigger returned
+	{
+		setstate t24 default
+		setstate powersupply_exit invisible
+		
+	}
+
+	trigger captured
+	{
+		trigger truckbox1 visible
+		trigger truckboxtrans1 invisible
+		setstate t24 invisible
+		setstate powersupply_toi invisible
+
+		setstate powersupply_exit invisible
+
+		setstate gate_fi default
+
+		setstate gatecontrol_spk default
+	
+		wm_objective_status 2 0 2
+		wm_objective_status 2 1 1
+
+	}
+}
+
+gate_fi
+{
+spawn
+{
+}
+activate allies
+{
+	accum 5 abort_if_equal 1
+	accum 5 set 1
+
+	setstate gate_fi invisible
+
+	setstate axis_gatespawn_obj invisible
+	alertentity axis_gatespawn
+
+	alertentity allies_gatespawn
+	setstate allies_gatespawn_obj default
+
+	setstate gatecontrol_spk_steam default
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_need_engineer"
+
+		wm_addteamvoiceannounce 1 "allies_hq_need_engineer"
+
+		wm_teamvoiceannounce 0 "axis_prot_cons"
+		wm_addteamvoiceannounce 0 "axis_prot_cons"
+
+		// *---------------------------------------------------------------------------------*
+
+	wait 50
+
+	setautospawn "Rocket Gate Spawn" 1
+	setautospawn "Rocket Hall Spawn" 0
+
+	wait 1500
+
+	wm_announce "Allies have activated the Gate Controls!"
+
+	wait 2500
+
+	wm_announce "Magnetic seal deactivated - Gates opening!"
+
+	wait 500
+
+	trigger gate open
+	trigger gate2 open
+	setstate gatecontrol_spk_steam invisible
+	setstate axisonlydoor2 default
+	setstate axisonlydoor invisible
+	trigger axisonlydoor2 open
+
+	wm_objective_status 3 0 2
+	wm_objective_status 3 1 1
+
+}
+
+trigger disablespawns
+{
+	setautospawn "Rocket Gate Spawn" 1
+	accum 5 abort_if_equal 1
+	setautospawn "Forward Allies Bunker Spawn" 1
+
+}
+
+trigger enablespawns
+{
+	accum 5 abort_if_equal 1
+	setautospawn "CP Spawn" 1
+
+}
+}
+
+
+gate
+{
+spawn
+{
+}
+trigger open
+{
+	wait 1000
+
+	playsound sound/movers/doors/door5_open.wav
+
+	faceangles 0 90 0 6000
+}
+}
+
+gate2
+{
+spawn
+{
+}
+trigger open
+{
+	wait 2000
+
+	playsound sound/movers/doors/door5_open.wav
+
+	faceangles 0 70 0 4000
+}
+}
+
+axisonlydoor2
+{
+spawn
+{
+}
+trigger open
+{
+	wait 3000
+
+	playsound sound/movers/doors/door5_open.wav
+
+	faceangles 0 85 0 2000
+}
+}
+
+axisonlydoor_st
+{
+spawn
+{
+accum 1 set 0
+}
+trigger activated
+{
+	accum 1 abort_if_equal 1
+	accum 1 set 1
+
+	trigger axisonlydoor open
+ 
+}
+trigger resetaccum
+{
+	accum 1 set 0
+}
+}
+
+axisonlydoor
+{
+spawn
+{
+}
+trigger open
+{
+	playsound sound/movers/doors/door6_open.wav
+
+	gotomarker axisonlydoor_2 60 wait
+
+	wait 2000
+
+	playsound sound/movers/doors/door6_open.wav
+
+	gotomarker axisonlydoor_1 60 wait
+
+	trigger axisonlydoor_st resetaccum
+}
+}
+
+
+// ************************
+// ***** GABELSTAPLER *****
+// ************************
+
+gabel_st
+{
+spawn
+{
+}
+trigger push
+{
+	trigger gabel up
+	trigger gabel down
+}
+}
+
+gabel
+{
+spawn
+{
+}
+trigger up
+{	
+	accum 6 abort_if_equal 0
+	playsound sound/movers/motors/motor_loop_02.wav looping
+
+	gotomarker gabel_2 20 wait
+
+	stopsound
+	accum 6 set 0
+	wait 20
+}
+trigger down
+{
+	accum 6 abort_if_equal 1
+	playsound sound/movers/motors/motor_loop_02.wav looping
+
+	gotomarker gabel_1 25 wait
+
+	stopsound
+	accum 6 set 1
+	wait 20
+}
+}
+
+
+
+// *********************************************
+// ************** COMMAND POST *****************
+// *********************************************
+axis_radio_destroyed
+{
+	spawn
+	{
+		wait 200
+		accum 0 set 0
+		setstate axis_radio_destroyed invisible
+		setstate axis_radio_destroyed_model invisible
+	}
+
+	trigger hide
+	{
+		setstate axis_radio_destroyed invisible
+		setstate axis_radio_destroyed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 0
+		setstate axis_radio_destroyed default
+		setstate axis_radio_destroyed_model default
+	}
+
+	trigger enable
+	{
+		accum 0 set 1
+	}
+
+	trigger disable
+	{
+		accum 0 set 0
+	}
+}
+
+allied_radio_destroyed
+{
+	spawn
+	{
+		wait 200
+		accum 0 set 0
+		setstate allied_radio_destroyed invisible
+		setstate allied_radio_destroyed_model invisible
+	}
+
+	trigger hide
+	{
+		setstate allied_radio_destroyed invisible
+		setstate allied_radio_destroyed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 0
+		setstate allied_radio_destroyed default
+		setstate allied_radio_destroyed_model default
+	}
+
+	trigger enable
+	{
+		accum 0 set 1
+	}
+
+	trigger disable
+	{
+		accum 0 set 0
+	}
+}
+
+neutral_radio_closed
+{
+	spawn
+	{
+		accum 0 set 0
+	}
+
+	trigger hide
+	{
+		setstate neutral_radio_closed invisible
+		setstate neutral_radio_closed_model invisible
+	}
+
+	trigger show
+	{
+		accum 0 abort_if_equal 1
+		setstate neutral_radio_closed default
+		setstate neutral_radio_closed_model default
+	}
+
+	trigger disable
+	{
+		accum 0 set 1
+	}
+}
+
+allied_radio_built
+{
+	spawn
+	{
+		wait 50
+		constructible_class	2
+		trigger allied_radio_built setup
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+	}
+
+	buildstart final
+	{
+		trigger allied_radio_built_model trans
+		trigger axis_radio_destroyed hide
+		trigger allied_radio_destroyed hide
+		trigger neutral_radio_closed 	hide
+	}
+
+	built final
+	{
+		trigger allied_radio_built_model show
+		trigger allied_radio_destroyed enable
+		trigger axis_radio_destroyed disable
+		trigger neutral_radio_closed 	disable
+		trigger allied_radio_built_model enable_allied_features
+		trigger alliedcpspawns_obj on
+
+		enablespeaker allies_compost_sound
+	}
+
+	decayed final
+	{
+		trigger allied_radio_built_model hide
+		trigger allied_radio_destroyed show
+		trigger axis_radio_destroyed show
+		trigger neutral_radio_closed 	show
+	}
+
+	death
+	{
+		trigger allied_radio_built_model hide
+		trigger allied_radio_destroyed show
+		trigger allied_radio_built_model disable_allied_features
+		trigger alliedcpspawns_obj off
+
+		disablespeaker allies_compost_sound
+	}
+}
+
+axis_radio_built
+{
+	spawn
+	{
+		wait 50
+		constructible_class	2
+
+		wait 150
+		trigger axis_radio_built setup
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+	}
+
+	buildstart final
+	{
+		trigger axis_radio_built_model trans
+		trigger axis_radio_destroyed hide
+		trigger allied_radio_destroyed hide
+		trigger neutral_radio_closed 	hide
+	}
+
+	built final
+	{
+		trigger axis_radio_built_model show
+		trigger axis_radio_destroyed enable
+		trigger allied_radio_destroyed enable
+		trigger neutral_radio_closed 	disable
+		trigger axis_radio_built_model enable_axis_features
+
+		enablespeaker axis_compost_sound
+	}
+
+	decayed final
+	{
+		trigger axis_radio_built_model hide
+		trigger axis_radio_destroyed show
+		trigger allied_radio_destroyed show
+		trigger neutral_radio_closed 	show
+	}
+
+	death
+	{
+		trigger axis_radio_built_model hide
+		trigger axis_radio_destroyed show
+		trigger axis_radio_built_model disable_axis_features
+
+		disablespeaker axis_compost_sound
+	}
+}
+
+axis_radio_built_model
+{
+	spawn
+	{
+		accum 1 set 0
+		wait 200
+		setstate axis_radio_built_model invisible
+	}
+
+	trigger show
+	{
+		setstate axis_radio_built_model default
+	}
+
+	trigger hide
+	{
+		setstate axis_radio_built_model invisible
+	}
+
+	trigger trans
+	{
+		setstate axis_radio_built_model underconstruction
+	}
+
+	trigger enable_axis_features
+	{
+		// axis built it
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		wm_objective_status	7 1 2
+		wm_objective_status	7 0 1
+
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger disable_axis_features
+	{
+		// axis lost it
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+
+		wm_objective_status	7 1 0
+		wm_objective_status	7 0 0
+
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+allied_radio_built_model
+{
+	spawn
+	{
+		accum 1 set 0
+		accum 2 set 0 // state of command post as far as the VO is concerned (0=not built, 1=built) - Wils
+		wait 200
+		setstate allied_radio_built_model invisible
+	}
+
+	trigger show
+	{
+		setstate allied_radio_built_model default
+		enablespeaker neutral_radio_sound
+	}
+
+	trigger hide
+	{
+		setstate allied_radio_built_model invisible
+		disablespeaker neutral_radio_sound
+	}
+
+	trigger trans
+	{
+		setstate allied_radio_built_model underconstruction
+	}
+
+	trigger alliedcompostvo
+	{
+		accum 2 abort_if_equal 1
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+	}
+		
+	trigger enable_allied_features
+	{
+		// allies built it
+		accum 1 set 1 // Is this ever used? - Wils
+		accum 2 set 1 // State of com post as far as VO is concerned (1=built)
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 0 1
+
+		wm_objective_status	7 1 1
+		wm_objective_status	7 0 2
+
+		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		trigger gate_fi enablespawns
+	}
+
+	trigger disable_allied_features
+	{
+		// allies lost it
+		accum 2 set 0 // state of com post as far as VO is concerned (0=destroyed)
+		wm_announce	"Axis team has destroyed the Allied Command Post!"
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 0 0
+
+		wm_objective_status	7 1 0
+		wm_objective_status	7 0 0
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		trigger gate_fi disablespawns
+	}
+}
+
+alliedcpspawns_obj
+{
+	spawn
+	{
+		wait 50
+		setstate alliedcpspawns_obj invisible
+		setstate alliedcpspawns invisible
+	}
+
+	trigger on
+	{
+		setstate alliedcpspawns_obj default
+		setstate alliedcpspawns default
+	}
+
+	trigger off
+	{
+		setstate alliedcpspawns_obj invisible
+		setstate alliedcpspawns invisible
+	}
+}
+
+alliedcpspawns
+{
+	spawn
+	{
+		wait 50
+		setstate alliedcpspawns invisible
+	}
+}
+
+
+
+//===========================
+//====== ENDTRUCK ===========
+//===========================
+
+truck
+{
+	spawn
+	{
+	}
+
+	trigger position
+	{
+		wait 500
+
+		setstate truckboxtrans2 invisible
+		setstate truckbox2 invisible
+		setstate truckmodel invisible
+		setstate truckmodel_wheel1 invisible
+		setstate truckmodel_wheel2 invisible
+		setstate truck default
+		setstate truck_bwheel2 default
+		setstate truck_fwheel default
+
+		wait 10
+
+		trigger truckbox_animation attach
+		trigger truck_bwheel2 attach
+		trigger truck_fwheel attach
+		trigger truckbox3 position
+		followspline 0 path_00 10000 wait length -64
+	}
+
+	trigger move
+	{
+		followspline 0 path_0 100 wait length -64
+		followspline 0 path_1 100 wait length -64
+		followspline 0 path_2 100 wait length -64
+	}
+}
+
+truck_bwheel2
+{
+	spawn
+	{
+		wait 500
+		attachtotag truck tag_wback
+	}
+	trigger forward
+	{
+		setrotation 130 0 0
+	}
+	trigger backward
+	{
+		setrotation -130 0 0
+	}
+	trigger stop
+	{
+		stoprotation
+	}
+	trigger attach
+	{
+		attachtotag truck tag_wback
+	}
+}
+
+truck_fwheel
+{
+	spawn
+	{
+		wait 500
+		attachtotag truck tag_wfront
+	}
+	trigger forward
+	{
+		setrotation 130 0 0
+	}
+	trigger backward
+	{
+		setrotation -130 0 0
+	}
+	trigger stop
+	{
+		stoprotation
+	}
+	trigger attach
+	{
+		attachtotag truck tag_wfront
+	}
+}
+
+truckbox3
+{
+	spawn
+	{
+		setstate truckbox3 invisible
+	}
+
+	trigger position
+	{
+		attachtotag truck tag_obj1
+		setstate truckbox3 default
+	}
+}
+
+rocket
+{
+	spawn
+	{
+	}
+
+	trigger move0
+	{
+	gotomarker rocket_11 999999
+	}
+
+	trigger move
+	{
+
+	trigger rocketarm1 move
+	trigger rocketarm2 move
+	trigger rocketarm3 move
+	trigger rocketarm4 move
+
+	wait 1500
+
+	setstate rocket default
+	setstate rocketfake invisible
+
+	gotomarker rocket_1 55 wait
+	gotomarker rocket_2 80 wait
+	gotomarker rocket_3 140 wait
+	gotomarker rocket_4 250 
+
+	setstate rocket invisible
+	}
+}
+
+rocketarm1
+{
+	spawn
+	{
+	}
+
+	trigger move
+	{
+	faceangles 0 90 0 1000
+	}
+}
+
+rocketarm2
+{
+	spawn
+	{
+	}
+
+	trigger move
+	{
+	faceangles 0 -90 0 1000
+	}
+}
+
+rocketarm3
+{
+	spawn
+	{
+	}
+
+	trigger move
+	{
+	faceangles 0 90 0 1000
+	}
+}
+
+rocketarm4
+{
+	spawn
+	{
+	}
+
+	trigger move
+	{
+	faceangles 0 -90 0 1000
+	}
+}
