@@ -233,7 +233,7 @@ game_manager
 		 globalaccum 3 bitset 0				// Forward Spawn cabinets (disabled by default)
 		 globalaccum 3 bitset 1				// CP Spawn cabinets (disabled by default)
 		// globalaccum 3 bitset 2				// Depot Spawn cabinets (disabled by default)
-		// globalaccum 4 set 2					// More responsive truck (disabled by default)
+		 globalaccum 4 set 1					// More responsive truck (disabled by default)
 		 trigger bunker1 remove				// Uncomment this line to open access to the first bunker
 		 trigger bunker2 remove				// Uncomment this line to open access to the second bunker
 		// ===================================================================================
