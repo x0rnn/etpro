@@ -14,6 +14,16 @@ game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "axisspawnroof"
+			classname "func_fakebrush"
+			origin "893 1950 944"
+			contents 1  // SOLID
+			mins "-845 -870 -88"
+			maxs "845 870 88"
+		}
+
 		// Game rules
 		wm_axis_respawntime 15
 		wm_allied_respawntime 20
@@ -116,26 +126,26 @@ game_manager
 		wait 1000
 		// Toggle the line of the respective setting you want to change by (un-)commenting.
 		// 
-		setstate roof_room_block invisible	// Comment this line to block the room near the bell mechanism.
+		//setstate roof_room_block invisible	// Comment this line to block the room near the bell mechanism.
 		globalaccum 8 set 1					// Comment this line to disable the health and ammo cabinets tied to the Axis CP
 		//===================================================================================
 		// To enable the optional rope ladder in the church to access the roof, comment all 'trigger church_rope*' lines below.
-		trigger church_rope remove
-		trigger church_rope_floor remove
-		trigger church_rope_toi remove
+		//trigger church_rope remove
+		//trigger church_rope_floor remove
+		//trigger church_rope_toi remove
 		//===================================================================================
 		// To enable the optional objective-delivery-based sacrifice method, switch the commenting on all the lines in the section below.
-		trigger lightning1_flag remove
-		trigger lightning2_flag remove
-		trigger lightning3_flag remove
-		trigger shoe remove
-		trigger chest remove
-		trigger sword remove
-		trigger armor_pieces remove
-		trigger armor_pieces_toi remove
-		// trigger lightning1_trigger remove
-		// trigger lightning2_trigger remove
-		// trigger lightning3_trigger remove
+		//trigger lightning1_flag remove
+		//trigger lightning2_flag remove
+		//trigger lightning3_flag remove
+		//trigger shoe remove
+		//trigger chest remove
+		//trigger sword remove
+		//trigger armor_pieces remove
+		//trigger armor_pieces_toi remove
+		 trigger lightning1_trigger remove
+		 trigger lightning2_trigger remove
+		 trigger lightning3_trigger remove
 		// ===================================================================================
 		// If you find the zombie in the crypt distracting, you can remove it by uncommenting the lines below
 		// trigger zombie remove
