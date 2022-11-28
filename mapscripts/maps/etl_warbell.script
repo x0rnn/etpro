@@ -1,0 +1,1966 @@
+// GLOBAL ACCUMS
+// =============
+//
+// GLOBALACCUM 1:	BOOK	(0=NOT_DELIVERED,	1=DELIVERED)
+// GLOBALACCUM 2:	GATES
+// GLOBALACCUM 3:	FORWARD GATE	(0=BUILT,	1=DESTROYED)
+// GLOBALACCUM 4:	DEPOT GATE		(0=BUILT,	1=DESTROYED)
+// GLOBALACCUM 5:	GARDEN GATE		(0=BUILT,	1=DESTROYED)
+// GLOBALACCUM 6:	CRYPT GATE		(0=BUILT,	1=DESTROYED)
+// GLOBALACCUM 7:	GENERATOR		(0=BUILT,	1=DESTROYED)
+// GLOBALACCUM 8:	CP CABINETS		(0=DISABLED, 1= ENABLED)
+
+game_manager
+{
+	spawn
+	{
+		// Game rules
+		wm_axis_respawntime 15
+		wm_allied_respawntime 20
+		wm_set_round_timelimit 18
+		wm_number_of_objectives 8
+		wm_set_defending_team 1
+		wm_setwinner 1
+
+		// Objectives
+		// 1: Forward Gate
+		wm_objective_status 1 0 0
+		wm_objective_status 1 1 0
+		// 2: Door Generator
+		wm_objective_status 2 0 0
+		wm_objective_status 2 1 0
+		// 3: Book of Death
+		wm_objective_status 3 1 0
+		wm_objective_status 3 0 0
+		// 4: Altar
+		wm_objective_status 4 1 0
+		wm_objective_status 4 0 0
+		// 5: Bell Mechanism
+		wm_objective_status 5 1 0
+		wm_objective_status 5 0 0
+		// 6: Bell Rope
+		wm_objective_status 6 1 0
+		wm_objective_status 6 0 0
+		// 7: Sacrifice Lightning
+		wm_objective_status 7 1 0
+		wm_objective_status 7 0 0
+		// 8: Command Post
+		wm_objective_status 8 1 0
+		wm_objective_status 8 0 0
+		
+		// Current status
+		wm_set_main_objective 1 0
+		wm_set_main_objective 1 1
+		
+		wait 50
+		setautospawn "Axis Spawn" 0
+		setautospawn "Guardhouse" 1
+		
+		wait 150
+		setstate church_roof_broken invisible
+		setstate book_delivered invisible
+		setstate lightning1_blue invisible
+		setstate lightning1_yellow invisible
+		setstate lightning1_red invisible
+		setstate lightning1_vortex invisible
+		setstate lightning1_trigger invisible
+		setstate lightning1_flag invisible
+		setstate lightning1_teleport invisible
+		setstate lightning1_smoke invisible
+		setstate lightning1_effect invisible
+		setstate lightning2_blue invisible
+		setstate lightning2_yellow invisible
+		setstate lightning2_red invisible
+		setstate lightning2_vortex invisible
+		setstate lightning2_trigger invisible
+		setstate lightning2_flag invisible
+		setstate lightning2_teleport invisible
+		setstate lightning2_smoke invisible
+		setstate lightning2_effect invisible
+		setstate lightning3_blue invisible
+		setstate lightning3_yellow invisible
+		setstate lightning3_red invisible
+		setstate lightning3_vortex invisible
+		setstate lightning3_trigger invisible
+		setstate lightning3_flag invisible
+		setstate lightning3_teleport invisible
+		setstate lightning3_smoke invisible
+		setstate lightning3_effect invisible
+		setstate armor_pieces invisible
+		setstate armor_pieces_toi invisible
+		
+		wait 150
+		remapshader gfx/misc/snow textures/common/nodraw
+		remapshader textures/etl_warbell/full_moon textures/etl_warbell/full_moon
+		remapshader textures/etl_warbell/_sky textures/etl_warbell/_sky
+		remapshader textures/etl_warbell/_fog textures/etl_warbell/_fog
+		remapshaderflush
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "0_yardcap"
+		wm_teamvoiceannounce 0 "0_gendyn"
+		wm_teamvoiceannounce 0 "0_entrance0dyn"
+		wm_addteamvoiceannounce 0 "0_gendyn"
+		wm_addteamvoiceannounce 0 "0_yardcap"
+		wm_addteamvoiceannounce 0 "0_entrance0dyn"
+		
+		wm_teamvoiceannounce 1 "1_yardcap"
+		wm_teamvoiceannounce 1 "1_gendyn"
+		wm_teamvoiceannounce 1 "1_entrance0dyn"
+		wm_addteamvoiceannounce 1 "1_gendyn"
+		wm_addteamvoiceannounce 1 "1_yardcap"
+		wm_addteamvoiceannounce 1 "1_entrance0dyn"
+		// *---------------------------------------------------------------------------------*
+		
+		//====OPTIONAL SETTINGS==============================================================
+		wait 1000
+		// Toggle the line of the respective setting you want to change by (un-)commenting.
+		// 
+		setstate roof_room_block invisible	// Comment this line to block the room near the bell mechanism.
+		globalaccum 8 set 1					// Comment this line to disable the health and ammo cabinets tied to the Axis CP
+		//===================================================================================
+		// To enable the optional rope ladder in the church to access the roof, comment all 'trigger church_rope*' lines below.
+		trigger church_rope remove
+		trigger church_rope_floor remove
+		trigger church_rope_toi remove
+		//===================================================================================
+		// To enable the optional objective-delivery-based sacrifice method, switch the commenting on all the lines in the section below.
+		trigger lightning1_flag remove
+		trigger lightning2_flag remove
+		trigger lightning3_flag remove
+		trigger shoe remove
+		trigger chest remove
+		trigger sword remove
+		trigger armor_pieces remove
+		trigger armor_pieces_toi remove
+		// trigger lightning1_trigger remove
+		// trigger lightning2_trigger remove
+		// trigger lightning3_trigger remove
+		// ===================================================================================
+		// If you find the zombie in the crypt distracting, you can remove it by uncommenting the lines below
+		// trigger zombie remove
+		// trigger zombie_head remove
+		// trigger zombie_trigger remove
+		// trigger zombie_hurt remove
+		// ===================================================================================
+	}
+	
+	trigger axis_win
+	{
+		wm_setwinner 0
+		remapshader models/multiplayer/flagpole/american models/multiplayer/flagpole/american
+		remapshader models/multiplayer/flagpole/german models/multiplayer/flagpole/german
+		remapshaderflush
+		wait 250
+		togglespeaker earthquake_sound
+		wm_endround
+		togglespeaker lightning_sound
+		togglespeaker heinrich_live_sound
+	}
+}
+
+generator
+{
+	spawn
+	{
+		wait 280
+		constructible_class 3	// DYNAMITE
+		remapshader textures/etl_props/cable_m01		textures/etl_props/cable_moving
+		remapshaderflush
+		enablespeaker generator_loop
+		enablespeaker generator_loop2
+	}
+	
+	death 
+	{ 
+		globalaccum 7 set 1
+		remapshader textures/etl_props/cable_m01		textures/etl_props/cable_m01
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_red
+		remapshaderflush
+		disablespeaker generator_loop
+		disablespeaker generator_loop2
+		
+		setstate generator_wall invisible
+		setstate generator_belt invisible
+		
+		trigger generator_pistons1 stop
+		trigger generator_pistons2 stop
+		trigger generator_smallwheel stop
+		trigger generator_bigwheel stop
+		trigger generator_gauge disable
+		trigger generator_door_gauge disable
+		trigger generator_door_gauge_out disable
+		trigger lower_generator_door_lever_out remove
+		trigger lower_generator_door_lever_in remove
+		trigger upper_generator_door_lever_out remove
+		trigger upper_generator_door_lever_in remove
+
+		trigger lower_generator_door1 activate
+		trigger lower_generator_door2 activate
+		trigger upper_generator_door activate
+		trigger middle_generator_door activate
+		
+		wm_objective_status 2 0 1
+		wm_objective_status 2 1 2
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have destroyed the Generator!"
+		wm_teamvoiceannounce 0 "0_gendest"
+		wm_removeteamvoiceannounce 0 "0_gendyn"
+		
+		wm_teamvoiceannounce 1 "1_gendest"
+		wm_removeteamvoiceannounce 1 "1_gendyn"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+lower_generator_door_activator
+{
+	trigger activate
+	{
+		trigger lower_generator_door1 activate
+		trigger lower_generator_door2 activate
+	}
+}
+
+lower_generator_door_lever_in
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+lower_generator_door_lever_out
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+lower_generator_door1
+{
+	trigger activate
+	{
+		accum 0 abort_if_equal 1
+		accum 0 set 1	// MOVING
+		wait 750
+		stopsound
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker lower_generator_door_open 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1250
+		globalaccum 7 abort_if_equal 1	// ABORT IF GENERATOR DESTROYED
+		
+		// CLOSE
+		wait 750
+		stopsound
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker lower_generator_door_closed 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		accum 0 set 0	// CLOSED
+		
+	}
+}
+
+lower_generator_door2
+{
+	trigger activate
+	{
+		accum 0 abort_if_equal 1
+		accum 0 set 1	// MOVING
+		wait 750
+		gotomarker lower_generator_door_open 40 wait
+		globalaccum 7 abort_if_equal 1	// ABORT IF GENERATOR DESTROYED
+		
+		// CLOSE
+		wait 4875
+		gotomarker lower_generator_door_half 40 wait
+		accum 0 set 0	// CLOSED
+	}
+}
+
+upper_generator_door_activator
+{
+	trigger activate
+	{
+		trigger upper_generator_door activate
+	}
+}
+
+upper_generator_door_lever_in
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+upper_generator_door_lever_out
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+upper_generator_door
+{
+	trigger activate
+	{
+		accum 0 abort_if_equal 1
+		accum 0 set 1
+		wait 750
+		stopsound
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker upper_generator_door_open 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1250
+		globalaccum 7 abort_if_equal 1	// ABORT IF GENERATOR DESTROYED
+		
+		// CLOSE
+		wait 750
+		stopsound
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker upper_generator_door_closed 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		accum 0 set 0	// CLOSED
+	}
+}
+
+middle_generator_door
+{
+	trigger activate
+	{
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker middle_generator_door_open 16 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+	}
+}
+
+generator_smallwheel
+{
+	spawn
+	{
+		wait 200
+		setrotation 0 0 250
+	}
+	
+	trigger stop
+	{
+		halt
+		setstate generator_smallwheel invisible
+		remove
+	}
+}
+
+generator_bigwheel
+{
+	spawn
+	{
+		wait 210
+		setrotation 0 0 250
+	}
+	
+	trigger stop
+	{
+		halt
+		setstate generator_bigwheel invisible
+		remove
+	}
+}
+
+generator_pistons1
+{
+	spawn
+	{
+		wait 100
+		trigger self move
+	}
+	
+	trigger move
+	{
+		faceangles 20 180 0 120 
+		faceangles 0 180 0 120 
+		trigger self move
+	}
+	
+	trigger stop
+	{
+		halt
+		setstate generator_pistons1 invisible
+		remove
+	}
+}
+
+generator_pistons2
+{
+	spawn
+	{
+		wait 200
+		trigger self move
+	}
+	
+	trigger move
+	{
+		faceangles 20 180 0 120 
+		faceangles 0 180 0 120 
+		trigger self move
+	}
+	
+	trigger stop
+	{
+		halt
+		setstate generator_pistons2 invisible
+		remove
+	}
+}
+
+generator_gauge
+{
+	spawn
+	{
+		wait 360
+		faceangles 0 0 270 100
+		wait 110
+		trigger self enable
+	}
+	
+	trigger enable
+	{
+		faceangles 0 0 135 600
+		faceangles 0 0 45 400
+		trigger self wobble
+	}
+	
+	trigger wobble
+	{
+		faceangles 0 0 55 400
+		faceangles 0 0 40 500
+		faceangles 0 0 50 400
+		faceangles 0 0 45 200
+		trigger self wobble
+	}
+	
+	trigger disable
+	{
+		halt
+		setstate generator_gauge invisible
+		remove
+	}
+}
+
+generator_door_gauge
+{
+	spawn
+	{
+		wait 360
+		faceangles 0 0 270 100
+		wait 110
+		trigger self enable
+	}
+	
+	trigger enable
+	{
+		faceangles 0 0 135 600
+		faceangles 0 0 45 400
+		trigger self wobble
+	}
+	
+	trigger wobble
+	{
+		faceangles 0 0 55 400
+		faceangles 0 0 40 500
+		faceangles 0 0 50 400
+		faceangles 0 0 45 200
+		trigger self wobble
+	}
+	
+	trigger disable
+	{
+		halt
+		faceangles 0 0 45 1
+		faceangles 0 0 135 400
+		faceangles 0 0 270 600
+	}
+}
+
+generator_door_gauge_out
+{
+	spawn
+	{
+		wait 360
+		faceangles 270 0 0 100
+		wait 110
+		trigger self enable
+	}
+	
+	trigger enable
+	{
+		faceangles 225 0 0 600
+		faceangles 315 0 0 400
+		trigger self wobble
+	}
+	
+	trigger wobble
+	{
+		faceangles 325 0 0 400
+		faceangles 310 0 0 500
+		faceangles 320 0 0 400
+		faceangles 315 0 0 200
+		trigger self wobble
+	}
+	
+	trigger disable
+	{
+		halt
+		faceangles 315 0 0 1
+		faceangles 225 0 0 400
+		faceangles 90 0 0 600
+	}
+}
+
+lightning1_activator
+{
+	trigger activate
+	{
+		trigger lightning1_effect show
+		togglespeaker lightning_sound
+		togglespeaker lightning1_squish
+		togglespeaker lightning1_growl
+		setstate lightning1_teleport default
+		setstate lightning1_yellow invisible
+		setstate lightning1_smoke default
+		setstate lightning1_red default
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1First Sacrifice performed!"
+		// *---------------------------------------------------------------------------------*
+
+		wait 500
+		setstate lightning1_teleport invisible
+		setstate lightning1_smoke invisible
+		
+		wait 9000
+		togglespeaker heinrich_domybidding
+		wait 7500
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Heinrich awaits his second Sacrifice!"
+		// *---------------------------------------------------------------------------------*
+		
+		togglespeaker heinrich_die
+		setstate lightning2_blue invisible
+		setstate lightning2_yellow default
+		setstate lightning2_trigger default
+		setstate lightning2_flag default
+	}
+}
+
+lightning1_flag
+{
+	death
+	{
+		trigger lightning1_activator activate
+		setstate lightning1_flag invisible
+		wait 100
+		remove
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning1_trigger
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning1_effect
+{
+	trigger show
+	{
+		setstate lightning1_effect default
+		startanimation 1 36 30 nolerp norandom noloop
+		wait 1000
+		setstate lightning1_effect invisible
+		remove
+	}
+}
+
+lightning2_activator
+{
+	trigger activate
+	{
+		trigger lightning2_effect show
+		togglespeaker lightning_sound
+		togglespeaker lightning2_squish
+		togglespeaker lightning2_growl
+		setstate lightning2_teleport default
+		setstate lightning2_yellow invisible
+		setstate lightning2_smoke default
+		setstate lightning2_red default
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Second Sacrifice performed!"
+		// *---------------------------------------------------------------------------------*
+
+		wait 500
+		setstate lightning2_teleport invisible
+		setstate lightning2_smoke invisible
+
+		wait 9000
+		togglespeaker heinrich_domybidding
+		
+		wait 7500
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Heinrich awaits his third Sacrifice!"
+		// *---------------------------------------------------------------------------------*
+		
+		togglespeaker heinrich_die
+		setstate lightning3_blue invisible
+		setstate lightning3_yellow default
+		setstate lightning3_trigger default
+		setstate lightning3_flag default
+	}
+}
+
+lightning2_flag
+{
+	death
+	{
+		trigger lightning2_activator activate
+		setstate lightning2_flag invisible
+		wait 100
+		remove
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning2_trigger
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning2_effect
+{
+	trigger show
+	{
+		setstate lightning2_effect default
+		startanimation 1 36 30 nolerp norandom noloop
+		wait 1000
+		setstate lightning2_effect invisible
+		remove
+	}
+}
+
+lightning3_activator
+{
+	trigger activate
+	{
+		trigger lightning3_effect show
+		togglespeaker lightning_sound
+		togglespeaker lightning3_squish
+		togglespeaker lightning3_growl
+		setstate lightning3_teleport default
+		setstate lightning3_yellow invisible
+		setstate lightning3_smoke default
+		setstate lightning3_red default
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Third Sacrifice performed!"
+		// *---------------------------------------------------------------------------------*
+		
+		wait 500
+		setstate lightning3_teleport invisible
+		setstate lightning3_smoke invisible
+		
+		trigger game_manager axis_win
+	}
+}
+
+lightning3_flag
+{
+	death
+	{
+		trigger lightning3_activator activate
+		setstate lightning3_flag invisible
+		wait 100
+		remove
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning3_trigger
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+lightning3_effect
+{
+	trigger show
+	{
+		setstate lightning3_effect default
+		startanimation 1 36 30 nolerp norandom noloop
+		wait 1000
+		setstate lightning3_effect invisible
+		remove
+	}
+}
+
+bell
+{
+	trigger ring
+	{
+		accum 0 set 1
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_moving
+		remapshaderflush
+		trigger bell_wheel_small left
+		trigger bell_wheel_big left
+		faceangles 0 0 18 500
+		trigger bell_ball ring
+		enablespeaker bell_sound
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_m01
+		remapshaderflush
+		trigger bell_wheel_small stop
+		trigger bell_wheel_big stop
+		wait 20
+		trigger self ring_continue
+	}
+	
+	trigger ring_continue
+	{
+		accum 0 inc 1
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_moving_inverted
+		remapshaderflush
+		trigger bell_wheel_small right
+		trigger bell_wheel_big right
+		faceangles 0 0 -18 1000
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_m01
+		remapshaderflush
+		trigger bell_wheel_small stop
+		trigger bell_wheel_big stop
+		wait 20
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_moving
+		remapshaderflush
+		trigger bell_wheel_small left
+		trigger bell_wheel_big left
+		faceangles 0 0 18 1000
+		remapshader textures/etl_warbell/cable_m01		textures/etl_warbell/cable_m01
+		remapshaderflush
+		trigger bell_wheel_small stop
+		trigger bell_wheel_big stop
+		wait 20
+		accum 0 trigger_if_equal 15 bell_wheel_small stop
+		accum 0 trigger_if_equal 15 bell_wheel_big stop
+		accum 0 trigger_if_equal 15 bell_ball stop
+		accum 0 trigger_if_equal 15 bell stop
+		accum 0 abort_if_equal 15
+		trigger self ring_continue
+	}
+	
+	trigger stop
+	{
+		disablespeaker bell_sound
+		faceangles 0 0 -15 1000
+		wait 20
+		faceangles 0 0 12 1000
+		wait 20
+		faceangles 0 0 -9 1000
+		wait 20
+		faceangles 0 0 6 1000
+		wait 20
+		faceangles 0 0 -3 1000
+		wait 20
+		faceangles 0 0 0 1000
+	}
+}
+
+bell_ball
+{
+	trigger ring
+	{
+		faceangles 0 0 3 1000
+		wait 20
+		trigger self ring_continue
+	}
+	
+	trigger ring_continue
+	{
+		faceangles 0 0 -3 1000
+		wait 20
+		faceangles 0 0 3 1000
+		wait 20
+		trigger self ring_continue
+	}
+	
+	trigger stop
+	{
+		faceangles 0 0 -2 1000
+		wait 20
+		faceangles 0 0 2 1000
+		wait 20
+		faceangles 0 0 -1 1000
+		wait 20
+		faceangles 0 0 1 1000
+		wait 20
+		faceangles 0 0 0 1000
+	}
+}
+
+bell_wheel_small
+{
+	trigger left
+	{
+		setrotation 0 0 250
+	}
+	
+	trigger right
+	{
+		setrotation 0 0 -250
+	}
+	
+	trigger stop
+	{
+		halt
+	}
+}
+
+bell_wheel_big
+{
+	trigger left
+	{
+		setrotation 0 0 250
+	}
+	
+	trigger right
+	{
+		setrotation 0 0 -250
+	}
+	
+	trigger stop
+	{
+		halt
+	}
+}
+
+bell_mechanism
+{ 
+	spawn 
+	{ 
+		wait 200
+		constructible_class 3	// DYNO
+		constructible_constructxpbonus 10
+		constructible_destructxpbonus 10
+		
+		setstate bell_wheel_belt invisible
+		setstate bell_wheel_big invisible
+	}
+	
+	buildstart
+	{
+		setstate bell_wheel_belt underconstruction
+		setstate bell_wheel_big underconstruction
+	}
+	
+	decayed
+	{
+		setstate bell_wheel_belt invisible
+		setstate bell_wheel_big invisible
+	}
+	
+	built
+	{
+		setstate bell_wheel_belt default
+		setstate bell_wheel_big default
+		setstate bell_wheel_broken invisible
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis repaired the Bell Mechanism!"
+		wm_teamvoiceannounce 0 "0_conconst_a"
+		wm_teamvoiceannounce 1 "1_conconst_a"
+		// *---------------------------------------------------------------------------------*
+		
+		wm_objective_status 5 0 1
+		wm_objective_status 5 1 2
+		
+		wait 250
+		setstate bell_rope default
+	} 
+
+	death 
+	{ 
+		
+		setstate bell_wheel_belt invisible
+		setstate bell_wheel_big invisible
+		setstate bell_rope invisible
+		setstate bell_wheel_broken default
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^5The Allies have destroyed the Bell Mechanism!"
+		wm_teamvoiceannounce 0 "0_condest_a"
+		wm_teamvoiceannounce 1 "1_condest_a"
+		// *---------------------------------------------------------------------------------*
+		
+		wm_objective_status 5 0 2
+		wm_objective_status 5 1 1	
+	}
+}
+
+bell_rope
+{
+	spawn
+	{
+		wait 75
+		setstate bell_rope invisible
+	}
+	
+	activate axis
+	{
+		globalaccum 1 abort_if_not_equal 1
+		setstate bell_rope invisible
+		trigger bell ring
+		setstate bell_mechanism invisible
+		setstate bell_mechanism_toi invisible
+		setstate armor_pieces default
+		alertentity armor_pieces
+		setstate armor_pieces_toi default
+		
+		wm_objective_status 6 0 1
+		wm_objective_status 6 1 2
+		
+		wait 2500
+		togglespeaker heinrich_domybidding
+		wait 7500
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Heinrich awaits his first Sacrifice!"
+		// *---------------------------------------------------------------------------------*
+		
+		
+		togglespeaker heinrich_die
+		setstate lightning1_blue invisible
+		setstate lightning1_yellow default
+		setstate lightning1_trigger default
+		setstate lightning1_flag default
+		
+		wait 500
+		remove
+	}
+}
+
+forward_gate
+{
+	spawn 
+	{ 
+		wait 320
+		constructible_class 3	// DYNAMITE
+	}
+	
+	death
+	{
+		trigger forward_spawn_flag secure	// Switch forward spawn permanently to Axis
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have destroyed the Guardhouse Gate!"
+		
+		wm_teamvoiceannounce 0 "0_entrance0dest"
+		wm_teamvoiceannounce 0 "0_entrancesdyn"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "0_entrancesdyn"
+		wm_removeteamvoiceannounce 0 "0_entrance0dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance0dest"
+		wm_teamvoiceannounce 1 "1_entrancesdyn"
+		wm_addteamvoiceannounce 1 "1_entrancesdyn"
+		wm_removeteamvoiceannounce 1 "1_entrance0dyn"
+		// *---------------------------------------------------------------------------------*
+
+		wm_objective_status 1 0 1
+		wm_objective_status 1 1 2
+	}
+}
+
+forward_spawn_flag
+{
+	spawn
+	{
+		wait 100
+		disablespeaker flag_sound
+		
+		remapshader models/multiplayer/flagpole/american textures/common/nodraw
+		remapshader models/multiplayer/flagpole/german textures/common/nodraw
+		remapshaderflush
+	}
+	
+	// ACCUM 0:	1 = Axis, 0 = Allied
+	trigger axis_capture
+	{
+		enablespeaker flag_sound
+		remapshader models/multiplayer/flagpole/american textures/common/nodraw
+		remapshader models/multiplayer/flagpole/german models/multiplayer/flagpole/german
+		remapshaderflush
+		accum 0 abort_if_equal 1	// Abort if already Axis
+		accum 0 set 1				// Set Axis
+		
+		alertentity forward_spawn_wobj
+		
+		setautospawn "Guardhouse" 0
+		setautospawn "Allied Spawn" 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have captured the Guardhouse!"
+		wm_teamvoiceannounce 0 "0_yardcapd"
+		wm_removeteamvoiceannounce 0 "0_yardcap"
+		
+		wm_teamvoiceannounce 1 "1_yardcapd"
+		wm_teamvoiceannounce 1 "1_yardrecl"
+		wm_addteamvoiceannounce 1 "1_yardrecl"
+		wm_removeteamvoiceannounce 1 "1_yardcap"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allied_capture
+	{
+		enablespeaker flag_sound
+		remapshader models/multiplayer/flagpole/american models/multiplayer/flagpole/american
+		remapshader models/multiplayer/flagpole/german textures/common/nodraw
+		remapshaderflush
+		accum 0 abort_if_equal 0	// Abort if already Allied
+		accum 0 set 0				// Set Allied
+
+		alertentity forward_spawn_wobj
+		
+		setautospawn "Axis Spawn" 0
+		setautospawn "Guardhouse" 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^5The Allies have reclaimed the Guardhouse!"
+		wm_teamvoiceannounce 0 "0_yardcap"
+		wm_addteamvoiceannounce 0 "0_yardcap"
+		
+		wm_teamvoiceannounce 1 "1_yardcap"
+		wm_addteamvoiceannounce 1 "1_yardcap"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger secure
+	{
+		setstate forward_spawn_flag invisible
+		disablespeaker flag_sound
+		remapshader models/multiplayer/flagpole/american models/multiplayer/flagpole/american
+		remapshader models/multiplayer/flagpole/german models/multiplayer/flagpole/german
+		remapshaderflush
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 1 "1_yardcap"
+		wm_removeteamvoiceannounce 0 "0_yardcap"
+		wm_removeteamvoiceannounce 1 "1_yardrecl"
+		// *---------------------------------------------------------------------------------*
+		
+		accum 0 abort_if_equal 1	// Abort if already Axis
+		accum 0 set 1				// Set Axis
+		
+		alertentity forward_spawn_wobj
+		alertentity forward_spawn
+		
+		setautospawn "Guardhouse" 0
+		setautospawn "Allied Spawn" 1
+	}
+}
+
+depot_gate
+{
+	spawn 
+	{ 
+		wait 320
+		constructible_class 3	// DYNAMITE
+		remapshader textures/etl_warbell/lights_neutral	textures/etl_warbell/lights_green
+		remapshaderflush
+	} 
+
+	death 
+	{ 
+		setstate depot_gate invisible
+		setstate depot_door_hint invisible
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce   "^1The Axis have destroyed the Abbey Main Gate!" 
+		wm_teamvoiceannounce 0 "0_entrance1dest"
+		wm_removeteamvoiceannounce 0 "0_entrance1dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance1dest"
+		wm_removeteamvoiceannounce 1 "1_entrance1dyn"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 4 set 1				// DEPOT GATE DESTROYED
+		globalaccum 2 inc 1
+		globalaccum 2 trigger_if_equal 2 floodgate voice_operator
+		
+		wait 2500
+		trigger depot_door activate
+		trigger depot_door_lever activate 
+		
+		wait 2000
+		remapshader textures/etl_warbell/lights_neutral	textures/etl_warbell/lights_green
+		remapshaderflush
+		wait 250
+		remove
+	}
+}
+
+depot_door
+{
+	// accum 0
+	// 0: closed
+	// 1: open
+	trigger activate
+	{
+		accum 0 trigger_if_equal 0 depot_door open
+		accum 0 trigger_if_equal 1 depot_door close
+	}
+	
+	trigger close
+	{
+		stopsound
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker depot_door_closed 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		accum 0 set 0	// CLOSED
+		setstate depot_door_hint default
+	}
+	
+	trigger open
+	{
+		wait 750
+		stopsound
+		setstate depot_door_hint invisible
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker depot_door_open 40 wait
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		accum 0 set 1	// OPEN
+		wait 1250
+		globalaccum 4 abort_if_equal 1
+		trigger depot_door_lever close
+		wait 750
+		trigger self close
+	}
+}
+
+depot_door_lever
+{
+	// accum 0
+	// 0: closed
+	// 1: open
+	trigger activate
+	{
+		accum 0 trigger_if_equal 0 depot_door_lever open
+		accum 0 trigger_if_equal 1 depot_door_lever close
+	}
+	
+	trigger close
+	{
+		halt
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker depot_lever_down 16 wait
+		accum 0 set 0	// CLOSED
+		stopsound
+	}
+	
+	trigger open
+	{
+		halt
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker depot_lever_up 16 wait
+		accum 0 set 1		// OPEN
+		stopsound
+	}
+}
+
+depot_door_hint
+{
+	activate allies
+	{
+		trigger depot_door activate
+		trigger depot_door_lever activate
+		setstate depot_door_hint invisible
+	}
+	
+	activate axis
+	{
+		togglespeaker depot_hint_sound
+		setstate depot_door_hint invisible
+		wait 500
+		setstate depot_door_hint default
+	}
+}
+
+garden_gate
+{
+	spawn
+	{
+		wait 150
+		constructible_class 2 // SATCHEL
+	}
+
+	death
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have destroyed the Garden Gate!"
+		wm_teamvoiceannounce 0 "0_entrance2dest"
+		wm_removeteamvoiceannounce 0 "0_entrance2dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance2dest"
+		wm_removeteamvoiceannounce 1 "1_entrance2dyn"
+		// *---------------------------------------------------------------------------------*
+
+		globalaccum 5 set 1				// GARDEN GATE DESTROYED
+		globalaccum 2 inc 1
+		globalaccum 2 trigger_if_equal 2 floodgate voice_operator
+	}
+
+}
+
+crypt_gate
+{
+	spawn
+	{
+		wait 150
+		constructible_class 3 // DYNO
+	}
+
+	death
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have destroyed the Crypt Gate!"
+		wm_teamvoiceannounce 0 "0_entrance3dest"
+		wm_removeteamvoiceannounce 0 "0_entrance3dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance3dest"
+		wm_removeteamvoiceannounce 1 "1_entrance3dyn"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 6 set 1				// CRYPT GATE DESTROYED
+		globalaccum 2 inc 1
+		globalaccum 2 trigger_if_equal 2 floodgate voice_operator
+	}
+
+}
+
+axis_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+		setstate axis_cp_model invisible
+		setstate axis_cp_spawns_wobj invisible
+		setstate axis_cp_spawns invisible
+		disablespeaker axis_cp_sound
+	}
+
+	buildstart
+	{
+		setstate cp_closed invisible
+		setstate axis_cp_model underconstruction
+	}
+
+	decayed
+	{
+		setstate cp_closed default
+		setstate axis_cp_model invisible
+	}
+
+	built
+	{
+		setstate axis_cp_model default
+		setstate cp_closed_clip invisible
+		setstate axis_cp_spawns_wobj default
+		setstate axis_cp_spawns default
+
+		wm_objective_status 8 0 1
+		wm_objective_status 8 1 2
+		
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Axis Command Post constructed. Charge speed increased!"
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		enablespeaker axis_cp_sound
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 8 abort_if_equal 0
+		setstate cp_ammo default
+		setstate cp_ammo_model default
+		setstate cp_ammo_broken invisible
+		setstate cp_health default
+		setstate cp_health_model default
+		setstate cp_health_broken invisible
+	}
+
+	death
+	{
+		setstate axis_cp_model invisible
+		setstate cp_closed default
+		setstate cp_closed_clip default
+		setstate axis_cp_spawns_wobj invisible
+		setstate axis_cp_spawns invisible
+
+		wm_objective_status 8 0 0
+		wm_objective_status 8 1 0
+		
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+		
+		// setautospawn "Guardhouse" 0
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^5The Allies have destroyed the Axis Command Post!"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"	
+		disablespeaker axis_cp_sound
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 8 abort_if_equal 0
+		setstate cp_ammo invisible
+		setstate cp_ammo_model invisible
+		setstate cp_ammo_broken default
+		setstate cp_health invisible
+		setstate cp_health_model invisible
+		setstate cp_health_broken default
+	}
+}
+
+allied_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+		setstate allied_cp_model invisible
+		disablespeaker allied_cp_sound
+	}
+
+	buildstart
+	{
+		setstate cp_closed invisible
+		setstate allied_cp_model underconstruction
+	}
+
+	decayed
+	{
+		setstate cp_closed default
+		setstate allied_cp_model invisible
+	}
+
+	built
+	{
+		setstate allied_cp_model default
+		setstate cp_closed_clip invisible
+		
+		wm_objective_status 8 0 2
+		wm_objective_status 8 1 1
+		
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^5Allied Command Post constructed. Charge speed increased!"
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		enablespeaker allied_cp_sound
+		// *---------------------------------------------------------------------------------*
+	}
+
+	death
+	{
+		setstate allied_cp_model invisible
+		setstate cp_closed default
+		setstate cp_closed_clip default
+
+		wm_objective_status 8 0 0
+		wm_objective_status 8 1 0
+		
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1The Axis have destroyed the Allied Command Post!"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		disablespeaker allied_cp_sound
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+book
+{
+	trigger stolen
+	{
+		setstate book_cm_marker invisible
+	}
+	
+	trigger returned
+	{
+		setstate book_cm_marker default
+	}
+}
+
+altar
+{
+	death
+	{
+		setstate book_delivered default
+		setstate book_highlight invisible
+		setstate book_cm_marker invisible
+		setstate book_toi invisible
+		trigger axis_win_cam enable_chanting_sound
+		togglespeaker rampup_sound
+		wait 5750
+		globalaccum 1 set 1
+		
+		wm_objective_status 3 0 1
+		wm_objective_status 3 1 2
+		
+		wm_objective_status 4 0 1
+		wm_objective_status 4 1 2
+		
+		wait 50
+		togglespeaker choir_sound
+		
+		togglespeaker lightning_sound
+		alertentity lightning_03
+		togglespeaker thunderspeaker03
+		
+		remapshader gfx/misc/snow textures/etl_warbell/ember
+		remapshader textures/etl_warbell/_sky textures/etl_warbell/_sky_lightning
+		remapshader textures/etl_warbell/_fog textures/etl_warbell/_fog_purple
+		remapshaderflush
+		
+		setstate lightning1_blue default
+		setstate lightning1_vortex default
+		setstate lightning2_blue default
+		setstate lightning2_vortex default
+		setstate lightning3_blue default
+		setstate lightning3_vortex default
+		enablespeaker lightning1_static
+		enablespeaker lightning1_static2
+		enablespeaker lightning2_static
+		enablespeaker lightning2_static2
+		enablespeaker lightning3_static
+		enablespeaker lightning3_static2
+		
+		wait 50
+		alertentity church_roof_boom
+		alertentity church_roof_debris
+		setstate church_roof invisible
+		setstate church_roof_broken default
+		
+		wait 450
+		remapshader textures/etl_warbell/_sky textures/etl_warbell/_sky_purple
+		remapshader textures/etl_warbell/full_moon textures/etl_warbell/red_moon
+		remapshaderflush
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Axis have delivered the Book of Death!"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+axis_win_cam
+{
+	trigger enable_chanting_sound
+	{
+		wait 100
+		enablespeaker chanting_sound
+		wait 45800
+		disablespeaker chanting_sound
+		wait 100
+		trigger self enable_chanting_sound
+	}
+}
+
+world_clip
+{
+	spawn
+	{
+		wait 150
+		accum 0 set 0 //randomiser to play different lightnings and thunders
+		trigger self random
+	}
+
+	trigger random
+	{
+		// wait 6300
+		wait 14300
+		accum 0 random 5
+		accum 0 trigger_if_equal 0 world_clip thunder01
+		accum 0 trigger_if_equal 1 world_clip thunder02
+		accum 0 trigger_if_equal 2 world_clip thunder03
+		accum 0 trigger_if_equal 3 world_clip thunder04
+		accum 0 trigger_if_equal 4 world_clip thunder05
+		// wait 7300
+		wait 14700
+		trigger self random_continue
+	}
+	
+	trigger random_continue
+	{
+		accum 0 random 5
+		accum 0 trigger_if_equal 0 world_clip thunder01
+		accum 0 trigger_if_equal 1 world_clip thunder02
+		accum 0 trigger_if_equal 2 world_clip thunder03
+		accum 0 trigger_if_equal 3 world_clip thunder04
+		accum 0 trigger_if_equal 4 world_clip thunder05
+		// wait 7300
+		wait 14700
+		trigger self random_continue
+	}
+
+	trigger thunder01
+	{
+		alertentity lightning_01
+		togglespeaker thunderspeaker01
+		togglespeaker zombie01
+	}
+
+	trigger thunder02
+	{
+		alertentity lightning_02
+		togglespeaker thunderspeaker02
+		togglespeaker zombie02
+	}
+
+	trigger thunder03
+	{
+		alertentity lightning_03
+		togglespeaker thunderspeaker03
+		togglespeaker zombie03
+	}
+
+	trigger thunder04
+	{
+		alertentity lightning_04
+		togglespeaker thunderspeaker04
+		togglespeaker zombie04
+	}
+
+	trigger thunder05
+	{
+		alertentity lightning_05
+		togglespeaker thunderspeaker05
+		togglespeaker zombie01
+	}
+}
+
+floodgate
+{
+	trigger voice_operator
+	{
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "0_entrancesdyn"
+		wm_removeteamvoiceannounce 1 "1_entrancesdyn"
+		// *---------------------------------------------------------------------------------*
+		
+		wait 1000
+		
+		trigger self depotgate
+		trigger self gardengate
+		trigger self cryptgate
+	}
+	
+	trigger depotgate
+	{
+		globalaccum 4 abort_if_equal 1
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "1_entrance1dyn"
+		wm_addteamvoiceannounce 1 "1_entrance1dyn"
+		
+		wm_teamvoiceannounce 0 "0_entrance1dyn"
+		wm_addteamvoiceannounce 0 "0_entrance1dyn"
+		// *---------------------------------------------------------------------------------*
+	}
+	
+	trigger gardengate
+	{
+		globalaccum 5 abort_if_equal 1
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "0_entrance2dyn"
+		wm_addteamvoiceannounce 0 "0_entrance2dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance2dyn"
+		wm_addteamvoiceannounce 1 "1_entrance2dyn"
+		// *---------------------------------------------------------------------------------*
+	}
+	
+	trigger cryptgate
+	{
+		globalaccum 6 abort_if_equal 1
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "0_entrance3dyn"
+		wm_addteamvoiceannounce 0 "0_entrance3dyn"
+		
+		wm_teamvoiceannounce 1 "1_entrance3dyn"
+		wm_addteamvoiceannounce 1 "1_entrance3dyn"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+river
+{
+	spawn
+	{
+		wait 230
+		gotomarker river_pos 16 wait
+		
+		globalaccum 8 abort_if_equal 0
+		setstate cp_health_broken default
+		setstate cp_health_clip default
+		setstate cp_health invisible
+		setstate cp_health_model invisible
+		setstate cp_ammo_broken default
+		setstate cp_ammo_clip default
+		setstate cp_ammo invisible
+		setstate cp_ammo_model invisible
+	}
+}
+
+grandfather_clock_castle
+{
+	spawn
+	{
+		wait 156
+		startanimation 0 40 20
+	}
+}
+
+grandfather_clock_guardhouse
+{
+	spawn
+	{
+		wait 156
+		startanimation 0 40 20
+	}
+}
+
+grandfather_clock_castle_hint
+{
+	activate
+	{
+		togglespeaker castle_clock
+	}
+}
+
+grandfather_clock_guardhouse_hint
+{
+	activate
+	{
+		togglespeaker guardhouse_clock
+	}
+}
+
+gramophone_castle_hint
+{
+	activate
+	{
+		accum 0 trigger_if_equal 0 gramophone_castle_hint enable
+		accum 0 trigger_if_equal 1 gramophone_castle_hint disable
+	}
+	
+	trigger enable
+	{
+		accum 0 set 1
+		alertentity castle_gramophone
+		wait 32748	// wait for wav to finish
+		alertentity castle_gramophone
+		accum 0 set 0
+	}
+	
+	trigger disable
+	{
+		alertentity castle_gramophone
+		accum 0 set 0
+	}
+}
+
+gramophone_guardhouse_hint
+{
+	activate
+	{
+		accum 0 trigger_if_equal 0 gramophone_guardhouse_hint enable
+		accum 0 trigger_if_equal 1 gramophone_guardhouse_hint disable
+	}
+	
+	trigger enable
+	{
+		accum 0 set 1
+		alertentity guardhouse_gramophone
+		wait 32748	// wait for wav to finish
+		alertentity guardhouse_gramophone
+		accum 0 set 0
+	}
+	
+	trigger disable
+	{
+		alertentity guardhouse_gramophone
+		accum 0 set 0
+	}
+}
+
+phone_hint
+{
+	activate
+	{
+		setstate phone_hint invisible
+		togglespeaker phone_call
+		wait 38521	// wait for wav to finish		
+		setstate phone_hint default
+	}
+}
+
+church_rope
+{
+	spawn
+	{
+		wait 345
+		constructible_class 2 // SATCHEL
+	}
+	
+	built
+	{
+		setstate church_rope_floor invisible
+	}
+	
+	death
+	{
+		setstate church_rope_floor default
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+church_rope_toi
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+church_rope_floor
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+armor_pieces
+{
+	spawn
+	{
+		wait 135
+		setstate armor_pieces invisible
+		setstate armor_pieces_toi invisible
+	}
+
+	trigger stolen
+	{
+		accum 0 inc 1
+		accum 0 trigger_if_equal 1 armor_pieces stolen1
+		accum 0 trigger_if_equal 2 armor_pieces stolen2
+		accum 0 trigger_if_equal 3 armor_pieces stolen3
+	}
+	
+	trigger returned
+	{
+		accum 0 trigger_if_equal 1 armor_pieces returned1
+		accum 0 trigger_if_equal 2 armor_pieces returned2
+		accum 0 trigger_if_equal 3 armor_pieces returned3
+		accum 0 inc -1
+	}
+
+	trigger returned1
+	{
+		setstate shoe default
+	}
+
+	trigger returned2
+	{
+		setstate chest default
+	}
+
+	trigger returned3
+	{
+		setstate sword default
+	}
+	
+	trigger stolen1
+	{
+		setstate shoe invisible
+	}
+
+	trigger stolen2
+	{
+		setstate chest invisible
+	}
+
+	trigger stolen3
+	{
+		setstate sword invisible
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+armor_pieces_toi
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+shoe
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+chest
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+sword
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+zombie_head
+{
+	spawn
+	{
+		wait 213
+		attachtotag zombie tag_head
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+zombie
+{
+	spawn
+	{
+		wait 123
+		startanimation 155 104 20 nolerp norandom
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+zombie_trigger
+{
+	spawn
+	{
+		wait 65		
+		setstate zombie_hurt invisible
+	}
+	
+	activate
+	{
+		togglespeaker zombie_attack
+		setstate zombie_hurt default
+		wait 500
+		setstate zombie_hurt invisible
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+zombie_hurt
+{
+	trigger remove
+	{
+		remove
+	}
+}
