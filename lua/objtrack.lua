@@ -9,6 +9,8 @@ doccarriers_id = {}
 objcarriers = {}
 objcarriers_id = {}
 second_obj = false
+third_obj = false
+fourth_obj = false
 firstflag = false
 secondflag = false
 
@@ -550,61 +552,7 @@ function et_Print(text)
 		end
 	end -- end falkenstein_b3
 
-	if (string.find(mapname, "decay")) then
-		if(string.find(text, "team_CTF_redflag")) then
-			local i, j = string.find(text, "%d+")   
-	        local id = tonumber(string.sub(text, i, j))
-			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
-			local name = et.gentity_get(id, "pers.netname")
-			if team == 2 then
-				objcarriers[id] = true
-				table.insert(objcarriers_id, id)
-				if second_obj == false then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Access Codes!\"\n")
-				else
-					if firstflag == false then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
-					else
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
-					end
-				end
-			elseif team == 1 then
-				if second_obj == false then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Access Codes!\"\n")
-				else
-					if firstflag == false then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the first Gold Crate!\"\n")
-					else
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
-					end
-				end
-			end
-		end
-		if(string.find(text, "The Allies have transmitted the Access codes")) then
-			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
-			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Access Codes!\"\n")
-			objcarriers[objcarriers_id[1]] = nil
-			table.remove(objcarriers_id, 1)
-			second_obj = true
-		end
-		if(string.find(text, "The Allies have secured a gold crate!")) then
-			if firstflag == false then
-				local name = et.gentity_get(objcarriers_id[1], "pers.netname")
-				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
-				objcarriers[objcarriers_id[1]] = nil
-				table.remove(objcarriers_id, 1)
-				firstflag = true
-			elseif firstflag == true then
-				local name = et.gentity_get(objcarriers_id[1], "pers.netname")
-				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the second Gold Crate!\"\n")
-				objcarriers[objcarriers_id[1]] = nil
-				table.remove(objcarriers_id, 1)
-			end
-		end
-	end --end decay_b7/decay_sw
-
-	-- decay_b7 alternate script
-	--if mapname == "decay_b7" then
+	--if (string.find(mapname, "decay")) then
 		--if(string.find(text, "team_CTF_redflag")) then
 			--local i, j = string.find(text, "%d+")   
 	        --local id = tonumber(string.sub(text, i, j))
@@ -616,13 +564,9 @@ function et_Print(text)
 				--if second_obj == false then
 					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Access Codes!\"\n")
 				--else
-					--if table.getn(objcarriers_id) == 1 then
-						--if firstflag == false then
-							--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
-						--else
-							--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
-						--end
-					--elseif table.getn(objcarriers_id) == 2 then
+					--if firstflag == false then
+						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+					--else
 						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
 					--end
 				--end
@@ -630,14 +574,10 @@ function et_Print(text)
 				--if second_obj == false then
 					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Access Codes!\"\n")
 				--else
-					--if firstflag == true then
-						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					--if firstflag == false then
+						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the first Gold Crate!\"\n")
 					--else
-						--if table.getn(objcarriers_id) == 1 then
-							--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
-						--else
-							--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
-						--end
+						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
 					--end
 				--end
 			--end
@@ -651,19 +591,10 @@ function et_Print(text)
 		--end
 		--if(string.find(text, "The Allies have secured a gold crate!")) then
 			--if firstflag == false then
-				--local x = 1
-				--for index in pairs(objcarriers_id) do
-					--if objcarriers[objcarriers_id[x]] == true then
-						--local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
-						--if redflag == 0 then
-							--local name = et.gentity_get(objcarriers_id[x], "pers.netname")
-							--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
-							--objcarriers[objcarriers_id[x]] = nil
-							--table.remove(objcarriers_id, x)
-						--end
-					--end
-					--x = x + 1
-				--end
+				--local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+				--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
+				--objcarriers[objcarriers_id[1]] = nil
+				--table.remove(objcarriers_id, 1)
 				--firstflag = true
 			--elseif firstflag == true then
 				--local name = et.gentity_get(objcarriers_id[1], "pers.netname")
@@ -672,7 +603,78 @@ function et_Print(text)
 				--table.remove(objcarriers_id, 1)
 			--end
 		--end
-	--end -- end decay_b7 alternate script
+	--end -- end decay_b7/decay_sw
+
+	-- decay_b7 alternate script
+	if mapname == "decay_b7" then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Access Codes!\"\n")
+				else
+					if table.getn(objcarriers_id) == 1 then
+						if firstflag == false then
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the first Gold Crate!\"\n")
+						else
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n") 
+						end
+					elseif table.getn(objcarriers_id) == 2 then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the second Gold Crate!\"\n")
+					end
+				end
+			elseif team == 1 then
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Access Codes!\"\n")
+				else
+					if firstflag == true then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+					else
+						if table.getn(objcarriers_id) == 1 then
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the second Gold Crate!\"\n")
+						else
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a Gold Crate!\"\n")
+						end
+					end
+				end
+			end
+		end
+		if(string.find(text, "The Allies have transmitted the Access codes")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the Access Codes!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			second_obj = true
+		end
+		if(string.find(text, "The Allies have secured a gold crate!")) then
+			if firstflag == false then
+				local x = 1
+				for index in pairs(objcarriers_id) do
+					if objcarriers[objcarriers_id[x]] == true then
+						local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
+						if redflag == 0 then
+							local name = et.gentity_get(objcarriers_id[x], "pers.netname")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the first Gold Crate!\"\n")
+							objcarriers[objcarriers_id[x]] = nil
+							table.remove(objcarriers_id, x)
+						end
+					end
+					x = x + 1
+				end
+				firstflag = true
+			elseif firstflag == true then
+				local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the second Gold Crate!\"\n")
+				objcarriers[objcarriers_id[1]] = nil
+				table.remove(objcarriers_id, 1)
+			end
+		end
+	end -- end decay_b7 alternate script
 
 	if mapname == "te_escape2" then
 		if(string.find(text, "team_CTF_redflag")) then
@@ -805,6 +807,118 @@ function et_Print(text)
 			table.remove(doccarriers_id, 1)
 		end
 	end -- end et_ice
+
+	if mapname == "warbell" then
+		if(string.find(text, "team_CTF_blueflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 1 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Book of Death^7!\"\n")
+			elseif team == 2 then
+				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Book of Death^7!\"\n")
+			end
+		end
+		if(string.find(text, "Axis have delivered the Book of Death")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the ^1Book of Death^7!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end warbell
+
+	--if mapname == "etl_warbell" then
+		--if(string.find(text, "team_CTF_blueflag")) then
+			--local i, j = string.find(text, "%d+")   
+	        --local id = tonumber(string.sub(text, i, j))
+			--local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			--local name = et.gentity_get(id, "pers.netname")
+			--if team == 1 then
+				--objcarriers[id] = true
+				--table.insert(objcarriers_id, id)
+				--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Book of Death^7!\"\n")
+			--elseif team == 2 then
+				--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Book of Death^7!\"\n")
+			--end
+		--end
+		--if(string.find(text, "Axis have delivered the Book of Death")) then
+			--local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the ^1Book of Death^7!\"\n")
+			--objcarriers[objcarriers_id[1]] = nil
+			--table.remove(objcarriers_id, 1)
+		--end
+	--end -- end etl_warbell
+
+	-- etl_warbell alternate script
+	if mapname == "etl_warbell" then
+		if(string.find(text, "team_CTF_blueflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 1 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Book of Death^7!\"\n")
+				else
+					if third_obj == false then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the First Sacrifice (Shoe)!\"\n")
+					else
+						if fourth_obj == false then
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Second Sacrifice (Chest)!\"\n")
+						else
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Third Sacrifice (Sword)!\"\n")
+						end
+					end
+				end
+			elseif team == 2 then
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Book of Death^7!\"\n")
+				else
+					if third_obj == false then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the First Sacrifice (Shoe)!\"\n")
+					else
+						if fourth_obj == false then
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Second Sacrifice (Chest)!\"\n")
+						else
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Third Sacrifice (Sword)!\"\n")
+						end
+					end
+				end
+			end
+		end
+		if(string.find(text, "Axis have delivered the Book of Death")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the ^1Book of Death^7!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			second_obj = true
+		end
+		if(string.find(text, "First Sacrifice performed!")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7performed the First Sacrifice!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			third_obj = true
+		end
+		if(string.find(text, "Second Sacrifice performed!")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7performed the Second Sacrifice!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			fourth_obj = true
+		end
+		if(string.find(text, "Third Sacrifice performed!")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7performed the Third Sacrifice!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end etl_warbell alternate script
 end
 
 function et_Obituary(victim, killer, mod)
@@ -924,24 +1038,24 @@ function et_Obituary(victim, killer, mod)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if (string.find(mapname, "decay")) then
-		objcarriers[victim] = nil
-		if objcarriers_id[1] == victim then
-			table.remove(objcarriers_id, 1)
-		end
-	end
-
-	--decay_b7 alternate script
-	--if mapname == "decay_b7" then
+	--if (string.find(mapname, "decay")) then
 		--objcarriers[victim] = nil
-		--local x = 1
-		--for index in pairs(objcarriers_id) do
-			--if objcarriers_id[x] == victim then
-				--table.remove(objcarriers_id, x)
-			--end
-			--x = x + 1
+		--if objcarriers_id[1] == victim then
+			--table.remove(objcarriers_id, 1)
 		--end
 	--end
+
+	--decay_b7 alternate script
+	if mapname == "decay_b7" then
+		objcarriers[victim] = nil
+		local x = 1
+		for index in pairs(objcarriers_id) do
+			if objcarriers_id[x] == victim then
+				table.remove(objcarriers_id, x)
+			end
+			x = x + 1
+		end
+	end
 
 	if mapname == "te_escape2" then
 		objcarriers[victim] = nil
@@ -961,6 +1075,12 @@ function et_Obituary(victim, killer, mod)
 			table.remove(goldcarriers_id, 1)
 		end
 	end
+	if mapname == "et_brewdog" then
+		doccarriers[victim] = nil
+		if doccarriers_id[1] == victim then
+			table.remove(doccarriers_id, 1)
+		end
+	end
 	if (string.find(mapname, "_ice")) then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -973,10 +1093,10 @@ function et_Obituary(victim, killer, mod)
 			table.remove(doccarriers_id, 1)
 		end
 	end
-	if mapname == "et_brewdog" then
-		doccarriers[victim] = nil
-		if doccarriers_id[1] == victim then
-			table.remove(doccarriers_id, 1)
+	if (string.find(mapname, "warbell")) then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
 		end
 	end
 end
@@ -1098,24 +1218,24 @@ function et_ClientDisconnect(i)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if (string.find(mapname, "decay")) then
-		objcarriers[i] = nil
-		if objcarriers_id[1] == i then
-			table.remove(objcarriers_id, 1)
-		end
-	end
-
-	-- decay_b7 alternate script
-	--if mapname == "decay_b7" then
+	--if (string.find(mapname, "decay")) then
 		--objcarriers[i] = nil
-		--local x = 1
-		--for index in pairs(objcarriers_id) do
-			--if objcarriers_id[x] == i then
-				--table.remove(objcarriers_id, x)
-			--end
-			--x = x + 1
+		--if objcarriers_id[1] == i then
+			--table.remove(objcarriers_id, 1)
 		--end
 	--end
+
+	-- decay_b7 alternate script
+	if mapname == "decay_b7" then
+		objcarriers[i] = nil
+		local x = 1
+		for index in pairs(objcarriers_id) do
+			if objcarriers_id[x] == i then
+				table.remove(objcarriers_id, x)
+			end
+			x = x + 1
+		end
+	end
 
 	if mapname == "te_escape2" then
 		objcarriers[i] = nil
@@ -1135,12 +1255,6 @@ function et_ClientDisconnect(i)
 			table.remove(goldcarriers_id, 1)
 		end
 	end
-	if (string.find(mapname, "_ice")) then
-		doccarriers[i] = nil
-		if doccarriers_id[1] == i then
-			table.remove(doccarriers_id, 1)
-		end
-	end
 	if mapname == "1944_beach" then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
@@ -1151,6 +1265,18 @@ function et_ClientDisconnect(i)
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then
 			table.remove(doccarriers_id, 1)
+		end
+	end
+	if (string.find(mapname, "_ice")) then
+		doccarriers[i] = nil
+		if doccarriers_id[1] == i then
+			table.remove(doccarriers_id, 1)
+		end
+	end
+	if (string.find(mapname, "warbell")) then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
 		end
 	end
 end
