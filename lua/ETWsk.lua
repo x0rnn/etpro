@@ -517,6 +517,13 @@ function getConfig(map)
 		        c.spawns[6] = {name = "Rocket Gate Spawn", state = NO_PROTECT, radius2 = 450}
 				c.actions[1] = {spawn = 1, newstate = NO_PROTECT, trigger = "Magnetic seal deactivated"}
 				--c.actions[2] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "Allies have activated the Gate Controls"}
+    elseif map == "missile_b4" then
+		        c.spawns[1] = {name = "Gate Control Spawn", state = PROTECT_AXIS, pos = {4119, -4408, 353}, radius2 = 500}
+		        c.spawns[3] = {name = "Bunker Spawn", state = PROTECT_ALLIES, radius2 = 700}
+		        c.spawns[5] = {name = "Rocket Hall Spawn", state = PROTECT_AXIS, radius2 = 600}
+		        c.spawns[6] = {name = "Rocket Gate Spawn", state = NO_PROTECT, radius2 = 450}
+				c.actions[1] = {spawn = 1, newstate = NO_PROTECT, trigger = "Magnetic seal deactivated"}
+				--c.actions[2] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "Allies have activated the Gate Controls"}
 
 				
     elseif map == "transmitter" then
@@ -599,6 +606,14 @@ function getConfig(map)
         c.spawns[3] = {name = "Command Post", state = NO_PROTECT}
         c.spawns[4] = {name = "Guard House", state = NO_PROTECT, radius2 = 350}
         c.actions[1] = {spawn = 4, newstate = PROTECT_AXIS, trigger = "secured the Guardhouse Flag"}
+-- etl_warbell
+    elseif map == "etl_warbell" then
+        c.spawns[1] = {name = "Monastery", state = PROTECT_ALLIES, pos = {2370, -2058, 24}, radius2 = 380}
+        c.spawns[5] = {name = "Monastery", state = PROTECT_ALLIES, pos = {2623, -2005, 24}, radius2 = 185}
+        c.spawns[2] = {name = "Axis Spawn", state = PROTECT_AXIS, pos = {960, 2064, 416}, radius2 = 900}
+        c.spawns[3] = {name = "Command Post", state = NO_PROTECT}
+        c.spawns[4] = {name = "Guard House", state = NO_PROTECT, pos = {-2742, -148, 512}, radius2 = 350}
+        c.actions[1] = {spawn = 4, newstate = PROTECT_AXIS, trigger = "have destroyed the Guardhouse Gate"}
 -- TroopTrain
     elseif map == "trooptrain" then
         c.spawns[1] = {state = NO_PROTECT}
