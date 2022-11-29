@@ -14,6 +14,16 @@ game_manager
 {
 	spawn
 	{
+		create
+		{
+			scriptName "axisspawnroof"
+			classname "func_fakebrush"
+			origin "893 1950 944"
+			contents 1  // SOLID
+			mins "-845 -870 -88"
+			maxs "845 870 88"
+		}
+
 		// Game rules
 		wm_axis_respawntime 15
 		wm_allied_respawntime 20
