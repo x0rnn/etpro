@@ -14,20 +14,10 @@ game_manager
 {
 	spawn
 	{
-		create
-		{
-			scriptName "axisspawnroof"
-			classname "func_fakebrush"
-			origin "893 1950 944"
-			contents 1  // SOLID
-			mins "-845 -870 -88"
-			maxs "845 870 88"
-		}
-
 		// Game rules
 		wm_axis_respawntime 15
 		wm_allied_respawntime 20
-		wm_set_round_timelimit 18
+		wm_set_round_timelimit 12
 		wm_number_of_objectives 8
 		wm_set_defending_team 1
 		wm_setwinner 1
@@ -153,6 +143,13 @@ game_manager
 		// trigger zombie_trigger remove
 		// trigger zombie_hurt remove
 		// ===================================================================================
+
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3	  Timebonus"
+		wm_announce "^3	  *  +5 min Abbey Main Gate"
+		wm_announce "^3	  *  +3 min ^1Book of Death"
+		// ----- Harlekin Timebonus Announce -----
 	}
 	
 	trigger axis_win
@@ -1130,6 +1127,15 @@ depot_gate
 		wm_removeteamvoiceannounce 1 "1_entrance1dyn"
 		// *---------------------------------------------------------------------------------*
 		
+		// ----- Harlekin Timebonus Abbey Main Gate -----
+		wm_announce "^1+5 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		 cvar timelimit inc "1"
+		 cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Abbey Main Gate -----
+		
 		globalaccum 4 set 1				// DEPOT GATE DESTROYED
 		globalaccum 2 inc 1
 		globalaccum 2 trigger_if_equal 2 floodgate voice_operator
@@ -1527,6 +1533,13 @@ altar
 		// *----------------------------------- vo ------------------------------------------*
 		wm_announce "^1Axis have delivered the Book of Death!"
 		// *---------------------------------------------------------------------------------*
+		
+		// ----- Harlekin Timebonus Book of Death -----
+		wm_announce "^1+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Book of Death -----
 	}
 }
 
