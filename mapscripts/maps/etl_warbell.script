@@ -1495,6 +1495,18 @@ altar
 		setstate book_toi invisible
 		trigger axis_win_cam enable_chanting_sound
 		togglespeaker rampup_sound
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_announce "^1Axis have delivered the Book of Death!"
+		// *---------------------------------------------------------------------------------*
+		
+		// ----- Harlekin Timebonus Book of Death -----
+		wm_announce "^1+3 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Book of Death -----
+
 		wait 5750
 		globalaccum 1 set 1
 		
@@ -1539,17 +1551,6 @@ altar
 		remapshader textures/etl_warbell/_sky textures/etl_warbell/_sky_purple
 		remapshader textures/etl_warbell/full_moon textures/etl_warbell/red_moon
 		remapshaderflush
-		
-		// *----------------------------------- vo ------------------------------------------*
-		wm_announce "^1Axis have delivered the Book of Death!"
-		// *---------------------------------------------------------------------------------*
-		
-		// ----- Harlekin Timebonus Book of Death -----
-		wm_announce "^1+3 min Timebonus!"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
- 		cvar timelimit inc "1"
-		// ----- Harlekin Timebonus Book of Death -----
 	}
 }
 
