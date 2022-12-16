@@ -225,7 +225,7 @@ function et_ClientCommand(id, cmd)
 		end
 		return false
 	end
-	if et.trap_Argv(0) == "say" or et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_buddy" then
+	if et.trap_Argv(0) == "say" or et.trap_Argv(0) == "say_team" or et.trap_Argv(0) == "say_buddy" or et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 		if et.trap_Argv(0) == "m" or et.trap_Argv(0) == "pm" then
 			if (string.sub(et.trap_Argv(2), 1, 6) == "!timer") then
 				fd,len = et.trap_FS_FOpenFile(shrubbot, et.FS_READ)
