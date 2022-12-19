@@ -1,0 +1,659 @@
+
+
+game_manager
+{
+	spawn
+	{
+		// Set the respawn times
+		wm_allied_respawntime		20
+		wm_axis_respawntime		25
+
+		wm_set_round_timelimit		18
+		wm_number_of_objectives 4
+
+		// Set the number of objectives for the map
+
+
+		// Set Defending Team for SW Mode
+		wm_set_defending_team	0
+
+		// If the round timer expires, the Axis have won, so set the current winning team
+		// Set the round winner:  0 == AXIS, 1 == ALLIED
+		wm_setwinner 0
+
+		wait 500
+
+		setautospawn	"Town Entrance"	1
+		setautospawn	"Town Square"	0
+
+		globalaccum 1 set 1
+		globalaccum 2 set 1
+		globalaccum 3 set 1
+
+
+		wm_objective_status 1 0 0 // main entrance
+		wm_objective_status 1 1 0 //
+		wm_objective_status 2 0 0 // objective
+		wm_objective_status 2 1 0 //	
+		wm_objective_status 3 0 0 // return to truck
+		wm_objective_status 3 1 0 //
+		wm_objective_status 4 0 0 // CP
+		wm_objective_status 4 1 0 //
+
+		wait 2000
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "el_kef_axis_city_defend"
+		wm_teamvoiceannounce 1 "el_kef_allies_city_capture"
+
+		wm_teamvoiceannounce 1 "el_kef_allies_entrance1_destroy"
+		wm_teamvoiceannounce 0 "el_kef_axis_entrance1_defend"
+
+		// generic sounds
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+	}
+
+	
+	trigger victory
+	{
+
+		// Set the round winner:  0 == AXIS, 1 == ALLIED
+		wm_setwinner 1
+
+		// End the round
+		wm_endround
+	}
+	
+	trigger flagred
+	{
+		globalaccum 1 abort_if_not_equal 0
+
+		alertentity a_spawn_1
+		alertentity x_spawn_1
+		alertentity flag1blob
+		setautospawn	"Town Entrance"	1
+		setautospawn	"Town Square"	0
+		wm_announce	"^6The Town flag has been reclaimed!"
+		
+		wm_teamvoiceannounce 1 "el_kef_axis_city_captured"
+		wm_teamvoiceannounce 0 "el_kef_allies_city_lost"
+
+		globalaccum 1 set 1
+	}
+
+	trigger flagblue
+	{
+		globalaccum 1 set 0
+
+		setautospawn	"Town Center"	0
+		setautospawn	"Town Square"	1
+		alertentity flag1blob
+		alertentity a_spawn_1
+		alertentity x_spawn_1
+
+		wm_teamvoiceannounce 0 "el_kef_axis_city_lost"
+		wm_teamvoiceannounce 1 "el_kef_allies_city_captured"
+
+		wm_teamvoiceannounce 1 "el_kef_allies_entrance1_destroy"
+		wm_teamvoiceannounce 0 "el_kef_axis_entrance1_defend"
+
+		wm_announce	"^6The Town flag has been captured!"
+
+
+	}
+
+	trigger flagdead
+	{
+		globalaccum 1 abort_if_not_equal 0
+
+		alertentity a_spawn_1
+		alertentity x_spawn_1
+		alertentity flag1blob
+		setautospawn	"Town Entrance"	1
+		setautospawn	"Town Square"	0
+	}
+
+	trigger towngate
+	{
+		//disable initial spawn
+		setstate xs1 invisible
+		alertentity x_spawn_0
+
+		setautospawn	"Town Center"	0
+		setautospawn	"Town Square"	1
+		trigger self flagdead
+		trigger sp_control commit_section1
+		trigger sp_control disable_flagblob
+		setstate com_door invisible
+		wm_announce	"^6The Town gate has been breached!"
+		wm_teamvoiceannounce 1 "el_kef_allies_entrance1_destroyed"
+		wm_teamvoiceannounce 0 "el_kef_axis_entrance1_destroyed"
+		trigger flag kill
+		wm_objective_status 1 1 1 
+		wm_objective_status 1 0 2 
+	}
+}
+
+gate
+{
+	spawn
+	{
+		wait 250
+		constructible_class 3
+	}
+
+	death
+	{
+		wm_announce	"^6The Village Gate has been breached!"
+		trigger game_manager towngate
+
+	}
+}
+
+wall
+{
+	spawn
+	{
+		wait 250
+		constructible_class 3
+	}
+
+	death
+	{
+		wm_announce	"^6The Town wall has been breached!"
+	}
+}
+
+
+flag
+{
+	trigger axis_capture
+	{
+		trigger game_manager flagred
+	}
+
+	trigger allied_capture
+	{
+		trigger game_manager flagblue
+	}
+
+	trigger kill
+	{
+		remove
+	}
+
+}
+
+
+sp_control
+{
+	spawn
+	{
+		wait 150
+		setstate archblob invisible
+		setstate acomspawn invisible
+		setstate xcomspawn invisible
+	}
+
+	trigger commit_section1
+	{
+		setstate archblob default
+		alertentity x_spawn_2
+		setautospawn	"Town Center"	0
+		setautospawn	"Arches"		1
+	}
+
+	trigger disable_flagblob
+	{
+		setstate flag1blob invisible
+	}
+
+
+	trigger show_axis_cp
+	{
+		setstate acomspawn default
+		alertentity a_spawn_cp
+		wm_objective_status 4 0 1 
+		wm_objective_status 4 1 0 
+
+	}
+
+	trigger hide_axis_cp
+	{
+		setstate acomspawn invisible
+		alertentity a_spawn_cp
+		wm_objective_status 4 0 0 
+		wm_objective_status 4 0 0 
+	}
+	
+	trigger show_allied_cp
+	{
+		setstate xcomspawn default
+		alertentity x_spawn_cp
+		wm_objective_status 4 0 0 
+		wm_objective_status 4 1 1 
+	}
+
+	trigger hide_allied_cp
+	{
+		setstate xcomspawn invisible
+		alertentity x_spawn_cp
+		wm_objective_status 4 0 0 
+		wm_objective_status 4 0 0 
+	}
+
+}
+
+
+
+goldbar_holder
+{
+	death
+	{
+		trigger game_manager victory
+	}
+}
+
+gold_crate
+{
+	spawn
+	{
+	}
+
+	trigger stolen
+	{
+		wm_announce "^6Allies have stolen the transmitter"
+		wm_objective_status 2 0 1 
+		setstate goldbars_cm_marker invisible
+
+	}
+
+	trigger secured
+	{
+		wm_announce "^6Allies have secured the transmitter"
+		wm_objective_status 3 0 2 
+		wm_objective_status 3 1 1
+
+	}
+
+	trigger returned
+	{
+		wm_announce "^The transmitter has been returned"
+		setstate goldbars_cm_marker default
+		wm_objective_status 2 1 0 
+	}
+}
+
+
+
+// ================================================
+// ============ NEUTRAL COMMAND POST ==============
+// ================================================
+
+allied_compost_built
+{
+	spawn
+	{
+		wait 400
+		trigger allied_compost_built setup
+
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+	}
+
+	buildstart final
+	{
+		setstate allied_compost_built_model underconstruction
+		setstate neutral_compost_closed_clip invisible
+		setstate neutral_compost_closed_model invisible
+	}
+
+	built final
+	{
+		setstate allied_compost_built_model default
+		setstate neutral_compost_closed_clip invisible
+		setstate neutral_compost_closed_model invisible
+
+		trigger allied_compost_built_model enable_allied_features
+
+		enablespeaker allies_compost_sound
+	}
+
+	decayed final
+	{
+		setstate allied_compost_built_model invisible
+		setstate neutral_compost_closed_clip default
+		setstate neutral_compost_closed_model default
+	}
+
+	death
+	{
+		setstate allied_compost_built_model invisible
+		setstate neutral_compost_closed_clip default
+		setstate neutral_compost_closed_model default
+
+		trigger allied_compost_built_model disable_allied_features
+
+		disablespeaker allies_compost_sound
+	}
+}
+
+allied_compost_built_model
+{
+	spawn
+	{
+		wait 400
+		setstate allied_compost_built_model invisible
+	}
+
+	trigger enable_allied_features
+	{
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+
+		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		trigger sp_control show_allied_cp
+	}
+
+	trigger disable_allied_features
+	{
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+
+		wm_announce	"Axis team has destroyed the Allied Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		trigger sp_control hide_allied_cp
+
+	}
+}
+
+axis_compost_built
+{
+	spawn
+	{
+		wait 400
+		trigger axis_compost_built setup
+
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+	}
+
+	buildstart final
+	{
+		setstate axis_compost_built_model underconstruction
+		setstate neutral_compost_closed_clip invisible
+		setstate neutral_compost_closed_model invisible
+	}
+
+	built final
+	{
+		setstate axis_compost_built_model default
+		setstate neutral_compost_closed_clip invisible
+		setstate neutral_compost_closed_model invisible
+
+		trigger axis_compost_built_model enable_axis_features
+
+		enablespeaker axis_compost_sound
+	}
+
+	decayed final
+	{
+		setstate axis_compost_built_model invisible
+		setstate neutral_compost_closed_clip default
+		setstate neutral_compost_closed_model default
+	}
+
+	death
+	{
+		setstate axis_compost_built_model invisible
+		setstate neutral_compost_closed_clip default
+		setstate neutral_compost_closed_model default
+
+		trigger axis_compost_built_model disable_axis_features
+
+		disablespeaker axis_compost_sound
+	}
+}
+
+axis_compost_built_model
+{
+	spawn
+	{
+		wait 400
+		setstate axis_compost_built_model invisible
+	}
+
+	trigger enable_axis_features
+	{
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+
+		wm_announce	"Axis Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+		
+		//trigger sp_control show_axis_cp
+
+	}
+
+	trigger disable_axis_features
+	{
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+
+		wm_announce	"Allied team has destroyed the Axis Command Post!"
+
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_damaged"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		//trigger sp_control hide_axis_cp
+
+
+
+	}
+
+}
+
+
+//*******************
+//**** Barricade ****
+//*******************
+
+const_te
+{
+	spawn
+	{
+		wait 200
+		trigger const_te setup
+		constructible_class 2
+	}
+
+	trigger setup
+	{
+		setstate const_te invisible
+		setstate te_materials default
+		setstate te_materials_clip default
+		setstate te_flag default
+	}
+
+	buildstart final
+	{
+		setstate const_te underconstruction
+		setstate te_materials default
+		setstate te_materials_clip default
+		setstate te_flag default
+
+	}
+
+	built final
+	{
+		setstate const_te default
+		setstate te_materials invisible
+		setstate te_materials_clip invisible
+		setstate te_flag invisible
+
+		wm_announce	"^6The barricade has been built"
+
+	}
+
+	decayed final
+	{
+		setstate const_te invisible
+		setstate te_materials default
+		setstate te_materials_clip default
+		setstate te_flag default
+	}
+
+	death
+	{
+		setstate const_te invisible
+		setstate te_materials default
+		setstate te_materials_clip default
+		setstate te_flag default
+		wm_announce	"^6The barricade has been destroyed"
+
+	}
+}
+
+
+//************************
+//**** Objective gate ****
+//************************
+td
+{
+	spawn
+	{
+		wait 200
+		trigger td setup
+		constructible_class 2
+
+		alertentity frame_broken
+		alertentity frame_fixed
+		setstate frame_door invisible
+
+	}
+
+	trigger setup
+	{
+		setstate const_td invisible
+		setstate td_materials default
+		setstate td_materials_clip default
+		setstate td_flag default
+	}
+
+	buildstart final
+	{
+		setstate const_td underconstruction
+		setstate td_materials default
+		setstate td_materials_clip default
+		setstate td_flag default
+	}
+
+	built final
+	{
+		setstate const_td default
+		setstate td_materials invisible
+		setstate td_materials_clip invisible
+		setstate td_flag invisible
+
+		wm_announce	"^6The security door has been set up"
+
+		alertentity frame_broken
+		alertentity frame_fixed
+		setstate frame_door default
+
+	}
+
+	decayed final
+	{
+		setstate const_td invisible
+		setstate td_materials default
+		setstate td_materials_clip default
+		setstate td_flag default
+	}
+
+	death
+	{
+		setstate const_td invisible
+		setstate td_materials default
+		setstate td_materials_clip default
+		setstate td_flag default
+
+		alertentity frame_broken
+		alertentity frame_fixed
+		setstate frame_door invisible
+
+		wm_announce	"^6The security door has been breached"
+
+
+	}
+}
