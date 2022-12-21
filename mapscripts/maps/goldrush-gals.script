@@ -120,7 +120,7 @@ game_manager
 		{
 			scriptName "spawnroof1"
 			classname "func_fakebrush"
-			origin "2757 -759 100"
+			origin "2757 -759 260"
 			contents 1  // SOLID
 			mins "-360 -375 -88"
 			maxs "360 375 88"
