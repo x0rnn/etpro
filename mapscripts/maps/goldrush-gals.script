@@ -20,11 +20,62 @@
 // Harlekin - Anti spawn kill roofs over all spawns. The roof over the Tank Spawn appear after the tank is repaired and moved out of the yard.
 // Harlekin - Timebonus
 // x0rnn - allied spawnroof disabled after truck with gold is near truck barrier #2
+// x0rnn - blocked some ledges
 
 game_manager
 {
 	spawn
 	{
+
+	create
+	{
+		scriptName "ledgeblock1"
+		classname "func_fakebrush"
+		origin "2017 -386 -60"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-15 -10 0"
+		maxs "400 10 200"
+	}
+
+	create
+	{
+		scriptName "ledgeblock2"
+		classname "func_fakebrush"
+		origin "3046 -85 8"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-40 -50 -30"
+		maxs "40 13 30"
+	}
+
+	create
+	{
+		scriptName "ledgeblock3"
+		classname "func_fakebrush"
+		origin "1409 -560 196"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-150 -10 0"
+		maxs "150 10 200"
+	}
+
+	create
+	{
+		scriptName "ledgeblock4"
+		classname "func_fakebrush"
+		origin "909 -576 196"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-205 -10 0"
+		maxs "150 10 200"
+	}
+
+	create
+	{
+		scriptName "ledgeblock5"
+		classname "func_fakebrush"
+		origin "845 -781 150"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-205 -20 0"
+		maxs "150 20 200"
+	}
 
 	//bani - bug fixes
 	create
