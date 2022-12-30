@@ -1123,6 +1123,7 @@ function et_Print(text)
 			if thanks then
 				last_revive[tonumber(zombie)] = {playerName(tonumber(medic)) , et.trap_Milliseconds()}
 			end
+			et.trap_SendServerCommand(tonumber(medic), "cp \"You have revived " .. et.gentity_get(tonumber(zombie), "pers.netname") .. "\"")
 		end
 		if string.find(text, "item_health") then
 	        local i, j = string.find(text, "%d+")
