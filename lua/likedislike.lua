@@ -1,6 +1,3 @@
--- likedislike.lua by x0rnn
--- !like or !dislike a map
-
 filename = "likedislike.log"
 mapname = ""
 results = {}
@@ -17,7 +14,8 @@ function mapresults()
 		et.trap_FS_FCloseFile(fd)
 		like = 0
 		hate = 0
-		for m,v in string.gfind(filestr, "[%x]+\t(" .. mapname .. ")\t([^\n]+)") do
+		clean_mapname = string.gsub(mapname, "%-", "%%-")
+		for m,v in string.gfind(filestr, "[%x]+\t(" .. clean_mapname .. ")\t([^\n]+)") do
 			if v == "like" then
 				like = like + 1
 			elseif v == "hate" then
@@ -45,7 +43,7 @@ function readLog(filename)
 	et.trap_FS_FCloseFile(fd)
 
 	local guid_map, opinion
-	for guid_map, opinion in string.gfind(filestr,"([%x]+\t[%_%w]+)\t([^\n]+)") do
+	for guid_map, opinion in string.gfind(filestr,"([%x]+\t[%_%-%w]+)\t([^\n]+)") do
 		results[guid_map] =
 		{
 			opinion
@@ -81,21 +79,25 @@ function vote(id, choice)
 					count = et.trap_FS_Write(cl_guid .. "	" .. mapname .. "	like\n", string.len(cl_guid .. "	" .. mapname .. "	like\n"), fd)
 					et.trap_FS_FCloseFile(fd)
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3liked ^7" .. mapname .. ". Thanks for your vote.\"\n")
-				elseif choice == "dislike" then
+				elseif choice == "hate" then
 					count = et.trap_FS_Write(cl_guid .. "	" .. mapname .. "	hate\n", string.len(cl_guid .. "	" .. mapname .. "	hate\n"), fd)
 					et.trap_FS_FCloseFile(fd)
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3disliked ^7" .. mapname .. ". Thanks for your vote.\"\n")
 				end
 			else
 				if results[cl_guid .. "	" .. mapname][1] == choice then
-					et.trap_SendServerCommand(id, "chat \"^7You have already " .. choice .. "d ^3" .. mapname .. "^7.\"\n")
-				else
 					if choice == "like" then
-						results[cl_guid .. "	" .. mapname][1] = choice
-					elseif choice == "dislike" then
-						results[cl_guid .. "	" .. mapname][1] = "hate"
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. "^7, you have already liked ^3" .. mapname .. "^7.\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. "^7, you have already disliked ^3" .. mapname .. "^7.\"\n")
 					end
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3" .. choice .. "d ^7" .. mapname .. ". Thanks for your vote.\"\n")
+				else
+					results[cl_guid .. "	" .. mapname][1] = choice
+					if choice == "like" then
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3liked ^7" .. mapname .. ". Thanks for your vote.\"\n")
+					else
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3disliked ^7" .. mapname .. ". Thanks for your vote.\"\n")
+					end
 					writeLog(results)
 				end
 			end
@@ -105,7 +107,7 @@ function vote(id, choice)
 				count = et.trap_FS_Write(cl_guid .. "	" .. mapname .. "	like\n", string.len(cl_guid .. "	" .. mapname .. "	like\n"), fd)
 				et.trap_FS_FCloseFile(fd)
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3liked ^7" .. mapname .. ". Thanks for your vote.\"\n")
-			elseif choice == "dislike" then
+			elseif choice == "hate" then
 				count = et.trap_FS_Write(cl_guid .. "	" .. mapname .. "	hate\n", string.len(cl_guid .. "	" .. mapname .. "	hate\n"), fd)
 				et.trap_FS_FCloseFile(fd)
 				et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^3disliked ^7" .. mapname .. ". Thanks for your vote.\"\n")
@@ -118,14 +120,15 @@ end
 
 function et_ClientCommand(id, command)
 	if et.trap_Argv(0) == "say" then
-		if et.trap_Argv(1) == "!like" or et.trap_Argv(1) == "!love" then
+		if string.lower(et.trap_Argv(1)) == "!like" or string.lower(et.trap_Argv(1)) == "!love" then
 			vote(id, "like")
 			mapresults()
-		elseif et.trap_Argv(1) == "!dislike" or et.trap_Argv(1) == "!hate" then
-			vote(id, "dislike")
+		elseif string.lower(et.trap_Argv(1)) == "!dislike" or string.lower(et.trap_Argv(1)) == "!hate" then
+			vote(id, "hate")
 			mapresults()
-		elseif et.trap_Argv(1) == "!mapresults" then
+		elseif string.lower(et.trap_Argv(1)) == "!mapresults" then
 			mapresults()
+			end
 		end
 	end
 	return(0)
