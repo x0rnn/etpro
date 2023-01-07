@@ -1,3 +1,6 @@
+-- likedislike.lua - like or dislike a map by x0rnn
+-- commands: !like/!love, !dislike/!hate, !mapresults
+
 filename = "likedislike.log"
 mapname = ""
 results = {}
