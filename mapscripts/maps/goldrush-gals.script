@@ -31,7 +31,7 @@ game_manager
 	{
 		scriptName "ledgeblock1"
 		classname "func_fakebrush"
-		origin "2017 -386 -60"
+		origin "2257 -386 -60"
 		contents 65536  // CONTENTS_PLAYERCLIP
 		mins "-15 -10 0"
 		maxs "400 10 200"
