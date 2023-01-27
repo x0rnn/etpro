@@ -149,6 +149,7 @@ game_manager
 		wm_announce "^3	  Timebonus"
 		wm_announce "^3	  *  +5 min Abbey Main Gate"
 		wm_announce "^3	  *  +3 min ^1Book of Death"
+		wm_announce "^3	  *  +2 min ^1Bell ring"
 		// ----- Harlekin Timebonus Announce ----- 
 		
 		wm_announce "^3Note: This version of Warbell has an objective-delivery based sacrifice method:"
@@ -571,6 +572,12 @@ lightning1_activator
 		setstate lightning2_yellow default
 		setstate lightning2_trigger default
 		setstate lightning2_flag default
+		
+		// ----- Harlekin Timebonus Bell Ring -----
+		wm_announce "^1+2 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Bell Ring -----
 	}
 }
 
