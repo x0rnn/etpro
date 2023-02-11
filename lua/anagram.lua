@@ -347,7 +347,7 @@ function shuffle_word(inputStr)
 end
 
 function et_InitGame(levelTime, randomSeed, restart)
-	et.RegisterModname("altnames.lua "..et.FindSelf())
+	et.RegisterModname("anagram.lua "..et.FindSelf())
 	local i = 0
 	for i=0,tonumber(et.trap_Cvar_Get("sv_maxclients"))-1 do
 		score[i] = 0
