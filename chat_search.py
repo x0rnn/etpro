@@ -30,7 +30,7 @@ for filename in logs:
 				found_flag = True
 
 		if found_flag == True:
-			match_say = re.search(r'say\w*:\s*(.+?):\s*(.*)', line)
+			match_say = re.search(r'say\w*:\s*(.*):\s*(.*)', line)
 			match_pm = re.search(r'etpro privmsg:\s*(.+?) to (.+?):\s*(.*)', line)
 			if match_say or match_pm:
 				f = open(guid + ".txt", "a+")
