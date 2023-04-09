@@ -20,6 +20,7 @@ nonhwkills = {}
 fopkills = {}
 chance = 15
 chance_mortar = 30
+chance_mg42 = 15
 min_kills = 25
 min_kills_mortar = 20
 min_percent = 85
@@ -310,7 +311,7 @@ function et_Obituary(victim, killer, mod)
 									if math.mod(mglamers[cl_guid][1], 5) == 0 then
 										if health > 0 then
 											local choice = math.random(1, 100)
-											if choice <= chance then
+											if choice <= chance_mg42 then
 												msg = string.format("cpm \"^3Oops. " .. name .. "^3's MG42 overheated from excessive use. It blew up in his face.\n")
 												et.G_LogPrint("LUA event: Oops. " .. name .. "'s MG42 overheated from excessive use. It blew up in his face.\n")
 												et.trap_SendServerCommand(-1, msg)
