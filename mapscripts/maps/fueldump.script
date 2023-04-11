@@ -17,6 +17,7 @@
 // harlekin - added arni - 09.07.2006 - Broke one garage gate to only close half way
 // harlekin - disable rear allied spawns completely after allied team has breached the Tunnel Doors
 // Moses - add 2 more Axis Truck spawns
+// Harlekin - added StinVec Assault Bridge for Axis in Fueldump
 // Harlekin - added 2 spawns at axis cp
 // Harlekin - added Health & Ammo @ allied cp & @ axis second spawn.
 // x0rnn - fixed arni's "fueljump1" anti-trickjump playerclip
@@ -27,414 +28,11 @@
 // Harlekin - changed allied spawntime from 20 to 15 until Tunnel Door is breached
 // x0rnn - disabled axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
 // x0rnn - added playerclips in cave to prevent lame engis going there by foot
-// x0rnn - added assault ramp instead of StinVec's Assault Bridge for Axis in Fueldump (fuelramp.pk3 is required on the server!)
 
 game_manager
 {
 	spawn
 	{
-		create
-		{
-			scriptName "fdrampmodel"
-			targetname "fdrampmodel"
-			spawnflags "2"
-			origin "-10577 -5050 183"
-			frames "1"
-			angle "360"
-			classname "misc_gamemodel"
-			modelscale "1.22"
-			contents "1"
-			mins "-25 0 0"
-			maxs "50 0 30"
-			clipmask "1"
-			model "models/ramp/ramp.md3"
-		}
-
-        create
-		{
-		scriptname "ramp_toi"
-		targetname "ramp_toi"
-		target     "fdramp"
-		classname  "trigger_objective_info"
-		infoAllied "Build Fueldump Assault Ramp"
-		infoAxis   "Destroy Fueldump Assault Ramp"
-		shortname  "Allied Fueldump Assault Ramp"
-		track      "the Allied Fueldump Assault Ramp"
-		spawnflags "2"
-		score      "50"
-		origin     "-10537 -5071 240"
-		mins       "-450 -170 -48"
-		maxs       "50 25 220"
-		}
-
-        create
-        	{
-            	scriptname "fdramp_materials"
-            	targetname "fdramp_materials"
-            	classname  "misc_gamemodel"
-            	angle      "90"
-				origin     "-10512 -5183 198"
-				skin       "models/mapobjects/cmarker/allied_crates.skin"
-            	model      "models/mapobjects/cmarker/cmarker_crates.md3"
-        	}
-
-           create
-           {
-                   scriptName "crateclip"
-				   targetname "crateclip"
-                   classname "func_fakebrush"
-                   origin "-10511 -5184 211"
-                   contents 1  // SOLID
-                   mins "-20 -25 10"
-                   maxs "20 20 10"
-           }
-
-        create
-        	{
-            	scriptname "fdramp_flag"
-            	targetname "fdramp_flag"
-            	classname  "misc_gamemodel"
-            	spawnflags "2"
-            	origin     "-10500 -5143 210" 
-            	angle      "90" 
-            	frames     "190"
-            	modelscale "0.4"
-            	model      "models/mapobjects/cmarker/cmarker_flag.md3"
-            	skin       "models/mapobjects/cmarker/allied_cflag.skin"
-        	}
-
-        create
-        	{
-            	model      "*165"
-            	scriptname "fdramp"
-            	targetname "fdramp"
-				classname  "func_constructible"
-            	origin     "-10763 -5002 276"
-            	spawnflags "8"
-            	modelscale "0.4"
-        	}
-
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10605 -5080 224"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10617 -5080 230"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10629 -5080 236"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10641 -5080 242"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10653 -5080 248"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10665 -5080 254"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10677 -5080 260"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10689 -5080 266"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10701 -5080 272"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10713 -5080 278"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10725 -5080 284"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10737 -5080 290"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10749 -5080 296"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10761 -5080 302"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10773 -5080 308"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10785 -5080 314"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10797 -5080 320"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10809 -5080 326"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10821 -5080 332"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10833 -5080 338"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10845 -5080 344"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10857 -5080 350"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10869 -5080 356"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10881 -5080 362"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10893 -5080 368"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10905 -5080 374"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10917 -5080 380"
-                   contents 1
-                   mins "-12 -25 0"
-                   maxs "0 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10929 -5080 398"
-                   contents 1
-                   mins "-50 -80 0"
-                   maxs "10 25 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10929 -5173 406"
-                   contents 1
-                   mins "-50 -20 0"
-                   maxs "20 20 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10929 -5193 412"
-                   contents 1
-                   mins "-50 -40 0"
-                   maxs "20 0 0"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10944 -5056 273"
-                   contents 1
-                   mins "-20 -1 -48"
-                   maxs "20 1 100"
-           }
-           create
-           {
-                   scriptName "ramp"
-                   targetname "ramp"
-                   classname "func_fakebrush"
-                   origin "-10775 -5084 256"
-                   contents 1
-                   mins "-1 -20 -48"
-                   maxs "1 20 48"
-           }
-
 		create
 		{
 			scriptName "caveblock1"
@@ -710,6 +308,77 @@ game_manager
 			angle "180"
 		}
 
+//----START----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+        create
+		{
+		scriptname "fdbridge_toi"
+		targetname "fdbridge_toi"
+		target     "fdbridge"
+		classname  "trigger_objective_info"
+		infoAllied "Build Fueldump Assault Bridge"
+		infoAxis   "Destroy Fueldump Assault Bridge"
+		shortname  "Allied Fueldump Assault Bridge"
+		track      "the Allied Fueldump Assault Bridge"
+		spawnflags "2"
+		score      "50"
+		origin     "-10326 -5523 633"
+		mins       "-52 -66 -34"
+		maxs       "52 66 34"
+		}
+
+        create
+        	{
+            	scriptname "fdbridge_materials"
+            	targetname "fdbridge_materials"
+            	classname  "misc_gamemodel"
+            	angle      "90"
+		origin     "-10326 -5523 633"
+		skin       "models/mapobjects/cmarker/allied_crates.skin"
+            	model      "models/mapobjects/cmarker/cmarker_crates.md3"
+        	}
+
+        create
+        	{
+		scriptname "fdbridge_material_hurt"
+		targetname "fdbridge_material_hurt"
+		spawnflags 24
+		classname  "trigger_hurt"
+		dmg        0            
+		sound      "sound/player/hurt_barbwire.wav"
+		origin     "-10712 -5931 603" 
+		mins       "-30 -30 -20"
+		maxs       "30 30 20"
+        	}
+
+        create
+        	{
+
+            	scriptname "fdbridge_flag"
+            	targetname "fdbridge_flag"
+            	classname  "misc_gamemodel"
+            	spawnflags "2"
+            	origin     "-10326 -5482 646" 
+            	angle      "90" 
+            	frames     "190"
+            	modelscale "0.4"
+            	model      "models/mapobjects/cmarker/cmarker_flag.md3"
+            	skin       "models/mapobjects/cmarker/allied_cflag.skin"
+        	}
+
+        create
+        	{
+            	model      "*10"
+            	scriptname "fdbridge"
+            	targetname "fdbridge"		
+		classname  "func_constructible"
+            	origin     "-10712 -5931 603"
+            	spawnflags "8"
+            	modelscale 1.04
+        	}
+
+//----END----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+
+
 // ----- Harlekin Allies Entrance Spawn Spawn Roof -----
 		create
 		{
@@ -966,6 +635,17 @@ game_manager
            }
 		// ----- Arni Extra Spawn @ Axis Truck ----- 
 
+           create
+           {
+                   scriptName "crateclip"
+				   targetname "crateclip"
+                   classname "func_fakebrush"
+                   origin "-10317 -5514 648"
+                   contents 1  // SOLID
+                   mins "-20 -25 10"
+                   maxs "20 20 10"
+           }
+
 		// fueldump anti-trickjump player clips - courtesy arni
 
            create
@@ -1195,11 +875,6 @@ game_manager
 		       setstate alliedrearspawn_new invisible
 		// ----- Allied Hut Spawn END -----
 
-		setstate ramp_toi invisible
-		setstate fdramp_materials invisible
-		setstate fdramp_flag invisible
-		setstate crateclip invisible
-
 		// Game rules
 		wm_axis_respawntime	30
 		wm_allied_respawntime	15 // Harlekin Changed from 20 to 15
@@ -1419,10 +1094,6 @@ game_manager
 
 		wm_removeteamvoiceannounce 1 "fueldump_allies_tank_reardepot"
 		// *---------------------------------------------------------------------------------*
-		setstate ramp_toi default
-		setstate fdramp_materials default
-		setstate fdramp_flag default
-		setstate crateclip default
 	}
 
 	trigger checkgame
@@ -2530,89 +2201,90 @@ footbridge
 	}
 }
 
-fdramp
+//----START----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
+fdbridge
 {
     spawn
     {
         wait 200        
-        //faceangles 0 90 0 1
-        constructible_class 2
-        constructible_chargebarreq 2
+
+        faceangles 0 -47 2 1
+        constructible_class 3
+        constructible_chargebarreq 1.6
         constructible_constructxpbonus 20
 
-        trigger fdramp setup
+        trigger fdbridge setup
     }
 
     trigger show_materials
     {
-        setstate fdramp_materials      default
-        setstate fdramp_flag           default
+        setstate fdbridge_materials      default
+        setstate fdbridge_flag           default
 		setstate crateclip default
     }
 
     trigger hide_materials
     {
-        setstate fdramp_materials      invisible
-        setstate fdramp_flag           invisible
+        setstate fdbridge_materials      invisible
+        setstate fdbridge_flag           invisible
 		setstate crateclip invisible
     }
 
-    trigger show_fdramp
+    trigger show_fdbridge
     {
-        setstate fdramp        default
-		setstate fdrampmodel   default
-		setstate ramp default
+        setstate fdbridge        default
     }
 
-    trigger hide_fdramp
+    trigger hide_fdbridge
     {
-        setstate fdramp        invisible
-		setstate fdrampmodel   invisible
-		setstate ramp invisible
+        setstate fdbridge        invisible
     }
 
-    trigger building_fdramp
+    trigger building_fdbridge
     {
-        setstate fdramp  underconstruction
-		setstate fdrampmodel underconstruction
+        setstate fdbridge  underconstruction
     }
 
     trigger setup
     {
-        trigger self hide_fdramp
-        //trigger self show_materials
+        setstate fdbridge_material_hurt invisible
+        trigger self hide_fdbridge
+        trigger self show_materials
     }
 
     buildstart final
     {
-        trigger self building_fdramp
+        trigger self building_fdbridge
         trigger self show_materials
     }
 
     built final
     {
-        trigger self show_fdramp
+        trigger self show_fdbridge
         trigger self hide_materials
 
-        wm_announce "^4***ALLIES: ^3The Allied Fueldump Assault Ramp has been constructed!^7"
+        wm_announce "^4***ALLIES: ^3The Allied Fueldump Assault Bridge has been constructed!^7"
         wm_announce "^1***AXIS: ^3 DESTROY IT!"
     }
     decayed final
     {
-        trigger self hide_fdramp
+        trigger self hide_fdbridge
         trigger self show_materials
     }
 
 
     death
     {
-        trigger self hide_fdramp
+        trigger self hide_fdbridge
         trigger self show_materials
+        setstate fdbridge_material_hurt default
         wait 10
+        setstate fdbridge_material_hurt invisible
 
-        wm_announce "^1AXIS ^)have destroyed the Allied Fueldump Assault Ramp!^7"
+        wm_announce "^1AXIS ^)have destroyed the Allied Fueldump Assault Bridge!^7"
      }
 }
+//----END----/SS/StinVec’s Allied Constructible Fueldump Assault Bridge 
 
 // ============================================================================
 // Allied MG42 Nest - on Allied side of the map
