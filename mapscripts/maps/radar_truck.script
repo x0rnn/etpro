@@ -6,11 +6,6 @@ game_manager
 {
 	spawn
 	{
-		delete
-		{
-			origin "-857 -1225 1270" //remove documents room door
-		}
-
 		// Harlekin - Roof over Abondoned Villa 
 		create
 		{
@@ -30,6 +25,50 @@ game_manager
 			contents 1  // SOLID
 			mins "-300 -300 -88"
 			maxs "300 300 88"
+		}
+
+		create
+		{
+			scriptName "axis_tunnelspawn"
+			targetname "axis_tunnelspawn"
+			classname "team_WOLF_objective"
+			description "Tunnel Entrance Spawn"
+			spawnflags 1
+			origin "2412 4404 1328"
+		}
+		create
+		{
+			scriptName "axis_tunnelspawns"
+			targetname "axis_tunnelspawns"
+			classname "team_CTF_redspawn"
+			origin "2944 4300 1328"
+			angle 180
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_tunnelspawns"
+			targetname "axis_tunnelspawns"
+			classname "team_CTF_redspawn"
+			origin "2944 4364 1328"
+			angle 180
+			spawnflags 3
+		}
+		create
+		{
+			scriptName "axis_tunnelspawns"
+			targetname "axis_tunnelspawns"
+			classname "team_CTF_redspawn"
+			origin "2944 4428 1328"
+			angle 180
+			spawnflags 3
+		}
+		setstate axis_tunnelspawn invisible
+		setstate axis_tunnelspawns invisible
+
+		delete
+		{
+			origin "-857 -1225 1270" //remove documents room door
 		}
 
 		// Game rules
@@ -1088,8 +1127,13 @@ axisfinalspawns_obj
 		wait 50
 		setautospawn "Axis Final" 0
 		wm_announce "^1Axis Abandoned Villa spawn enabled!"
+		setstate axis_tunnelspawn default
+		setstate axis_tunnelspawns default
 		setstate eastside_wobj invisible
 		setstate eastsidespawns invisible
+		
+		wm_allied_respawntime	15
+		wm_announce "Allied respawn time changed to 15"
 		
 	}
 
@@ -2293,13 +2337,19 @@ truck
 		trigger truck stuck_check
 		accum 1 abort_if_bitset 3 	// stuck check
 
+		// do death check before accum 4 set 0, because
+		//+otherwise tank_disabler doesn't have a chance to increase accum 4 to 4,
+		//+and tank will be stuck until Allies move away from it
+		//+(unable to move but can't be fixed either)
+		accum 1 abort_if_bitset 7 	// death check
+
 		accum 4 set 0				// reset stop counter
 		accum 1 bitreset 8			// reset stop check
 
 		accum 1 abort_if_bitset 2 	// already following spline
 		accum 1 abort_if_bitset 4 	// script lockout
 
-		accum 1 abort_if_bitset 7 	// death check
+		//accum 1 abort_if_bitset 7 	// death check
 
 		// Any just started moving stuff goes here
 		trigger truck_engine start
@@ -2535,6 +2585,6 @@ teleporter
 {
 	spawn
 	{
-		remove
+		//remove
 	}
 }

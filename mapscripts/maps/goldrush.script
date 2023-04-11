@@ -1651,13 +1651,19 @@ tank
 		trigger self stuck_check
 		accum 1 abort_if_bitset 3 	// stuck check
 
+		// do death check before accum 4 set 0, because
+		//+otherwise tank_disabler doesn't have a chance to increase accum 4 to 4,
+		//+and tank will be stuck until Allies move away from it
+		//+(unable to move but can't be fixed either)
+		accum 1 abort_if_bitset 7 	// death check
+
 		accum 4 set 0				// reset stop counter
 		accum 1 bitreset 8			// reset stop check
 
 		accum 1 abort_if_bitset 2 	// already following spline
 		accum 5 abort_if_not_equal 0	// are we not in a script lockout?
 
-		accum 1 abort_if_bitset 7 	// death check
+		//accum 1 abort_if_bitset 7 	// death check
 
 		// Any just started moving stuff goes here
 
@@ -2796,13 +2802,19 @@ truck
 		trigger truck stuck_check
 		accum 1 abort_if_bitset 3 	// stuck check
 
+		// do death check before accum 4 set 0, because
+		//+otherwise tank_disabler doesn't have a chance to increase accum 4 to 4,
+		//+and tank will be stuck until Allies move away from it
+		//+(unable to move but can't be fixed either)
+		accum 1 abort_if_bitset 7 	// death check
+
 		accum 4 set 0				// reset stop counter
 		accum 1 bitreset 8			// reset stop check
 
 		accum 1 abort_if_bitset 2 	// already following spline
 		accum 1 abort_if_bitset 4 	// script lockout
 
-		accum 1 abort_if_bitset 7 	// death check
+		//accum 1 abort_if_bitset 7 	// death check
 
 		// Any just started moving stuff goes here
 		trigger truck_engine start
