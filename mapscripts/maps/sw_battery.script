@@ -1,9 +1,6 @@
 //
 // Map: Atlantic Seawall Battery
-// BSP: sw_battery
-// x0rnn changes:
-// main bunker door is reconstructible 
-// CP spawn is disabled, instead Axis spawn at backdoor and Allies at Ragnar's Battery forward spawns
+// BSP: battery
 
 game_manager
 {
@@ -16,7 +13,6 @@ game_manager
 			targetname "newdoor_toi"
 			classname  "trigger_objective_info"
 			target "newdoor_construct"
-			//origin "1016 -2256 826"
 			spawnflags "1"
 			track "Sea Wall Door"
 			infoAxis "Defend the Sea Wall door !"
@@ -57,6 +53,130 @@ game_manager
             maxs "15 5 15"
             model      "models/mapobjects/cmarker/cmarker_sandbags.md3"
             skin       "models/mapobjects/cmarker/axis_sandbags.skin"
+        }
+
+        // Ragnar begin: Add Allied forward spawn points
+        // First the lowest spawnpoint.
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_1"
+            targetname "forward_spawns_1"
+            origin     "5136 -1184 488"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_1"
+            targetname "forward_spawns_1"
+            origin     "5200 -1184 504"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_1"
+            targetname "forward_spawns_1"
+            origin     "5200 -1248 528"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_1"
+            targetname "forward_spawns_1"
+            origin     "5136 -1248 520"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        // Middle spawnpoint.
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_2"
+            targetname "forward_spawns_2"
+            origin     "4960 -1904 792"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "225"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_2"
+            targetname "forward_spawns_2"
+            origin     "5024 -1904 792"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "225"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_2"
+            targetname "forward_spawns_2"
+            origin     "5024 -1968 824"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "225"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_2"
+            targetname "forward_spawns_2"
+            origin     "4960 -1968 824"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "225"
+        }
+
+        // Top spawnpoint.
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_3"
+            targetname "forward_spawns_3"
+            origin     "4120 -2408 1056"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_3"
+            targetname "forward_spawns_3"
+            origin     "4184 -2408 1056"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_3"
+            targetname "forward_spawns_3"
+            origin     "4184 -2472 1080"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
+        }
+
+        create
+        {
+            classname  "team_CTF_bluespawn"
+            scriptname "forward_spawns_3"
+            targetname "forward_spawns_3"
+            origin     "4120 -2472 1080"
+            spawnflags "3" // INVULNERABLE(1) + START_ACTIVE(2)
+            angle      "270"
         }
 
         // Harlekin - Roof over alies west beach spawn
@@ -132,6 +252,9 @@ game_manager
 		// Set status of backup generator (0 = built, 1 = destroyed)
 		globalaccum 2 set 0
 
+		setstate eastbunker_spawns invisible
+		setstate eastbunker_wobj invisible
+		
 		wait 450
 
 		// start triggered loops on/off as required (eg: command post radio sounds)
@@ -157,8 +280,7 @@ game_manager
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
 		// *---------------------------------------------------------------------------------*
 
-		setstate eastbunker_spawns invisible
-		setstate eastbunker_wobj invisible
+		wm_announce "^3Note to Soldiers: Mortar is bugged in sw_battery - the shells never fall down from the sky."
 	}
 
 	trigger westbunker_flagblue
@@ -251,8 +373,107 @@ game_manager
 	}
 }
 
+eastbeach_wobj
+{
+    spawn
+    {
+        accum 7 set 0 // Use accum 7 to store the current states of the objectives which influence the forward spawn.
+                      // Used as bitset:
+                      // Bit 0: 0=Axis cp built,       1=Axis cp destroyed
+                      // Bit 1: 0=Allied cp destroyed, 1=Allied cp built
+                      // Bit 2: 0=Backdoor built,      1=Backdoor destroyed
+        trigger self update
 
-// Ragnar begin: Backdoor script block.
+        set
+        {
+            origin "4384 -2072 1088"
+        }
+    }
+
+    trigger axis_cp_built
+    {
+        accum 7 abort_if_not_bitset 0
+	    accum 7 bitreset 0
+        trigger self update
+    }
+
+    trigger axis_cp_destroyed
+    {
+        accum 7 abort_if_bitset 0
+	    accum 7 bitset 0
+        trigger self update
+    }
+
+    trigger allied_cp_built
+    {
+        accum 7 abort_if_bitset 1
+	    accum 7 bitset 1
+        trigger self update
+    }
+
+    trigger allied_cp_destroyed
+    {
+        accum 7 abort_if_not_bitset 1
+	    accum 7 bitreset 1
+        trigger self update
+    }
+
+    trigger backdoor_built
+    {
+        accum 7 abort_if_not_bitset 2
+	    accum 7 bitreset 2
+        trigger self update
+    }
+
+    trigger backdoor_destroyed
+    {
+        accum 7 abort_if_bitset 2
+	    accum 7 bitset 2
+        trigger self update
+    }
+
+    trigger update
+    {
+        // The number of set bits indicates the position of the forward spawn.
+        accum 7 trigger_if_equal 0 eastbeach_wobj set_default
+        accum 7 trigger_if_equal 1 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 2 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 3 eastbeach_wobj set_2     // 2 bits set.
+        accum 7 trigger_if_equal 4 eastbeach_wobj set_default     // 1 bit set.
+        accum 7 trigger_if_equal 5 eastbeach_wobj set_2     // 2 bits set.
+        accum 7 trigger_if_equal 6 eastbeach_wobj set_2     // 2 bits set.
+        accum 7 trigger_if_equal 7 eastbeach_wobj set_3     // 3 bits set.
+    }
+
+    // Set back to default position.
+    trigger set_default
+    {
+        setstate forward_spawns_1 default
+        setstate forward_spawns_2 invisible
+        setstate forward_spawns_3 invisible
+    }
+
+    // Set to middle forward spawn.
+    trigger set_2
+    {
+        wm_announce "Enabled Allied forward spawn 2."
+
+        setstate forward_spawns_1 default
+        setstate forward_spawns_2 default
+        setstate forward_spawns_3 invisible
+    }
+
+    // Set to top forward spawn.
+    trigger set_3
+    {
+        wm_announce "Enabled Allied forward spawn."
+
+        setstate forward_spawns_1 default
+        setstate forward_spawns_2 default
+        setstate forward_spawns_3 default
+    }
+}
+
 newdoor_construct
 {
     spawn
@@ -262,6 +483,7 @@ newdoor_construct
 		constructible_chargebarreq 1.50
 
         constructible_class 3
+        accum 7 set 0
     }
 
     trigger setup
@@ -285,6 +507,8 @@ newdoor_construct
         setstate newdoor_construct default
 
 		wm_announce	"^3Axis have rebuilt the Sea Wall Door!"
+		accum 7 inc 1
+		trigger self built_count_dispatch
     }
 
     decayed final
@@ -302,6 +526,17 @@ newdoor_construct
 
 		wm_announce	"^3Allies have destroyed the Sea Wall Door! (Axis can rebuild it!)"
 	}
+
+    trigger built_count_dispatch
+    {
+         accum 7 trigger_if_equal 2 newdoor_construct built_count_2
+    }
+
+    trigger built_count_2
+    {
+        constructible_class 2
+        wm_announce "Sea Wall Door rebuilt for the 2nd time. Allies can destroy it with satchel from now on."
+    }
 }
 
 allied_obj1_2_toi
@@ -1628,13 +1863,14 @@ allied_compost_built_model
 		setchargetimefactor 1 covertops 0.75
 		sethqstatus 1 1
 
-		alertentity eastbunker_spawns
-		alertentity eastbunker_wobj
+		//alertentity eastbunker_spawns
+		//alertentity eastbunker_wobj
 
-		setstate eastbunker_spawns default
-		setstate eastbunker_wobj default
+		//setstate eastbunker_spawns default
+		//setstate eastbunker_wobj default
 		setstate axis_lms_wobj invisible
 		setstate axis_lms_spawns invisible
+		trigger eastbeach_wobj allied_cp_built
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
@@ -1661,12 +1897,13 @@ allied_compost_built_model
 		setchargetimefactor 1 covertops 1
 		sethqstatus 1 0
 
-		alertentity eastbunker_spawns
-		alertentity eastbunker_wobj
-		setstate eastbunker_spawns invisible
-		setstate eastbunker_wobj invisible
+		//alertentity eastbunker_spawns
+		//alertentity eastbunker_wobj
+		//setstate eastbunker_spawns invisible
+		//setstate eastbunker_wobj invisible
 		setstate axis_lms_wobj default
 		setstate axis_lms_spawns default
+		trigger eastbeach_wobj allied_cp_destroyed 
 
 
 		// *----------------------------------- vo ------------------------------------------*
@@ -1760,8 +1997,9 @@ axis_compost_built_model
 		setchargetimefactor 0 covertops 0.75
 		sethqstatus 0 1
 
-		setstate eastbunker_spawns default
-		setstate eastbunker_wobj default
+		//setstate eastbunker_spawns default
+		//setstate eastbunker_wobj default
+		trigger eastbeach_wobj axis_cp_built
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
@@ -1788,8 +2026,9 @@ axis_compost_built_model
 		setchargetimefactor 0 covertops 1
 		sethqstatus 0 0
 
-		setstate eastbunker_spawns invisible
-		setstate eastbunker_wobj invisible
+		//setstate eastbunker_spawns invisible
+		//setstate eastbunker_wobj invisible
+		trigger eastbeach_wobj axis_cp_destroyed
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
@@ -1894,6 +2133,7 @@ backdoor_obj
 		setstate baumaterial default
 		setstate baumaterial_mod default
 		setstate baumaterial_toi default
+		trigger eastbeach_wobj backdoor_destroyed
 	}
 }
 
@@ -1936,6 +2176,7 @@ setstate glotz default
 setstate baumaterial invisible
 setstate baumaterial_mod invisible
 setstate baumaterial_toi invisible
+trigger eastbeach_wobj backdoor_built
 
 wm_announce "The Backdoor Barrier has been constructed."
 }
@@ -1955,6 +2196,7 @@ setstate glotz invisible
 setstate baumaterial default
 setstate baumaterial_mod default
 setstate baumaterial_toi default
+trigger eastbeach_wobj backdoor_destroyed
 
 wm_teamvoiceannounce 0 "axis_hq_objective_destroyed"
 wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
