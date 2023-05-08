@@ -1426,6 +1426,9 @@ function et_Obituary(victim, killer, mod)
         if (victim == killer) then -- suicide
 
             if mod == 37 or mod == 64 then
+				if mod == 37 then
+					deaths[victim] = deaths[victim] + 1
+				end
                 if not allow_spree_sk then
                     local max = findMaxKSpree()
                     if table.getn(max) == 3 then
