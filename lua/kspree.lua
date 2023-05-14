@@ -1325,7 +1325,7 @@ function checkMultiKill (id, mod)
     local lvltime = et.trap_Milliseconds()
     if (lvltime - kmulti[id][1]) < 3000 then
         kmulti[id][2] = kmulti[id][2] + 1
-        if mod==7 or mod==8 or mod==9 or mod==10 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+        if mod==7 or mod==8 or mod==9 or mod==10 or mod=11 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
         	mkps[id][1] = mkps[id][1] + 1
         	if mkps[id][2] == 0 then
    	     	mkps[id][2] = lvltime
