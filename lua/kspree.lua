@@ -1369,7 +1369,11 @@ function checkMultiKill (id, mod)
         elseif kmulti[id][2] == 7 then
             wait_table[id] = {lvltime, 5}
             if save_awards then add_qwnage(id, 1) end
-        elseif kmulti[id][2] >= 8 then
+        elseif kmulti[id][2] == 8 then
+            wait_table[id] = {lvltime, 6}
+            if save_awards then add_qwnage(id, 2) end
+        elseif kmulti[id][2] > 8 then
+            topshots[id][17] = topshots[id][17] + 1
             wait_table[id] = {lvltime, 6}
             if save_awards then add_qwnage(id, 2) end
         end
