@@ -725,15 +725,11 @@ function et_Obituary(victim, killer, mod)
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
         if (victim == killer) then -- suicide
 
-            if mod == 37 or mod == 64 then
-				if mod == 37 then
-					deaths[victim] = deaths[victim] + 1
-				end
-                    checkKSpreeEnd(victim)
-                    if mod == 37 then
-                	    death_sprees[victim] = death_sprees[victim] + 1
-                    end
-            end
+            if mod ~= 64 then
+				deaths[victim] = deaths[victim] + 1
+			end
+            checkKSpreeEnd(victim)
+            death_sprees[victim] = death_sprees[victim] + 1
 
             killing_sprees[victim] = 0
 
