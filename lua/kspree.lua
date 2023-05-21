@@ -1592,6 +1592,7 @@ function et_Obituary(victim, killer, mod)
                   end
                 end
             else
+		deaths[victim] = deaths[victim] + 1
                 checkKSpreeEnd(victim, killer, false)
             end
             killing_sprees[victim] = 0
