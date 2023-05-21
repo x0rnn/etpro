@@ -743,19 +743,16 @@ function et_Obituary(victim, killer, mod)
             if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
-                death_sprees[victim] = death_sprees[victim] + 1
-
 				vsstats[killer][victim] = vsstats[killer][victim] + 1
                 kills[killer] = kills[killer] + 1
                 deaths[victim] = deaths[victim] + 1
                 worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
                 easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1
                 local posk = et.gentity_get(victim, "ps.origin")
-		local posv = et.gentity_get(killer, "ps.origin")
+				local posv = et.gentity_get(killer, "ps.origin")
                 local killdist = dist(posk, posv)
 
                 checkMultiKill(killer, mod)
-
                 checkKSpreeEnd(victim)
                 checkDSpreeEnd(killer)
 
@@ -823,11 +820,10 @@ function et_Obituary(victim, killer, mod)
 					topshots[victim][19] = topshots[victim][19] + 1
 				end
             else
+				deaths[victim] = deaths[victim] + 1
                 checkKSpreeEnd(victim)
-                if killer ~= 1022 then
-					death_sprees[victim] = death_sprees[victim] + 1
-                end
             end
+			death_sprees[victim] = death_sprees[victim] + 1
             killing_sprees[victim] = 0
             death_sprees[killer] = 0
         end
