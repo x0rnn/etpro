@@ -1429,25 +1429,22 @@ function et_Obituary(victim, killer, mod)
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
         if (victim == killer) then -- suicide
 
-            if mod ~= 64 then
+        if mod ~= 64 then
 		deaths[victim] = deaths[victim] + 1
-                if not allow_spree_sk then
-                    local max = findMaxKSpree()
-                    if table.getn(max) == 3 then
-                        if killing_sprees[victim] > max[1] and kspree_announce then
-                            sayClients(kspree_pos, string.format("^%sWhat a pity! ^7%s^%s killed himself. This would have been a new ^qspree record ^%s!",
-                            kspree_color, playerName(victim), kspree_color, kspree_color))
-                        end
-                    end
-                else
-                    checkKSpreeEnd(victim, killer, false)
-                end
-            end
-
-            killing_sprees[victim] = 0
-			if mod == 37 then
-				deaths[victim] = deaths[victim] + 1
+	end
+	if not allow_spree_sk then
+		local max = findMaxKSpree()
+		if table.getn(max) == 3 then
+			if killing_sprees[victim] > max[1] and kspree_announce then
+				sayClients(kspree_pos, string.format("^%sWhat a pity! ^7%s^%s killed himself. This would have been a new ^qspree record ^%s!",
+				kspree_color, playerName(victim), kspree_color, kspree_color))
 			end
+		end
+	else
+		checkKSpreeEnd(victim, killer, false)
+	end
+
+        killing_sprees[victim] = 0
 
         elseif (v_teamid == k_teamid) then -- team kill
 
