@@ -1429,10 +1429,8 @@ function et_Obituary(victim, killer, mod)
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
         if (victim == killer) then -- suicide
 
-            if mod == 37 or mod == 64 then
-				if mod == 37 then
-					deaths[victim] = deaths[victim] + 1
-				end
+            if mod ~= 64 then
+		deaths[victim] = deaths[victim] + 1
                 if not allow_spree_sk then
                     local max = findMaxKSpree()
                     if table.getn(max) == 3 then
