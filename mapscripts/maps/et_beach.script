@@ -2,19 +2,228 @@
 //Brush Scripting
 //Map: mp_beach
 //Last edited by: SEKoner
-//
+//mortis Feb 5 2005  added CP enabled bunker spawns, fixed double/triple messages and other minor bugfixes
+//mortis Feb 5 2005  added south beach spawns to work with south TWO
+//mortis Oct 14 2006 moved spawns into rtcw positions
+//mortis Feb 1 2007 fixed endgame wait state
+//Harlekin - Sat Feb 3 2007 Anti spawnkill roofs
+//Harlekin - Timebonus
+//Harlekin - Allies secure bunker after they held it for 50seconds
+//Moses 2010-07-06 fixed autospawn problems by adding autospawn funktion
+//Harlekin 2019-03-03 reduce spawntime for allies after cp is build
 
 game_manager
 {
 	spawn
 	{
 
+
+		// mortis - new allied supply bunker spawns
+
+		create
+		{
+			scriptName "supplybunker_obj"
+			classname "team_WOLF_objective"
+			targetname "supplybunker_obj"
+			origin "2060 2160 600"	// z = CC_FILTER_ALLIES(2) | CC_FILTER_SPAWNS(4)
+			spawnflags 2	// TEAM_ALLIES(2)
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn1"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2000 2100 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn2"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2000 2160 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn3"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2000 2220 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn4"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2060 2100 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn5"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2060 2220 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn6"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2120 2100 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn7"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2120 2160 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "supplybunker_spawn8"
+			classname "team_CTF_bluespawn"
+			targetname "supplybunker_spawn"
+			origin "2120 2220 600"
+			angle 180
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		
+		//mortis create new south beach spawns to work with malfunctioning TWO - version two
+
+
+		create
+		{
+			scriptName "sidespawn_spawn1"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1800 -2650 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn2"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1800 -2700 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn3"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1800 -2600 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+
+		create
+		{
+			scriptName "sidespawn_spawn4"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1750 -2650 200"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn5"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1850 -2650 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn6"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1900 -2750 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn7"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-1950 -2750 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+
+		create
+		{
+			scriptName "sidespawn_spawn8"
+			classname "team_CTF_bluespawn"
+			targetname "sidespawn2"
+			origin "-2000 -2650 312"
+			angle 0
+			spawnflags 2	// TEAM_ALLIES
+		}
+		// ----- Harlekin Allies Spawn Roof Beach -----
+		create
+		{
+			scriptName "spawnroof1"
+			classname "func_fakebrush"
+			origin "-2120 2760 900"
+			contents 1  // SOLID
+			mins "-680 -1460 -88"
+			maxs "680 1460 88"
+		}
+		// ----- Harlekin Allies Spawn Roof Beach -----
+
+		// ----- Harlekin Forward Bunker roof End ----
+		create
+		{
+			scriptName "flagspawnroof"
+			classname "func_fakebrush"
+           		targetname "flagspawnroof"
+			origin "1350 3457 1400"
+			contents 1  // SOLID
+			mins "-303 -287 -88"
+			maxs "303 287 88"
+		}
+	        setstate flagspawnroof invisible
+		// ----- Harlekin Forward Bunker roof End ----
 		// Set the respawn times
 
-		wm_axis_respawntime	35
-		wm_allied_respawntime	25
+		wm_axis_respawntime	30
+		wm_allied_respawntime	20
 		wm_number_of_objectives 4
-		wm_set_round_timelimit  19
+		wm_set_round_timelimit  10
 
 		// Axis control all objectives at the start (0 == AXIS, 1 == ALLIED)
 		wm_objective_status		1	0	0	//SideWall
@@ -36,6 +245,11 @@ game_manager
 
 		wm_set_defending_team	0
 
+		//Moses autospawn add
+		setautospawn "Allied Side"	1	// Set Allies to Beach spawn
+		setautospawn "Axis Side"	0	// Set Axis to Main spawn
+		//Moses
+
 		// If the round timer expires, the Axis have won, so set the current winning team
 		// Set the round winner:  0 == AXIS, 1 == ALLIED
 		wm_setwinner 0
@@ -48,9 +262,16 @@ game_manager
 		// Hide forward bunker flag
 		setstate beach_flag_wobj invisible
 
+
 		// Play objective 1_2 & 1
 		wm_teamvoiceannounce 0 "sideentr_allies_defend"
 		wm_teamvoiceannounce 1 "sideentr_allies_destroy"
+
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3Initial Map time 10 min"
+		wm_announce "^3Timebonus: +5 min Sea Wall Door & +4 min Sea Wall"
+		// ----- Harlekin Timebonus Announce -----
+
 	}
 
 	trigger objective1
@@ -61,7 +282,17 @@ game_manager
 		wm_objective_status		1	1	1
 
 		// UI pop-up to alert players
-		wm_announce	"The Sea Wall has been breached !"
+		wm_announce	"The Sea Wall has been breached!"
+
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3+5 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Announce -----
+
 	}
 
 	trigger objective2
@@ -89,7 +320,17 @@ game_manager
 		wm_objective_status		5	1	1
 
 		// UI pop-up to alert players
-		wm_announce	"The Side Door has been destroyed !"
+		wm_announce	"The Sea Wall Door has been breached!"
+
+		// ----- Harlekin Timebonus Announce -----
+		wm_announce "^3+4 min Timebonus!"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+ 		cvar timelimit inc "1"
+		// ----- Harlekin Timebonus Announce -----
+
+
 	}
 
 	trigger axis_object_stolen
@@ -118,11 +359,10 @@ game_manager
 		accum 1 abort_if_not_equal 1
 		// Set the round winner:  0 == AXIS, 1 == ALLIED
 		wm_setwinner 1
-		wm_announce "Allied team transmit the War Documents!"
 		wm_teamvoiceannounce 0 "objective_axis_lost"
 		wm_teamvoiceannounce 1 "objective_allies_secured"
-
-		wait 1500
+		//mortis reduce excessive 1500ms wait state coutesy dersaiden
+		wait 50
 		// End the round
 		wm_endround
 	}
@@ -135,7 +375,28 @@ game_manager
 		wm_objective_status		4	0	1
 
 		// Some kind of UI pop-up to alert players
-		wm_announce	"Allies capture the Forward Bunker!"
+
+		//wm_announce	"Allies capture the Forward Bunker!"
+		
+//Moses autospawn add		
+		setautospawn "Forward Bunker" 1 // Set Allies to Forward Bunker spawn
+//Moses
+
+// Harlekin - Timer to remove the flag
+		accum 7 set 0
+		wm_announce	"Allies captured the Forward Bunker, Axis got 50 seconds to recapture!"
+		wait 20000
+		accum 7 abort_if_equal 1
+		wm_announce	"Axis got 30 seconds left to recapture the Forward Bunker!"
+		wait 20000
+		accum 7 abort_if_equal 1
+		wm_announce	"Axis got 10 seconds left to recapture the Forward Bunker!"
+		wait 10000
+		accum 7 abort_if_equal 1
+		wm_announce	"Allies secured the Forward Bunker!"
+		trigger beach_flag final_capture
+	        setstate flagspawnroof invisible
+// Harlekin
 	}
 
 	trigger beach_flagred
@@ -144,6 +405,14 @@ game_manager
 		// Axis takes control of checkpoint #1
 		wm_objective_status		4	1	1
 		wm_objective_status		4	0	2
+
+//Moses autospawn add
+		setautospawn "Allied Side"	1	// Set Allies to Beach spawn
+//Moses
+
+	//harlekin - start timer stop
+		accum 7 set 1
+	//harlekin - end timer stop
 
 		// Some kind of UI pop-up to alert players
 		wm_announce "Axis captured the Forward Bunker!"
@@ -178,7 +447,6 @@ allied_obj1_1 //Sea wall breached.
 
 	death
 	{
-		wm_announce	"The Sea Wall has been breached!"
 
 		wm_teamvoiceannounce 0 "sidewall_axis_breach"
 		wm_teamvoiceannounce 1 "sidewall_allies_breach"
@@ -198,7 +466,6 @@ allied_obj1_2 //Sea wall door breached.
 
 	death
 	{
-		wm_announce	"The Sea Wall Door has been breached!"
 
 		wm_teamvoiceannounce 0 "sideentr_axis_breach"
 		wm_teamvoiceannounce 1 "sideentr_allies_breach"
@@ -218,7 +485,6 @@ allied_obj2 //The war documents being transmitted.
 
 	death
 	{
-		wm_announce	"The Allies transmittet the Documents"
 		trigger game_manager objective2
 	}
 }
@@ -228,7 +494,6 @@ beach_flag
 	trigger axis_capture
 	{
 		trigger game_manager beach_flagred
-		wm_announce "Axis captured the Forward Bunker!"
 
 		wm_addteamvoiceannounce 0 "axis_bunker_defend"
 		wm_addteamvoiceannounce 1 "allies_bunker_capture"
@@ -243,7 +508,6 @@ beach_flag
 	trigger allied_capture
 	{
 		trigger game_manager beach_flagblue
-		wm_announce "Allies captured the Forward Bunker!"
 
 		wm_teamvoiceannounce 0 "axis_bunker_lost"
 		wm_teamvoiceannounce 1 "allies_bunker_captured"
@@ -254,6 +518,12 @@ beach_flag
 		wait 400 
 		setstate beach_flag_wobj default
 		//alertentity beach_flag_wobj
+	}
+
+	trigger final_capture
+	{
+
+		remove
 	}
 }
 
@@ -297,6 +567,11 @@ allied_compost_built
 		trigger allied_compost_built_model enable_allied_features
 
 		enablespeaker allies_compost_sound
+
+		//mortis
+		trigger supplybunker_obj on
+
+		wm_announce "The Allies' supply bunker spawn has been enabled!"
 	}
 
 	decayed final
@@ -315,6 +590,11 @@ allied_compost_built
 		trigger allied_compost_built_model disable_allied_features
 
 		disablespeaker allies_compost_sound
+
+		//mortis
+		trigger supplybunker_obj off
+
+		wm_announce "The Allies' supply bunker spawn has been disabled!"
 	}
 }
 
@@ -336,6 +616,7 @@ allied_compost_built_model
 		sethqstatus 1 1
 
 		wm_announce	"Allied Command Post constructed. Charge speed increased!"
+		wm_allied_respawntime	18
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
@@ -347,6 +628,8 @@ allied_compost_built_model
 
 		wm_objective_status 6 0 2
 		wm_objective_status 6 1 1
+
+
 	}
 
 	trigger disable_allied_features
@@ -359,6 +642,7 @@ allied_compost_built_model
 		sethqstatus 1 0
 
 		wm_announce	"Axis team has destroyed the Allied Command Post!"
+		wm_allied_respawntime	20
 
 		// *----------------------------------- vo ------------------------------------------*
 		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
@@ -372,6 +656,8 @@ allied_compost_built_model
 
 		wm_objective_status 6 0 0
 		wm_objective_status 6 1 0
+
+
 	}
 }
 
@@ -488,6 +774,42 @@ axis_compost_built_model
 		wm_objective_status 7 1 0
 	}
 }
+
+//mortis - spawn handling
+supplybunker_obj
+{
+	spawn
+	{
+		set
+		{
+			//these have to be set inside the spawn{} function, not create{}
+			description "Supply Bunker"
+			message "Supply Bunker"
+		}
+		wait 50
+		setstate supplybunker_obj invisible
+		setstate supplybunker_spawn invisible
+	}
+
+	trigger on
+	{               
+		setstate supplybunker_obj default
+		setstate supplybunker_spawn default
+//Moses autospawn add
+		setautospawn "Supply Bunker"	1	// Set Allies to Supply Bunker spawn
+//Moses
+	}
+
+	trigger off
+	{
+		setstate supplybunker_obj invisible
+		setstate supplybunker_spawn invisible
+//Moses autospawn add
+		setautospawn "Forward Bunker"	1	// Set Allies to Forward Bunker spawn
+//Moses
+	}
+}
+
 
 // ================================
 // ======= REMOVE LMS STUFF =======
