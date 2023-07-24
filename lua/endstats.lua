@@ -25,8 +25,10 @@ easiest_prey = {}
 vsstats = {}
 vsstats_kills = {}
 vsstats_deaths = {}
+death_time = {}
+death_time_total = {}
 
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned" }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most lightweapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Full respawn king", [39]="Least time dead (What spawn?)"}
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -38,7 +40,7 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         death_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0 }
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
 	vsstats[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 	vsstats_kills[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 	vsstats_deaths[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
@@ -49,6 +51,8 @@ function et_InitGame(levelTime, randomSeed, restart)
         allies_time[i] = 0
         kills[i] = 0
         deaths[i] = 0
+        death_time[i] = 0
+		death_time_total[i] = 0
     end
 end
 
@@ -90,8 +94,8 @@ function getKeysSortedByValue(tbl, sortFunction)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 100}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -105,6 +109,12 @@ function topshots_f(id)
 			local d = tonumber(et.gentity_get(i, "sess.deaths"))
 			local k = tonumber(et.gentity_get(i, "sess.kills"))
 			local kd = 0
+			local timeplayed = tonumber(et.gentity_get(i, "sess.time_axis")) + tonumber(et.gentity_get(i, "sess.time_allies"))
+			if death_time[i] ~= 0 then
+				local diff = et.trap_Milliseconds() - death_time[i]
+				death_time_total[i] = death_time_total[i] + diff
+			end
+
 			if d ~= 0 then
 				kd = k/d
 			else
@@ -318,6 +328,22 @@ function topshots_f(id)
 				max[37] = topshots[i][28]
 				max_id[37] = i
 			end
+			-- most time dead
+			if timeplayed > 600000 or timeplayed == et.trap_Cvar_Get("timelimit") * 60 * 1000 then
+				if (death_time_total[i] / timeplayed) * 100 > max[38] then
+					max[38] = (death_time_total[i] / timeplayed) * 100
+					max_id[38] = i
+					max[40] = death_time_total[i]
+				end
+			end
+			-- least time dead
+			if timeplayed > 600000  or timeplayed == et.trap_Cvar_Get("timelimit") * 60 * 1000 then
+				if (death_time_total[i] / timeplayed) * 100 < max[39] then
+					max[39] = (death_time_total[i] / timeplayed) * 100
+					max_id[39] = i
+					max[41] = death_time_total[i]
+				end
+			end
 		end
 	end
 	if id == -2 then
@@ -354,8 +380,8 @@ function topshots_f(id)
 		end
 		local j = 1
 		local players = {}
-		for j=1, 37 do
-			if max[j] > 1 then
+		for j=1, 39 do
+			if max[j] > 1 or (j == 39 and max[j] == 0) then
 				if j ~= 10 and j ~= 25 and j ~= 33 then
 					if j == 8 then
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
@@ -392,6 +418,13 @@ function topshots_f(id)
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							roundNum(max[j], 2) .. " ^7m"
+						})
+					elseif j == 38 or j == 39 then
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zpercent, ^1" .. roundNum((max[j+2] / 60000), 2) .. " ^zmin\"\n")
+						table.insert(players, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							roundNum(max[j], 2) .. " ^7percent, " .. roundNum((max[j+2] / 60000), 2) .. " ^7min"
 						})
 					else
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
@@ -722,11 +755,16 @@ end
 function et_Obituary(victim, killer, mod)
     if gamestate == 0 then
         local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
-        local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+        local k_teamid
+		if killer ~= 1022 and killer ~= 1023 then
+			k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+		end
+
         if (victim == killer) then -- suicide
 
             if mod ~= 64 then
 				deaths[victim] = deaths[victim] + 1
+				death_time[victim] = et.trap_Milliseconds()
 			end
             checkKSpreeEnd(victim)
 
@@ -737,8 +775,10 @@ function et_Obituary(victim, killer, mod)
             checkKSpreeEnd(victim)
             killing_sprees[victim] = 0
             --death_sprees[victim] = death_sprees[victim] + 1
+            death_time[victim] = et.trap_Milliseconds()
 
         else -- nomal kill
+       	death_time[victim] = et.trap_Milliseconds()
             if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
                 killing_sprees[killer] = killing_sprees[killer] + 1
@@ -871,8 +911,8 @@ end
 
 function et_ClientSpawn(id, revived)
 	killing_sprees[id] = 0
+	local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 	if revived ~= 1 then
-		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 		if team == 1 and axis_time[id] == 0 then
 			axis_time[id] = et.trap_Milliseconds()
 		elseif team == 2 and allies_time[id] == 0 then
@@ -882,12 +922,19 @@ function et_ClientSpawn(id, revived)
 			allies_time[id] = 0
 		end
 	end
+	if team == 2 or team == 3 then
+		if death_time[id] ~= 0 then
+			local diff = et.trap_Milliseconds() - death_time[id]
+			death_time_total[id] = death_time_total[id] + diff
+		end
+	end
+	death_time[id] = 0
 end
 
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     death_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0 }
+    topshots[id] = {[1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
     axis_time[id] = 0
     allies_time[id] = 0
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
@@ -906,6 +953,8 @@ function et_ClientDisconnect(id)
 		vsstats_kills[j][id] = 0
 		vsstats_deaths[j][id] = 0
 	end
+	death_time[id] = 0
+	death_time_total[id] = 0
 end
 
 --- Sends a nice table to a client.
