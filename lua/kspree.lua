@@ -542,7 +542,7 @@ function topshots_f(id)
 			local k = tonumber(et.gentity_get(i, "sess.kills"))
 			local kd = 0
 			local kr = 0
-			local timeplayed = tonumber(et.gentity_get(i, "sess.time_axis")) + tonumber(et.gentity_get(i, "sess.time_allies"))
+			local timeplayed = axis_time[i] + allies_time[i]
 			if death_time[i] ~= 0 then
 				local diff = et.trap_Milliseconds() - death_time[i]
 				death_time_total[i] = death_time_total[i] + diff
