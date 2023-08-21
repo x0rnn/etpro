@@ -3572,6 +3572,7 @@ gold_crate
 	spawn
 	{
 		accum 0 set 0 // gold counter
+		accum 1 set 0 // secure counter
 	}
 
 	trigger stolen
@@ -3583,8 +3584,16 @@ gold_crate
 
 	trigger secured
 	{
-		accum 0 trigger_if_equal 1 gold_crate secured1
-		accum 0 trigger_if_equal 2 gold_crate secured2
+		accum 1 inc 1
+		
+		accum 1 trigger_if_equal 1 gold_crate secured1
+		accum 1 trigger_if_equal 2 gold_crate secured2
+	}
+
+	trigger dropped
+	{
+		accum 0 trigger_if_equal 1 gold_crate dropped1
+		accum 0 trigger_if_equal 2 gold_crate dropped2
 	}
 
 	trigger returned
@@ -3643,10 +3652,36 @@ gold_crate
 		wm_teamvoiceannounce 0 "goldrush_axis_gold2_secured"
 
 		wm_teamvoiceannounce 1 "goldrush_allies_gold2_secured"
-
 		wm_removeteamvoiceannounce 0 "goldrush_axis_gold_defend"
 
 		wm_removeteamvoiceannounce 1 "goldrush_allies_gold_defend"
+
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger dropped1
+	{
+		wm_announce "Allied team has dropped the first Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "goldrush_axis_gold1_lost"
+
+		wm_teamvoiceannounce 1 "goldrush_allies_gold1_lost"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger dropped2
+	{
+		wm_announce "Allied team has dropped the second Gold Crate!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "goldrush_axis_gold2_lost"
+
+		wm_teamvoiceannounce 1 "goldrush_allies_gold2_lost"
+
+		wm_removeteamvoiceannounce 0 "goldrush_axis_gold_lost"
+
+		wm_removeteamvoiceannounce 1 "goldrush_allies_gold_lost"
 		// *---------------------------------------------------------------------------------*
 	}
 
