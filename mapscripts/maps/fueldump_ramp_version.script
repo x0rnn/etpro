@@ -28,6 +28,8 @@
 // x0rnn - disabled axis fueldump spawns at start so lame engis can't spawn there and build fence/plant mines instead of help at 1st stage
 // x0rnn - added playerclips in cave to prevent lame engis going there by foot
 // x0rnn - added assault ramp instead of StinVec's Assault Bridge for Axis in Fueldump (fuelramp.pk3 is required on the server!)
+// hazz - fix tank damaged-but-not-damaged bug
+// hazz - fix tank sound sometimes playing when tank damaged
 
 game_manager
 {
@@ -2949,6 +2951,10 @@ tank
 
 	trigger sound_move
 	{
+		// check to see if tank is dead before looping the move sound
+		// needed because sound_move gets called after a wait in trigger tank_sound start,
+		// and tank might have died in the meantime
+		accum 1 abort_if_bitset 7
 		stopsound
 		playsound sound/vehicles/tank/tank_move.wav looping volume 512
 	}
