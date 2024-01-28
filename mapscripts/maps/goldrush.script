@@ -401,6 +401,10 @@ tank
 
 	trigger sound_move
 	{
+		// check to see if tank is dead before looping the move sound
+		// needed because sound_move gets called after a wait in trigger tank_sound start,
+		// and tank might have died in the meantime
+		accum 1 abort_if_bitset 7
 		stopsound
 		playsound sound/vehicles/tank/tank_move.wav looping volume 512
 	}

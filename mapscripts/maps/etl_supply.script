@@ -51,7 +51,7 @@ game_manager
 			scriptName "shelterspawn_spawn1"
 			classname "team_CTF_redspawn"
 			targetname "shelterspawn_spawn"
-			origin "-478 -1997 30"
+			origin "-484 -1974 30"
 			spawnflags 3        // TEAM_AXIS
 			angle "1"
 		}
@@ -61,7 +61,7 @@ game_manager
 			scriptName "shelterspawn_spawn2"
 			classname "team_CTF_redspawn"
 			targetname "shelterspawn_spawn"
-			origin "-478 -1919 30"
+			origin "-480 -1910 30"
 			spawnflags 3        // TEAM_AXIS
 			angle "1"
 		}
@@ -71,7 +71,7 @@ game_manager
 			scriptName "shelterspawn_spawn3"
 			classname "team_CTF_redspawn"
 			targetname "shelterspawn_spawn"
-			origin "-478 -1842 30"
+			origin "-474 -1853 30"
 			spawnflags 3        // TEAM_AXIS
 			angle "1"
 		}
