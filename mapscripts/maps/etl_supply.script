@@ -23,7 +23,7 @@ game_manager
 {
 	spawn
 	{
-		// ----- Harlekin Shelter Spawn Start -----
+	// ----- Harlekin Shelter Spawn Start -----
 		// info_limbo_flag
 		create
 		{
@@ -233,11 +233,14 @@ game_manager
 		 globalaccum 3 bitset 0				// Forward Spawn cabinets (disabled by default)
 		 globalaccum 3 bitset 1				// CP Spawn cabinets (disabled by default)
 		// globalaccum 3 bitset 2				// Depot Spawn cabinets (disabled by default)
-		 globalaccum 4 set 1					// More responsive truck (disabled by default)
+		 globalaccum 4 set 2					// More responsive truck (disabled by default)
 		 trigger bunker1 remove				// Uncomment this line to open access to the first bunker
 		 trigger bunker2 remove				// Uncomment this line to open access to the second bunker
+		// setstate bunker1_ladder invisible		// Comment this line to add a ladder to the first bunker
+		// setstate bunker2_ladder invisible		// Comment this line to add a ladder to the first bunker
+		 setstate tunnel_blockade invisible	// Uncomment this line to open an optional room in the first tunnel system
 		// ===================================================================================
-
+		
 		// ----- Harlekin Timebonus Announce -----
 		wm_announce "^3Initial Map time 11 min"
 		wm_announce "^3Timebonus:  +6 min Forward Bunker Gate"
@@ -493,14 +496,12 @@ west_depot_wall
 	{
 		wait 200
 		constructible_class 3	// Dyno
-		setstate west_depot_wall_debris invisible
 	}
 
 	death
 	{
 		wm_objective_status 6 0 2
 		wm_objective_status 6 1 1
-		setstate west_depot_wall_debris default
 		
 		// *----------------------------------- vo ------------------------------------------*
 		// wm_announce "The Allies have breached the Depot's west wall!"
@@ -517,14 +518,12 @@ east_depot_wall
 	{
 		wait 200
 		constructible_class 3	// Dyno
-		setstate east_depot_wall_debris invisible
 	}
 
 	death
 	{
 		wm_objective_status 7 0 2
 		wm_objective_status 7 1 1
-		setstate east_depot_wall_debris default
 
 		// *----------------------------------- vo ------------------------------------------*
 		// wm_announce "The Allies have breached the Depot's east wall!"
@@ -1200,6 +1199,7 @@ crane_rope_4
 		wm_teamvoiceannounce 0 "axis_gold_secured"
 		wm_teamvoiceannounce 1 "allies_gold_secured"
 		// *---------------------------------------------------------------------------------*
+		
 		setdamagable truck 1
 		wm_announce "The Truck is now damageable!"
 		gotomarker crane_path1 100 wait
