@@ -220,6 +220,11 @@ game_manager
 		setstate depot_health_model invisible
 		setstate depot_cabinets_clip invisible
 		
+		setstate tunnel_health invisible
+		setstate tunnel_health_model invisible
+		setstate tunnel_ammo invisible
+		setstate tunnel_ammo_model invisible
+
 		
 		//====OPTIONAL SETTINGS==============================================================
 		wait 1000
@@ -239,6 +244,9 @@ game_manager
 		// setstate bunker1_ladder invisible		// Comment this line to add a ladder to the first bunker
 		// setstate bunker2_ladder invisible		// Comment this line to add a ladder to the first bunker
 		 setstate tunnel_blockade invisible	// Uncomment this line to open an optional room in the first tunnel system
+		// trigger tunnel_bunker enable_cabinets	// Uncomment this line to add cabinets in the optional room in first stage bunker system
+		// setstate tunnel_bunker invisible			// Uncomment this line to open up the optional room in first stage bunker system
+		// setstate tunnel_expansion invisible		// Uncomment this line to open an optional tunnel route in the first tunnel system
 		// ===================================================================================
 		
 		// ----- Harlekin Timebonus Announce -----
@@ -3005,5 +3013,16 @@ bunker2
 		setstate bunker2 invisible
 		wait 100
 		remove
+	}
+}
+
+tunnel_bunker
+{
+	trigger enable_cabinets
+	{
+		setstate tunnel_health default
+		setstate tunnel_health_model default
+		setstate tunnel_ammo default
+		setstate tunnel_ammo_model default
 	}
 }
