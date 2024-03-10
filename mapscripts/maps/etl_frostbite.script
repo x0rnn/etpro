@@ -1,0 +1,921 @@
+// x0rnn - changed allied spawntime to 25
+// x0rnn - changed to 2 docruns for public play - version 3:
+// Deciphered supply documents appear on the floor next to the transmitter after the initial documents are secured. Bring them to the escape truck near the axis garage spawn.
+// If allies destroy the axis CP and 1st docs are secured, allies can now spawn there.
+
+// GLOBALACCUM 0
+//	BIT 0 = MAIN ENTRANCE DESTROYED
+//	BIT 1 = SIDE_ENTRANCE_DESTROYED
+//	BIT 2 = ALARM_ALREADY_SOUNDED
+game_manager
+{
+	spawn
+	{
+	create
+	{
+		scriptName "spawnroof"
+		classname "func_fakebrush"
+		origin "-4600 -163 434"
+		contents 1  // SOLID
+		mins "-560 -738 -10"
+		maxs "760 738 10"
+	}
+
+	create
+	{
+		scriptname "docmarker"
+		origin "112 1568 56"
+		classname "misc_gamemodel"
+		modelscale 1
+		angle "270"
+		mins "-90 -90 -25"
+		maxs "90 90 25"
+		clipmask 1
+		model "models/mapobjects/portable_radar_sd/portable_radar_box_tr.md3"
+	}
+
+	create
+		{
+			classname "team_WOLF_objective"
+			scriptname "transmitter_spawn"
+			targetname "transmitter_spawn"
+			origin "-4840 2272 -200"
+			spawnflags 2
+			description "Transmitter Spawn"
+		}
+
+	create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "transmitterspawns"
+			scriptName "transmitterspawns"
+			origin "-4816 2384 -200"
+			spawnflags 2
+			angle "225"
+		}
+
+	create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "transmitterspawns"
+			scriptName "transmitterspawns"
+			origin "-4768 2336 -200"
+			spawnflags 2
+			angle "225"
+		}
+
+	create
+		{
+			classname "team_CTF_bluespawn"
+			targetname "transmitterspawns"
+			scriptName "transmitterspawns"
+			origin "-4728 2288 -200"
+			spawnflags 2
+			angle "200"
+		}
+
+	create
+		{
+			scriptname "docs2"
+			targetname "docs2"
+			classname  "team_CTF_redflag"
+			model "models/multiplayer/secretdocs/secretdocs.md3"
+			origin "-4656 2080 -160"
+			message "the Deciphered Supply Documents"
+		}
+
+	create
+		{
+		classname "misc_commandmap_marker"
+		origin "-4672 2080 -96"
+		scriptname "docs2_cm_marker"
+		targetname "docs2_cm_marker"
+		}
+
+	create
+		{
+		classname "trigger_objective_info"
+		customimage "gfx/limbo/cm_documents" 
+		infoAllied "Deciphered Supply Documents"
+		infoAxis "Deciphered Supply Documents"
+		spawnflags "19"
+		origin "-4656 2080 -111"
+		mins "0 0 0"
+		maxs "110 110 100"
+		scriptname "docs2_toi"
+		shortname "Deciphered Supply Documents"
+		target "docs2_cm_marker"
+		targetname "docs2_toi"
+		track "the Deciphered Supply Documents"
+		}
+
+	create
+		{
+			scriptname "docs2_trigger"
+			targetname "docs2_trigger"
+			classname  "trigger_flagonly_multiple"
+			spawnflags "1"
+			origin "112 1560 72"
+			mins "-45 -45 -25"
+			maxs "45 45 25"
+		}
+
+	create
+		{
+		classname "misc_commandmap_marker"
+		origin "112 1560 96"
+		scriptname "docs2_trig_cm_marker"
+		targetname "docs2_trig_cm_marker"
+		}
+
+	create
+		{
+		classname "trigger_objective_info"
+		customimage "gfx/limbo/cm_truck"
+		infoAllied "the Escape Truck"
+		infoAxis "the Escape Truck"
+		spawnflags "19"
+		origin "112 1560 64"
+		mins "0 0 0"
+		maxs "400 400 100"
+		scriptname "docs2_trig_toi"
+		shortname "Escape Truck"
+		target "docs2_trig_cm_marker"
+		targetname "docs2_trig_toi"
+		track "the Escape Truck"
+		}
+
+		// Game rules
+		wm_axis_respawntime	30
+		wm_allied_respawntime	25
+		wm_number_of_objectives 7
+		wm_set_round_timelimit	15
+		wm_set_defending_team 0
+
+		// Objectives
+		// 1: Transmit the Supply Documents
+		// 2: Destroy the Main Door
+		// 3: Destroy the Storage Wall
+		// 4: Destroy the Service Door
+		// 5: Axis Field Command
+		// 6: Allies Base of Operations
+		// 7: Transmit the deciphered Supply Documents to the Escape Truck
+
+		// Winner on expiration of round timer (0=Axis, 1=Allies)
+		wm_setwinner 0
+
+		wait 500
+
+		setautospawn "Axis Barracks" 0
+		setautospawn "Command Post" 1
+		alertentity axis_garage_spawns
+		
+		//====OPTIONAL SETTINGS==============================================================
+		// Toggle the line of the respective setting you want to change by (un-)commenting.
+		//
+		setstate TJ_clip invisible				// clip preventing TJ over storage wall
+		//===================================================================================
+
+		setstate docs2_cm_marker invisible
+		setstate docs2_toi invisible
+		setstate docs2_trig_cm_marker default
+		setstate docs2_trig_toi default
+
+		setstate cabinet_toi invisible
+		setstate cabinet_marker invisible
+		setstate cabinet_health invisible
+		setstate cabinet_ammo invisible
+		setstate cabinet_health_model invisible
+		setstate cabinet_ammo_model invisible
+		setstate health_dest default
+		setstate ammo_dest default
+		
+		disablespeaker record_music
+		disablespeaker record_music_broken
+
+		// wait for everything to settle
+		wait 1500
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		wm_announce "^3Note: This version of Frostbite has 2 docruns:"
+		wm_announce "^3After securing the 1st documents, new deciphered documents appear next to the Transmitter."
+		wm_announce "^3Bring them to the back of the Escape Truck in the Axis garage!"
+
+		setstate gramophone_hint invisible
+	}
+
+	trigger allies_transmit1
+	{
+			wm_announce "The Allies have transmitted the Supply Documents!"
+			setstate transmitter invisible
+			setstate transmitter_toi invisible
+			setstate docs2 default
+			alertentity docs2
+			setstate docs2_trigger default
+			setstate docs2_cm_marker default
+			setstate docs2_toi default
+			wm_announce "^4Allies: Bring the Deciphered Supply Documents to the Escape Truck!"
+			// *----------------------------------- vo ------------------------------------------*
+			wm_teamvoiceannounce 0 "they_secured_obj_axis"
+			wm_teamvoiceannounce 1 "allies_hq_objective_secure"
+			// *---------------------------------------------------------------------------------*
+	}
+
+	trigger allies_transmit2
+	{
+		wm_announce "The Allies have transmitted the Deciphered Supply Documents to the Escape Truck!" 
+		wm_objective_status 7 1 1
+		wm_objective_status 7 0 2
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "they_secured_obj_axis"
+		wm_teamvoiceannounce 1 "allies_hq_objective_secure"
+		// *---------------------------------------------------------------------------------*
+		wm_setwinner 1
+		//wait 1500
+		wm_endround
+	} 
+
+	trigger sound_alarm
+	{
+		globalaccum 0 abort_if_bitset 2
+		globalaccum 0 bitset 2
+		wait 3000
+		alertentity sound_alarm
+	}
+}
+
+transmitter_spawn
+{
+	spawn
+    {
+   	set
+		{
+			description "Transmitter Spawn"
+			message "Transmitter Spawn"
+		}
+		wait 50
+		setstate transmitter_spawn invisible
+		setstate transmitterspawns invisible
+
+        accum 1 set 0
+                      // Used as bitset:
+                      // Bit 0: 0=Axis cp built,       1=Axis cp destroyed
+                      // Bit 1: 0=Docs not secured, 1=Docs secured
+        accum 1 bitset 0 // Axis cp starts disabled
+    }
+
+	trigger axis_cp_built
+    {
+        accum 1 abort_if_not_bitset 0
+	    accum 1 bitreset 0
+        trigger self update
+    }
+
+    trigger axis_cp_destroyed
+    {
+        accum 1 abort_if_bitset 0
+	    accum 1 bitset 0
+        trigger self update
+    }
+
+	trigger docs_secured
+    {
+        accum 1 abort_if_bitset 1
+	    accum 1 bitset 1
+        trigger self update
+    }
+
+	trigger update
+    {
+        accum 1 trigger_if_equal 0 transmitter_spawn disable
+        accum 1 trigger_if_equal 1 transmitter_spawn disable    // 1 bit set.
+        accum 1 trigger_if_equal 2 transmitter_spawn disable    // 1 bit set.
+        accum 1 trigger_if_equal 3 transmitter_spawn enable     // 2 bits set.
+    }
+
+	trigger disable
+    {
+        setstate transmitterspawns invisible
+        setstate transmitter_spawn invisible
+    }
+
+	trigger enable
+    {
+        setstate transmitterspawns default
+        setstate transmitter_spawn default
+        wm_announce "Allied Transmitter Spawns enabled!"
+		wm_announce "^1Axis: Build the CP to disable their Transmitter Spawn!"
+        setautospawn "Transmitter Spawn" 1
+        setautospawn "Axis Garage" 0
+    } 
+}
+
+/////////////////////////////////////////////////
+// Doors
+/////////////////////////////////////////////////
+
+main_door
+{
+	spawn
+	{
+		wait 320
+		constructible_class 3
+	}
+	death
+	{
+		wm_announce "The Main Door has been breached!" 
+		trigger game_manager sound_alarm
+		
+		wm_objective_status 2 1 1
+		wm_objective_status 2 0 2
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrance1_destroyed"
+		wm_teamvoiceannounce 1 "frostbite_allies_entrance1_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 0 bitset 0				// MAIN GATE IS DESTROYED
+		globalaccum 0 abort_if_bitset 1		// ABORT_IF_SIDE_GATE_DESTROYED
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+	}
+}
+
+service_door
+{
+	spawn
+	{
+		wait 240
+		constructible_class 3
+	}
+	
+	death
+	{
+		wm_announce "The Service Door has been breached!"
+		
+		wm_objective_status 4 1 1
+		wm_objective_status 4 0 2
+		
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_objective_destroyed"
+		wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		trigger game_manager sound_alarm
+	}
+}
+
+storage_wall_explosive
+{
+	spawn
+	{
+		wait 300
+		constructible_class 3
+	}
+	
+	death
+	{
+		alertentity storage_wall_rubble
+		trigger game_manager sound_alarm
+		
+		trigger storage_wall_mover remove
+		trigger storage_wall_hint remove
+		trigger storage_wall_open remove
+		trigger storage_wall_closed remove
+		
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_red
+		remapshaderflush
+		
+		wm_announce "Storage Wall destroyed!"
+		
+		wm_objective_status 3 1 1
+		wm_objective_status 3 0 2
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
+		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
+		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+
+		wm_teamvoiceannounce 0 "frostbite_axis_entrance2_destroyed"
+		wm_teamvoiceannounce 1 "frostbite_allies_entrance2_destroyed"
+		// *---------------------------------------------------------------------------------*
+		
+		globalaccum 0 bitset 1				// SIDE GATE IS DESTROYED
+		globalaccum 0 abort_if_bitset 0		// ABORT_IF_MAIN_GATE_DESTROYED
+		wm_addteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
+		wm_addteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+	}
+}
+
+storage_wall_open
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_closed
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_hint
+{
+	activate
+	{
+		trigger storage_wall_lever activate
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+storage_wall_lever
+// ACCUM 0:	cmd_door_LEVER	(0=CLOSED, 1=OPEN)
+{
+	spawn
+	{
+		wait 200
+		gotomarker storage_wall_lever_up 16 wait
+		gotomarker storage_wall_lever_down 16 wait
+	}
+	
+	trigger activate
+	{
+		setstate storage_wall_hint invisible
+		accum 0 trigger_if_equal 0 storage_wall_lever open		// TRIGGER_IF_CLOSED
+		accum 0 trigger_if_equal 1 storage_wall_lever close		// TRIGGER_IF_OPEN
+	}	
+	
+	trigger close
+	{
+		halt
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker storage_wall_lever_down 16 wait
+		accum 0 set 0	// CLOSED
+		stopsound
+		trigger storage_wall_mover activate
+		wait 1000
+		setstate storage_wall_hint default
+	}
+	
+	trigger open
+	{
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker storage_wall_lever_up 16 wait
+		accum 0 set 1		// OPEN
+		stopsound
+		globalaccum 4 abort_if_bitset 1
+		trigger storage_wall_mover activate
+		globalaccum 4 abort_if_bitset 0
+		wait 1000
+		setstate storage_wall_hint default
+	}
+}
+
+// ACCUM 0:
+//	0=CLOSED
+//	1=OPENING
+//	2=OPEN
+//	3=CLOSING
+storage_wall_mover
+{
+	spawn
+	{
+		wait 200
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_green
+		remapshaderflush
+	}
+	
+	trigger activate
+	{
+		accum 0 trigger_if_equal 0 storage_wall_mover open				// IF_CLOSED
+		accum 0 trigger_if_equal 1 storage_wall_mover stop_and_close	// IF_OPENING
+		accum 0 trigger_if_equal 2 storage_wall_mover close				// IF_OPEN
+		accum 0 trigger_if_equal 3 storage_wall_mover stop_and_open		// IF_CLOSING
+	}
+	
+	trigger stop_and_close
+	{
+		halt
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self close
+	}
+	
+	trigger stop_and_open
+	{
+		halt
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self open
+	}
+	
+	trigger close
+	{
+		accum 0 set 3	// CLOSING
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker storage_wall_closed 32 wait
+		accum 0 abort_if_not_equal 3	// ABORT_IF_NOT_CLOSING
+		setstate storage_wall_hint invisible
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 0	// CLOSED
+		setstate storage_wall_hint default
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_green
+		remapshaderflush
+	}
+	
+	trigger open
+	{
+		accum 0 set 1	// OPENING
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_neutral
+		remapshaderflush
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker storage_wall_open 32 wait
+		accum 0 abort_if_not_equal 1	// ABORT_IF_NOT_OPENING
+		setstate storage_wall_hint invisible
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 2	// OPEN
+		setstate storage_wall_hint default
+		remapshader textures/etl_lights/lights_neutral	textures/etl_lights/lights_red
+		remapshaderflush
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+//////////
+// Docs //
+//////////
+
+docs
+{
+	trigger stolen 
+	{
+		setstate docs_cm_marker invisible 
+	}
+	  
+	trigger dropped
+	{
+		wm_announce "Allied team has dropped the Supply Documents!"
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "obj_dropped_axis"
+
+		wm_teamvoiceannounce 1 "obj_dropped_allies"
+		// *---------------------------------------------------------------------------------*
+	}
+
+	trigger returned 
+	{ 
+		setstate docs_cm_marker default
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "obj_returned_axis"
+
+		wm_teamvoiceannounce 1 "obj_returned_allies"
+		// *---------------------------------------------------------------------------------*
+	}
+}
+
+docs2
+{
+    spawn
+    {
+        wait 100
+        setstate docs2 invisible
+    }
+
+      trigger stolen 
+      { 
+        setstate docs2_cm_marker invisible
+      } 
+
+      trigger returned 
+      { 
+		 setstate docs2_cm_marker default
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "obj_returned_axis"
+		wm_teamvoiceannounce 1 "obj_returned_allies"
+		// *---------------------------------------------------------------------------------*
+      } 
+
+		trigger dropped
+		{
+			wm_announce "Allied team has dropped the Deciphered Supply Documents!" 
+			// *----------------------------------- vo ------------------------------------------*
+			wm_teamvoiceannounce 0 "obj_dropped_axis"
+			wm_teamvoiceannounce 1 "obj_dropped_allies"
+			// *---------------------------------------------------------------------------------*
+		}
+}
+
+transmitter
+{
+	death
+	{
+		trigger game_manager allies_transmit1
+		trigger transmitter_spawn docs_secured
+	}
+}
+
+docs2_trigger
+{
+    spawn
+    {
+        wait 100
+        setstate docs2_trigger invisible
+    }
+
+	death
+	{
+		trigger game_manager allies_transmit2
+	}
+}
+
+// === ALLIED COMMAND POST ===
+
+allied_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+
+		setstate allied_cp_built_model invisible
+		setstate allied_cp_destroyed invisible
+		setstate allied_cp_destroyed_model invisible
+		setstate allied_cp_wobj invisible
+		
+		disablespeaker allied_compost_sound
+	}
+	
+	buildstart
+	{
+		setstate allied_cp_closed_model invisible
+		setstate allied_cp_closed invisible
+		setstate allied_cp_destroyed invisible
+		setstate allied_cp_destroyed_model invisible
+		setstate allied_cp_built_model underconstruction
+	}
+
+	decayed
+	{
+		setstate allied_cp_closed_model default
+		setstate allied_cp_closed default
+		setstate allied_cp_built_model invisible
+	}
+
+	built
+	{
+		setstate allied_cp_built_model default
+		setstate allied_cp default
+
+		wm_announce	"^5Allied Command Post constructed. Charge speed increased!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"	
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 1 soldier 0.75
+		setchargetimefactor 1 lieutenant 0.75
+		setchargetimefactor 1 medic 0.75
+		setchargetimefactor 1 engineer 0.75
+		setchargetimefactor 1 covertops 0.75
+		sethqstatus 1 1
+		
+		wm_objective_status	6 1 1
+		wm_objective_status	6 0 2
+
+		setstate allied_cp_wobj default
+		alertentity allied_cp_spawns
+
+		enablespeaker allied_compost_sound
+	}
+
+	death
+	{
+		setstate allied_cp_built_model invisible
+		setstate allied_cp invisible
+		setstate allied_cp_destroyed default
+		setstate allied_cp_destroyed_model default
+
+		wm_announce	"^1Axis team has destroyed the Allied Command Post!"
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 1 soldier 1
+		setchargetimefactor 1 lieutenant 1
+		setchargetimefactor 1 medic 1
+		setchargetimefactor 1 engineer 1
+		setchargetimefactor 1 covertops 1
+		sethqstatus 1 0
+		
+		wm_objective_status	6 1 0
+		wm_objective_status	6 0 0		
+
+		setstate allied_cp_wobj invisible
+		alertentity allied_cp_spawns
+
+		disablespeaker allied_compost_sound
+	}
+}
+
+/////////////////////////////////////////////////
+// Axis Command Post
+/////////////////////////////////////////////////
+axis_cp
+{
+	spawn
+	{
+		wait 400
+		constructible_class 2
+
+		setstate axis_cp_damaged_model invisible
+		setstate axis_cp_built_model invisible
+		setstate axis_cp_damaged invisible
+		
+		disablespeaker axis_compost_sound
+	}
+
+	buildstart
+	{
+		setstate axis_cp_damaged_model invisible
+		setstate axis_cp_damaged invisible
+		setstate axis_cp_closed_model invisible
+		setstate axis_cp_closed invisible
+		setstate axis_cp_built_model underconstruction
+	}
+
+	decayed
+	{
+		setstate axis_cp_closed_model default
+		setstate axis_cp_closed default
+		setstate axis_cp_built_model invisible
+	}
+
+	built
+	{
+		setstate axis_cp_built_model default
+		setstate axis_cp default
+
+		wm_announce	"^1Axis Command Post constructed. Charge speed increased!"
+		trigger transmitter_spawn axis_cp_built
+
+		// *----------------------------------- vo ------------------------------------------*
+		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
+
+		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 0 soldier 0.75
+		setchargetimefactor 0 lieutenant 0.75
+		setchargetimefactor 0 medic 0.75
+		setchargetimefactor 0 engineer 0.75
+		setchargetimefactor 0 covertops 0.75
+		sethqstatus 0 1
+		
+		wm_objective_status	5 0 1
+		wm_objective_status	5 1 2
+		
+		enablespeaker axis_compost_sound
+	}
+
+	death
+	{
+		setstate axis_cp_built_model invisible
+		setstate axis_cp invisible
+		setstate axis_cp_damaged_model default
+		setstate axis_cp_damaged default
+
+		wm_announce	"^5Allied team has destroyed the Axis Command Post!"
+		trigger transmitter_spawn axis_cp_destroyed
+				
+		// *----------------------------------- vo ------------------------------------------*
+		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+
+		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		// *---------------------------------------------------------------------------------*
+
+		setchargetimefactor 0 soldier 1
+		setchargetimefactor 0 lieutenant 1
+		setchargetimefactor 0 medic 1
+		setchargetimefactor 0 engineer 1
+		setchargetimefactor 0 covertops 1
+		sethqstatus 0 0
+		
+		wm_objective_status	5 1 0
+		wm_objective_status	5 0 0
+		
+		disablespeaker axis_compost_sound
+	}
+}
+
+gramophone_hint
+{
+	activate
+	{
+		setstate gramophone_hint invisible
+		togglespeaker record_music
+		wait 39414	// wait for wav to finish
+		setstate gramophone_hint default
+	}
+}
+
+// ============================================================================
+// Platform MG42 Nest
+// ============================================================================
+platform_mg42 
+{ 
+	spawn 
+	{ 
+		wait 200 
+		constructible_class 2 
+
+		setstate platform_mg42_sandbags invisible
+		setstate platform_mg invisible
+	}
+	
+	buildstart
+	{
+		setstate platform_mg42_sandbags underconstruction
+		setstate platform_mg underconstruction
+	}
+
+	decayed
+	{
+		setstate platform_mg42_sandbags invisible
+		setstate platform_mg invisible
+	}
+
+	built 
+	{
+		setstate platform_mg42_sandbags default
+		setstate platform_mg default
+		setstate platform_mg42_materials invisible 
+
+		wm_announce	"Axis team has constructed the Platform MG Nest!"
+	}
+
+	death
+	{
+		setstate platform_mg42_sandbags invisible
+		repairmg42 platform_mg
+		setstate platform_mg invisible
+		setstate platform_mg42_materials default
+		
+		wm_announce	"Allied team has destroyed the Platform MG Nest!"
+	}
+}
