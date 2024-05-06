@@ -77,6 +77,16 @@ game_manager
 		maxs "150 20 200"
 	}
 
+	create
+	{
+		scriptName "ledgeblock6"
+		classname "func_fakebrush"
+		origin "2477 -436 -57"
+		contents 65536  // CONTENTS_PLAYERCLIP
+		mins "-10 -150 10"
+		maxs "10 150 200"
+	}
+
 	//bani - bug fixes
 	create
 	{
@@ -223,7 +233,7 @@ game_manager
 		wm_axis_respawntime	30
 		wm_allied_respawntime	20
 		wm_number_of_objectives 7
-		wm_set_round_timelimit	12
+		wm_set_round_timelimit	10
 
 		// Objectives
 		// 1: Steal Tank
@@ -294,13 +304,13 @@ game_manager
 		wm_announce "Axis get another 2 spawns @ South Courtyard after the truck is past barrier 1."
 		// ----- Harlekin South Courtyard Announce End -----
 		// ----- Harlekin Timebonus Announce -----
-		wm_announce "^3*Initial Map time 12 min"
+		wm_announce "^3*Initial Map time 10 min"
 		wm_announce "^3	  Timebonus"
 		wm_announce "^3	  *  +5 min Tank"
-		wm_announce "^3	  *  +4 min Barrier 1"
+		wm_announce "^3	  *  +3 min Barrier 1"
 		wm_announce "^3	  *  +3 min Barrier 2"
-		wm_announce "^3	  *  +2 min Gold 1"
-		wm_announce "^3	  *  +2 min Gold 2"
+		wm_announce "^3	  *  +1 min Gold 1"
+		wm_announce "^3	  *  +1 min Gold 2"
 		wm_announce "^3	  *  +2 min Stolen Truck"
 		// ----- Harlekin Timebonus Announce -----
 	}
@@ -330,6 +340,10 @@ game_manager
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus tank -----
+		// ----- Harlekin Anti Spawnkill roof Start -----
+  	  setstate tankspawnroof default
+   	 //wm_announce "Tank Depot Anti Spawnkill roof activated!"
+		// ----- Harlekin Anti Spawnkill roof End -----
 		wm_objective_status 1 0 2
 		wm_objective_status 1 1 1
 
@@ -691,11 +705,6 @@ tank
 		trigger self tracks_forward
 		trigger game_manager allies_steal_tank
 
-		// ----- Harlekin Anti Spawnkill roof Start -----
-  	      setstate tankspawnroof default
-   	 	wm_announce "Tank Depot Anti Spawnkill roof activated!"
-		// ----- Harlekin Anti Spawnkill roof End -----
-
 		accum 1 bitset 2
 		followspline 0 spln3 50 wait length 32
 		accum 1 bitreset 2
@@ -965,8 +974,7 @@ tank
 
 		// ----- Harlekin Timebonus first barrier -----
 		wm_announce "Allied team has moved the tank past the first barrier!"
-		wm_announce "^1+4 min Timebonus!"
- 		cvar timelimit inc "1"
+		wm_announce "^1+3 min Timebonus!"
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
  		cvar timelimit inc "1"
@@ -3630,8 +3638,7 @@ gold_crate
 		wm_announce "Allied team has secured the first Gold Crate!"
 
 		// ----- Harlekin Timebonus first Gold Crate -----
-		wm_announce "^1+2 min Timebonus!"
- 		cvar timelimit inc "1"
+		wm_announce "^1+1 min Timebonus!"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus first Gold Crate -----
 
@@ -3647,8 +3654,7 @@ gold_crate
 		wm_announce "Allied team has secured the second Gold Crate!"
 
 		// ----- Harlekin Timebonus second Gold Crate -----
-		wm_announce "^1+2 min Timebonus!"
- 		cvar timelimit inc "1"
+		wm_announce "^1+1 min Timebonus!"
  		cvar timelimit inc "1"
 		// ----- Harlekin Timebonus second Gold Crate -----
 
