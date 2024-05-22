@@ -56,9 +56,12 @@ game_manager
 			spawnflags 1
 			origin "-294 1409 64"
 		}
+		setstate axis_spawnblob_lower invisible
+
 		create
 		{
-			scriptName "axis_lowerspawn1"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-405 1180 40"
 			angle 90
@@ -66,7 +69,8 @@ game_manager
 		}
 		create
 		{
-			scriptName "axis_lowerspawn2"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-305 1180 40"
 			angle 90
@@ -74,7 +78,8 @@ game_manager
 		}
 		create
 		{
-			scriptName "axis_lowerspawn3"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-205 1180 40"
 			angle 90
@@ -82,7 +87,8 @@ game_manager
 		}
 		create
 		{
-			scriptName "axis_lowerspawn4"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-405 1580 40"
 			angle 270
@@ -90,7 +96,8 @@ game_manager
 		}
 		create
 		{
-			scriptName "axis_lowerspawn5"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-305 1580 40"
 			angle 270
@@ -98,12 +105,14 @@ game_manager
 		}
 		create
 		{
-			scriptName "axis_lowerspawn6"
+			scriptName "axis_lowerspawns"
+			targetname "axis_lowerspawns"
 			classname "team_CTF_redspawn"
 			origin "-205 1580 40"
 			angle 270
 			spawnflags 3
 		}
+		setstate axis_lowerspawns invisible
 
 		remapshader "gfx/reactor/cm_tower1_allied" "gfx/reactor/cm_tower1_allied"
 		remapshader "gfx/reactor/cm_tower1_axis" "gfx/reactor/cm_tower1_axis"
@@ -629,6 +638,8 @@ forward_spawn
 		setautospawn "Forward Spawn" 1
 
 		wm_announce "Allies have secured the forward bunker"
+		setstate axis_spawnblob_lower default
+		setstate axis_lowerspawns default
 		remove
 
 		accum 0 abort_if_equal 1
