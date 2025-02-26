@@ -7,6 +7,10 @@
 //	BIT 0 = MAIN ENTRANCE DESTROYED
 //	BIT 1 = SIDE_ENTRANCE_DESTROYED
 //	BIT 2 = ALARM_ALREADY_SOUNDED
+//	BIT 3 = SERVICE_DOOR DESTROYED
+// GLOBALACCUM 2: 
+//	BIT 0 = WARM-UP (0=WARM-UP; 1=REGULAR MATCH)
+//	BIT 1 = WARM-UP ROUTINE DESIRED (0=ROUTINE DESIRED; 1=NO ROUTINE)
 game_manager
 {
 	spawn
@@ -151,7 +155,8 @@ game_manager
 		wm_number_of_objectives 7
 		wm_set_round_timelimit	15
 		wm_set_defending_team 0
-
+		wm_setwinner 0
+		
 		// Objectives
 		// 1: Transmit the Supply Documents
 		// 2: Destroy the Main Door
@@ -161,26 +166,12 @@ game_manager
 		// 6: Allies Base of Operations
 		// 7: Transmit the deciphered Supply Documents to the Escape Truck
 
-		// Winner on expiration of round timer (0=Axis, 1=Allies)
-		wm_setwinner 0
 
-		wait 500
-
+		wait 20
+		
 		setautospawn "Axis Barracks" 0
 		setautospawn "Command Post" 1
-		alertentity axis_garage_spawns
 		
-		//====OPTIONAL SETTINGS==============================================================
-		// Toggle the line of the respective setting you want to change by (un-)commenting.
-		//
-		setstate TJ_clip invisible				// clip preventing TJ over storage wall
-		//===================================================================================
-
-		setstate docs2_cm_marker invisible
-		setstate docs2_toi invisible
-		setstate docs2_trig_cm_marker default
-		setstate docs2_trig_toi default
-
 		setstate cabinet_toi invisible
 		setstate cabinet_marker invisible
 		setstate cabinet_health invisible
@@ -189,32 +180,53 @@ game_manager
 		setstate cabinet_ammo_model invisible
 		setstate health_dest default
 		setstate ammo_dest default
+		setstate axis_barracks_door_open invisible
 		
 		disablespeaker record_music
-		disablespeaker record_music_broken
-
-		// wait for everything to settle
-		wait 1500
-
+		
+		setstate docs2_cm_marker invisible
+		setstate docs2_toi invisible
+		setstate docs2_trig_cm_marker default
+		setstate docs2_trig_toi default
+		
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "frostbite_axis_entrances_defend"
-		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "fb_0_protect_entrances"
+		wm_addteamvoiceannounce 0 "fb_0_stop_cp_construct"
+		wm_addteamvoiceannounce 0 "fb_0_construct_cp"
 
-		wm_addteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
-		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_addteamvoiceannounce 1 "fb_1_destroy_entrances"
+		wm_addteamvoiceannounce 1 "fb_1_construct_cp"
 
-		wm_teamvoiceannounce 0 "frostbite_axis_entrances_defend"
-		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_teamvoiceannounce 0 "fb_0_protect_entrances"
+		wm_teamvoiceannounce 0 "fb_0_stop_cp_construct"
+		wm_teamvoiceannounce 0 "fb_0_construct_cp"
 
-		wm_teamvoiceannounce 1 "frostbite_allies_entrances_destroy"
-		wm_teamvoiceannounce 1 "allies_hq_compost_construct"
+		wm_teamvoiceannounce 1 "fb_1_destroy_entrances"
+		wm_teamvoiceannounce 1 "fb_1_construct_cp"
 		// *---------------------------------------------------------------------------------*
-
+		
+		//====OPTIONAL SETTINGS==============================================================
+		// Toggle the line of the respective setting you want to change by (un-)commenting.
+		wait 30
+		//
+		setstate TJ_clip invisible				// clip preventing TJ over storage wall (default disabled)
+		// trigger radio_ladder_original remove	// make outer radio bunker ladder retractable with a lever up top (default static ladder)
+		setstate allied_hut_doors invisible  	// widen the Allied spawn hut exits by opening up the other door half (default open)
+		 trigger gramophone_hint remove		// disable the gramophone entirely (default enabled)
+		// trigger axis_barracks_door open_door	// open a connection doorway from Axis upper barracks spawn to garage spawn (default closed)
+		// setstate guidance_system invisible	// hide the wire-based guidance system connecting documents and transmitter (default enabled)
+		// globalaccum 2 bitset 1				// disable map explanation routine during warm-up (non-functional in v18. Can be disregarded.)
+		//===================================================================================
+		
+		wait 50
+		trigger guidance_system initiate_warmup_routine
+		
+		wait 400
+		alertentity axis_garage_spawns
+		
 		wm_announce "^3Note: This version of Frostbite has 2 docruns:"
 		wm_announce "^3After securing the 1st documents, new deciphered documents appear next to the Transmitter."
 		wm_announce "^3Bring them to the back of the Escape Truck in the Axis garage!"
-
-		setstate gramophone_hint invisible
 	}
 
 	trigger allies_transmit1
@@ -247,7 +259,7 @@ game_manager
 		//wait 1500
 		wm_endround
 	} 
-
+	
 	trigger sound_alarm
 	{
 		globalaccum 0 abort_if_bitset 2
@@ -343,19 +355,26 @@ main_door
 		wm_objective_status 2 0 2
 		
 		// *----------------------------------- vo ------------------------------------------*
-		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
-		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
-		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
-		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+		wm_removeteamvoiceannounce 		0 "fb_0_protect_entrances"
+		wm_removeteamvoiceannounce 		0 "fb_0_protect_main_door"
+				
+		wm_removeteamvoiceannounce 		1 "fb_1_destroy_entrances"
+		wm_removeteamvoiceannounce 		1 "fb_1_dynamite_main_door"
 
-		wm_teamvoiceannounce 0 "frostbite_axis_entrance1_destroyed"
-		wm_teamvoiceannounce 1 "frostbite_allies_entrance1_destroyed"
-		// *---------------------------------------------------------------------------------*
+		wm_teamvoiceannounce 			0 "fb_0_destroyed_main_door"
+		wm_teamvoiceannounce 			1 "fb_1_destroyed_main_door"
 		
 		globalaccum 0 bitset 0				// MAIN GATE IS DESTROYED
-		globalaccum 0 abort_if_bitset 1		// ABORT_IF_SIDE_GATE_DESTROYED
-		wm_addteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
-		wm_addteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+		globalaccum 0 abort_if_bitset 1		// ABORT_IF_STORAGE_WALL_DESTROYED
+		
+		wm_teamvoiceannounce 			0 "fb_0_storage_wall_remains"
+		wm_teamvoiceannounce 			1 "fb_1_storage_wall_remains"
+		
+		wm_addteamvoiceannounce 		1 "fb_1_dynamite_storage_wall"
+		wm_addteamvoiceannounce 		0 "fb_0_protect_storage_wall"
+		// *---------------------------------------------------------------------------------*
+		
+		
 	}
 }
 
@@ -375,8 +394,14 @@ service_door
 		wm_objective_status 4 0 2
 		
 		// *----------------------------------- vo ------------------------------------------*
-		wm_teamvoiceannounce 0 "axis_hq_objective_destroyed"
-		wm_teamvoiceannounce 1 "allies_hq_objective_destroyed"
+		wm_removeteamvoiceannounce 		0 "fb_0_protect_service_door"
+		wm_removeteamvoiceannounce 		1 "fb_1_dynamite_service_door"
+		
+		wm_teamvoiceannounce 			1 "fb_1_destroyed_service_door"
+		wm_teamvoiceannounce 			1 "fb_1_steal_documents"
+					
+		wm_teamvoiceannounce 			0 "fb_0_destroyed_service_door"
+		wm_teamvoiceannounce 			0 "fb_0_protect_documents"
 		// *---------------------------------------------------------------------------------*
 		
 		trigger game_manager sound_alarm
@@ -410,19 +435,26 @@ storage_wall_explosive
 		wm_objective_status 3 0 2
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_removeteamvoiceannounce 0 "frostbite_axis_entrances_defend"
-		wm_removeteamvoiceannounce 1 "frostbite_allies_entrances_destroy"
-		wm_removeteamvoiceannounce 1 "frostbite_allies_entrance2_destroy"
-		wm_removeteamvoiceannounce 0 "frostbite_axis_entrance2_defend"
+		wm_removeteamvoiceannounce 			0 "fb_0_protect_entrances"
+		wm_removeteamvoiceannounce 			0 "fb_0_protect_storage_wall"
+					
+		wm_removeteamvoiceannounce 			1 "fb_1_destroy_entrances"
+		wm_removeteamvoiceannounce 			1 "fb_1_dynamite_storage_wall"
 
-		wm_teamvoiceannounce 0 "frostbite_axis_entrance2_destroyed"
-		wm_teamvoiceannounce 1 "frostbite_allies_entrance2_destroyed"
-		// *---------------------------------------------------------------------------------*
+		wm_teamvoiceannounce 				0 "fb_0_destroyed_storage_wall"
+		wm_teamvoiceannounce 				1 "fb_1_destroyed_storage_wall"
 		
 		globalaccum 0 bitset 1				// SIDE GATE IS DESTROYED
 		globalaccum 0 abort_if_bitset 0		// ABORT_IF_MAIN_GATE_DESTROYED
-		wm_addteamvoiceannounce 1 "frostbite_allies_entrance1_destroy"
-		wm_addteamvoiceannounce 0 "frostbite_axis_entrance1_defend"
+		
+		wm_teamvoiceannounce 				0 "fb_0_main_door_remains"
+		wm_teamvoiceannounce 				1 "fb_1_main_door_remains"
+		
+		wm_addteamvoiceannounce 			1 "fb_1_dynamite_main_door"
+		wm_addteamvoiceannounce 			0 "fb_0_protect_main_door"
+		// *---------------------------------------------------------------------------------*
+		
+		
 	}
 }
 
@@ -712,11 +744,25 @@ allied_cp
 		wm_announce	"^5Allied Command Post constructed. Charge speed increased!"
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_teamvoiceannounce 0 "axis_hq_compost_constructed_allies"
+		wm_teamvoiceannounce 0 "fb_0_allied_cp_constructed"
+		wm_teamvoiceannounce 0 "fb_0_protect_documents"
+		wm_teamvoiceannounce 1 "fb_1_cp_constructed"
+		wm_teamvoiceannounce 1 "fb_1_steal_documents"
+		
+		wm_addteamvoiceannounce 0 "fb_0_destroy_allied_cp"
+		wm_addteamvoiceannounce 0 "fb_0_protect_documents"
+		wm_addteamvoiceannounce 1 "fb_1_steal_documents"
 
-		wm_teamvoiceannounce 1 "allies_hq_compost_constructed"
-
-		wm_removeteamvoiceannounce 1 "allies_hq_compost_construct"	
+		wm_removeteamvoiceannounce 0 "fb_0_stop_cp_construct"	
+		wm_removeteamvoiceannounce 1 "fb_1_construct_cp"	
+		
+		globalaccum 0 abort_if_bitset 3		// ABORT_IF_SERVICE_DOOR_DESTROYED
+		
+		wm_teamvoiceannounce 0 "fb_0_protect_service_door"
+		wm_teamvoiceannounce 1 "fb_1_dynamite_service_door"
+		
+		wm_addteamvoiceannounce 0 "fb_0_protect_service_door"
+		wm_addteamvoiceannounce 1 "fb_1_dynamite_service_door"
 		// *---------------------------------------------------------------------------------*
 
 		setchargetimefactor 1 soldier 0.75
@@ -744,12 +790,16 @@ allied_cp
 
 		wm_announce	"^1Axis team has destroyed the Allied Command Post!"
 
+		
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
-
-		wm_addteamvoiceannounce 1 "allies_hq_compost_construct"
-
-		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		wm_teamvoiceannounce 0 "fb_0_destroyed_allied_cp"
+		wm_teamvoiceannounce 1 "fb_1_cp_lost"
+		
+		wm_addteamvoiceannounce 0 "fb_0_stop_cp_construct"
+		wm_addteamvoiceannounce 1 "fb_1_construct_cp"	
+		
+		wm_removeteamvoiceannounce 0 "fb_0_protect_documents"
+		wm_removeteamvoiceannounce 1 "fb_1_steal_documents"
 		// *---------------------------------------------------------------------------------*
 
 		setchargetimefactor 1 soldier 1
@@ -811,11 +861,11 @@ axis_cp
 		trigger transmitter_spawn axis_cp_built
 
 		// *----------------------------------- vo ------------------------------------------*
-		wm_teamvoiceannounce 1 "allies_hq_compost_constructed_axis"
+		wm_teamvoiceannounce 1 "fb_1_axis_cp_constructed"
+		wm_teamvoiceannounce 0 "fb_0_cp_constructed"
 
-		wm_teamvoiceannounce 0 "axis_hq_compost_constructed"
-
-		wm_removeteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_removeteamvoiceannounce 0 "fb_0_construct_cp"
+		wm_addteamvoiceannounce 1 "fb_1_destroy_axis_cp"
 		// *---------------------------------------------------------------------------------*
 
 		setchargetimefactor 0 soldier 0.75
@@ -842,11 +892,11 @@ axis_cp
 		trigger transmitter_spawn axis_cp_destroyed
 				
 		// *----------------------------------- vo ------------------------------------------*
-		wm_addteamvoiceannounce 0 "axis_hq_compost_construct"
+		wm_addteamvoiceannounce 0 "fb_0_construct_cp"
+		wm_removeteamvoiceannounce 1 "fb_1_destroy_axis_cp"
 
-		wm_teamvoiceannounce 0 "axis_hq_compost_construct"
-
-		wm_teamvoiceannounce 1 "allies_hq_compost_damaged"
+		wm_teamvoiceannounce 0 "fb_0_cp_lost"
+		wm_teamvoiceannounce 1 "fb_1_destroyed_axis_cp"
 		// *---------------------------------------------------------------------------------*
 
 		setchargetimefactor 0 soldier 1
@@ -867,10 +917,251 @@ gramophone_hint
 {
 	activate
 	{
-		setstate gramophone_hint invisible
-		togglespeaker record_music
+		wait 250
+		accum 1 trigger_if_equal 0 gramophone_hint start
+		accum 1 trigger_if_equal 1 gramophone_hint stop
+	}
+	
+	trigger start
+	{
+		accum 1 set 1
+		enablespeaker record_music
 		wait 39414	// wait for wav to finish
-		setstate gramophone_hint default
+		disablespeaker record_music
+		accum 1 set 0
+		
+	}
+	
+	trigger stop
+	{
+		accum 1 set 0
+		disablespeaker record_music
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+// RADIO LADDER
+radio_ladder_hint
+{
+	activate
+	{
+		trigger radio_ladder_lever activate
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder_gauge
+{
+	spawn
+	{
+		wait 360
+		faceangles 0 -45 90 100
+		trigger self enable
+	}
+	
+	trigger enable
+	{
+		faceangles 0 -45 225 600
+		faceangles 0 -45 315 400
+		trigger self wobble
+	}
+	
+	trigger wobble
+	{
+		faceangles 0 -45 325 400
+		faceangles 0 -45 310 500
+		faceangles 0 -45 320 400
+		faceangles 0 -45 315 200
+		trigger self wobble
+	}
+	
+	trigger disable
+	{
+		halt
+		faceangles 0 -45 315 1
+		faceangles 0 -45 225 400
+		faceangles 0 -45 90 600
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder
+// ACCUM 0:	radio_ladder	(0=LOWERED, 1=RAISING, 2=RAISED, 3=LOWERING)
+{
+	trigger activate
+	{
+		trigger radio_ladder_cover disappear
+		accum 0 trigger_if_equal 0 radio_ladder raise				// IF LOWERED
+		accum 0 trigger_if_equal 1 radio_ladder stop_and_lower		// IF RAISING
+		accum 0 trigger_if_equal 2 radio_ladder lower				// IF RAISED
+		accum 0 trigger_if_equal 3 radio_ladder stop_and_raise		// IF LOWERING
+	}
+	
+	trigger stop_and_raise
+	{
+		halt
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self raise
+	}
+	
+	trigger stop_and_lower
+	{
+		halt
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav volume 255
+		wait 1968	// wait for wav to play
+		trigger self lower
+	}
+	
+	trigger lower
+	{
+		accum 0 set 3	// LOWERING
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker radio_ladder_down 24 wait
+		accum 0 abort_if_not_equal 3	// ABORT_IF_NOT_CLOSING
+		stopsound
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 0	// LOWERED
+	}
+	
+	trigger raise
+	{
+		accum 0 set 1	// raising
+		playsound sound/movers/misc/big_gate2.wav looping  volume 255
+		gotomarker radio_ladder_up 24 wait
+		accum 0 abort_if_not_equal 1	// ABORT_IF_NOT_OPENING
+		stopsound
+		trigger radio_ladder_cover appear
+		playsound sound/movers/misc/big_gate3.wav  volume 255
+		wait 1968	// wait for wav to play
+		accum 0 set 2	// raised
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder_cover
+{
+	trigger appear
+	{
+		gotomarker radio_ladder_up 24
+	}
+	
+	trigger disappear
+	{
+		gotomarker radio_ladder_back 24
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder_lever
+// ACCUM 0:	radio_ladder_LEVER	(0=LOWERED, 1=RAISED)
+{
+	spawn
+	{
+		wait 200
+		gotomarker radio_ladder_lever_up 16 wait
+		gotomarker radio_ladder_lever_down 16 wait
+	}
+	
+	trigger activate
+	{
+		setstate radio_ladder_hint invisible
+		accum 0 trigger_if_equal 0 radio_ladder_lever raise		// TRIGGER_IF_LOWERED
+		accum 0 trigger_if_equal 1 radio_ladder_lever lower		// TRIGGER_IF_RAISED
+	}	
+	
+	trigger lower
+	{
+		halt
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker radio_ladder_lever_down 16 wait
+		accum 0 set 0	// CLOSED
+		stopsound
+		trigger radio_ladder activate
+		wait 1000
+		setstate radio_ladder_hint default
+	}
+	
+	trigger raise
+	{
+		playsound sound/movers/misc/garage_door_start_01.wav  volume 255
+		gotomarker radio_ladder_lever_up 16 wait
+		accum 0 set 1		// OPEN
+		stopsound
+		trigger radio_ladder activate
+		wait 1000
+		setstate radio_ladder_hint default
+	}
+	
+	trigger locked
+	{
+		setstate radio_ladder_hint invisible
+		playsound sound/movers/misc/garage_door_end_01.wav  volume 255
+		wait 2000
+		setstate radio_ladder_hint default
+	}
+	
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder_base
+{
+	trigger remove
+	{
+		remove
+	}
+}
+
+radio_ladder_original
+{
+	spawn
+	{
+		wait 250
+		accum 0 abort_if_equal 1
+		trigger self keep_original_ladder
+	}
+	
+	trigger remove
+	{
+		accum 0 set 1
+		setstate radio_ladder_original invisible
+		remove
+	}
+	
+	trigger keep_original_ladder
+	{
+		trigger radio_ladder_hint remove
+		trigger radio_ladder_gauge remove
+		trigger radio_ladder remove
+		trigger radio_ladder_cover remove
+		trigger radio_ladder_lever remove
+		trigger radio_ladder_base remove
 	}
 }
 
@@ -917,5 +1208,35 @@ platform_mg42
 		setstate platform_mg42_materials default
 		
 		wm_announce	"Allied team has destroyed the Platform MG Nest!"
+	}
+}
+
+axis_barracks_door
+{
+	trigger open_door
+	{
+		setstate axis_barracks_door invisible
+		setstate axis_barracks_door_open default
+	}
+}
+
+world_clip
+{
+	spawn
+	{
+		wait 55
+		abortifwarmup
+		globalaccum 2 bitset 0 // tells the accum we're in regular match not warm-up
+	}
+}
+
+guidance_system
+{
+	trigger initiate_warmup_routine
+	{
+		globalaccum 2 abort_if_bitset 0		// abort if we're during regular match
+		globalaccum 2 abort_if_bitset 1		// abort if explanation routine is not desired
+		
+		// THIS IS WHERE A POSSIBLE WARM-UP SEQUENCE COULD BE SCRIPTED
 	}
 }
