@@ -46,10 +46,10 @@ game_manager
 		{
 			scriptName "spawnroof2"
 			classname "func_fakebrush"
-			origin "6300 3226 800"
+			origin "6300 3226 900"
 			contents 1  // SOLID
-			mins "-1240 -596 -88"
-			maxs "1240 596 88"
+			mins "-1240 -596 -10"
+			maxs "1240 596 10"
 		}
 
 		// roof over axis tower
