@@ -2,7 +2,7 @@ game_manager
 // bani - bug fixes
 // Harlekin - Sat Feb 3 2007 Anti spawnkill roofs thanks at jade for the trigger
 // Harlekin - Timebonus
-// x0rnn - corrected 2 allied spawn angles, moved axis garrison wobj closer to main entrance
+// x0rnn - moved axis garrison wobj closer to main entrance
 // x0rnn - added backplant protection at both guns
 
 {
@@ -1968,3 +1968,4 @@ pak75_model_2
 // ======================================================
 // ==============   END SEQUENCE End   ==================
 // ======================================================
+
