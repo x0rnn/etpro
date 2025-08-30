@@ -1026,7 +1026,7 @@ game_manager
 			scriptName "fueldumphq_spawn1"
 			classname "team_CTF_bluespawn"
 			targetname "fueldumphq_spawn"
-			origin "11072 -2448 512"
+			origin "-11072 -2448 512"
 			spawnflags 2	// TEAM_ALLIES
 		}
 
@@ -1062,7 +1062,7 @@ game_manager
 			scriptName "fueldumphq_spawn5"
 			classname "team_CTF_bluespawn"
 			targetname "fueldumphq_spawn"
-			origin "11072 -2288 512"
+			origin "-11072 -2288 512"
 			spawnflags 2	// TEAM_ALLIES
 		}
 
@@ -1098,7 +1098,7 @@ game_manager
 			scriptName "fueldumphq_spawn9"
 			classname "team_CTF_bluespawn"
 			targetname "fueldumphq_spawn"
-			origin "11072 -2114 512"
+			origin "-11072 -2114 512"
 			spawnflags 2	// TEAM_ALLIES
 		}
 
